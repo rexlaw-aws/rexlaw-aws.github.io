@@ -1,0 +1,3455 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../pods/">
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>身份和访问管理 - EKS最佳实践指南</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-VQGL8B2FH8"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-VQGL8B2FH8",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-VQGL8B2FH8",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../../" title="EKS最佳实践指南" class="md-header__button md-logo" aria-label="EKS最佳实践指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EKS最佳实践指南
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              身份和访问管理
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../security/docs/iam/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../ko/security/docs/iam/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh" class="md-select__link">
+              中文（简体）
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../zh-TW/security/docs/iam/" hreflang="zh-TW" class="md-select__link">
+              中文（繁體）
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-eks-best-practices" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="EKS最佳实践指南" class="md-nav__button md-logo" aria-label="EKS最佳实践指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    EKS最佳实践指南
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-eks-best-practices" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    指南
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    介绍
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    安全
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            安全
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    主页
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    身份和访问管理
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    身份和访问管理
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      控制对EKS集群的访问
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="控制对EKS集群的访问">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      集群访问管理器
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-auth-configmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      aws-auth ConfigMap (已弃用)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      集群访问建议
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="集群访问建议">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#eks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      使EKS集群端点私有化
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      不要使用服务帐户令牌进行身份验证
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      对AWS资源实施最小权限访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      删除集群创建者主体的cluster-admin权限
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iam" class="md-nav__link">
+    <span class="md-ellipsis">
+      当多个用户需要对集群的相同访问权限时,请使用IAM角色
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rolebindingclusterrolebinding" class="md-nav__link">
+    <span class="md-ellipsis">
+      在创建RoleBinding和ClusterRoleBinding时实施最小权限访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用自动化流程创建集群
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iam_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用专用IAM角色创建集群
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      定期审核对集群的访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-auth-configmap_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      如果依赖于aws-auth configMap,请使用工具进行更改
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      身份验证和访问管理的替代方法
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks-pods" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS Pods的身份和凭据
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EKS Pods的身份和凭据">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kubernetes服务帐户
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iamirsa" class="md-nav__link">
+    <span class="md-ellipsis">
+      IAM角色的服务帐户(IRSA)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eks-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS Pod身份
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EKS Pod身份">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#eks-podiam" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用EKS Pod身份的IAM角色
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#abaceks-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      ABAC和EKS Pod身份
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eks-podirsa" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS Pod身份与IRSA的比较
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks-pods_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS Pods的身份和凭据建议
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EKS Pods的身份和凭据建议">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-node-daemonsetirsa" class="md-nav__link">
+    <span class="md-ellipsis">
+      将aws-node daemonset更新为使用IRSA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      限制对分配给工作节点的实例配置文件的访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#irsa" class="md-nav__link">
+    <span class="md-ellipsis">
+      将IRSA角色的信任策略范围缩小到服务帐户名称、命名空间和集群
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iam_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      为每个应用程序使用一个IAM角色
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#imdsimdsv2ec22" class="md-nav__link">
+    <span class="md-ellipsis">
+      当您的应用程序需要访问IMDS时,使用IMDSv2并将EC2实例的跳数增加到2
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      禁用自动挂载服务帐户令牌
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      为每个应用程序使用专用服务帐户
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root" class="md-nav__link">
+    <span class="md-ellipsis">
+      以非root用户运行应用程序
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      授予应用程序最小权限访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eks_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      检查并撤销对您的EKS集群的不必要的匿名访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#irsaaws-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      与IRSA一起重复使用AWS SDK会话
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      替代方法
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      工具和资源
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pods/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pod安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multitenancy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多租户
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../detective/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    侦查控制
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    网络安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    数据加密和机密管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    运行时安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hosts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基础设施安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../compliance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    监管合规性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../incidents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    事故响应和取证
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../image/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    镜像安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multiaccount/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多账户策略
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    集群自动扩缩
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            集群自动扩缩
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../karpenter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Karpenter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cluster-autoscaling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    集群自动缩放器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可靠性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            可靠性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reliability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    主页
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reliability/docs/application/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    应用程序
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reliability/docs/controlplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reliability/docs/dataplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    数据平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Windows容器
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Windows容器
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/ami/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AMI管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/gmsa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows容器的gMSA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/hardening/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows服务器强化
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    扫描Windows镜像
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/licensing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows版本和许可
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    日志记录
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    监控Windows容器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows网络
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/oom/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    内存和系统管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/patching/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基础设施管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/scheduling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    调度
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows容器的Pod安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存储选项
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    网络
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            网络
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    主页
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/subnets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VPC和子网注意事项
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/vpc-cni/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon VPC CNI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/ip-optimization-strategies/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    优化IP地址利用率
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/ipv6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    运行IPv6集群
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/custom-networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    自定义网络
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/prefix-mode/index_linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Linux的前缀模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/prefix-mode/index_windows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows的前缀模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/sgpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    每个Pod的安全组
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/loadbalancing/loadbalancing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    负载均衡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    网络性能问题监控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可扩展性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            可扩展性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    主页
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/control-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/data-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    数据平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/cluster-services/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    集群服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/workloads/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    工作负载
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/scaling_theory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    扩展背后的理论
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/kcp_monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面监控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/node_efficiency/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    节点效率和扩展
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/kubernetes_slos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes SLO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/quotas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    已知限制和服务配额
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../upgrades/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    集群升级
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    成本优化
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            成本优化
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cfm_framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    云财务管理框架
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cost_opt_compute/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    计算
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cost_opt_networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    网络
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cost_opt_storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存储
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cost_opt_observability/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    可观察性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      控制对EKS集群的访问
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="控制对EKS集群的访问">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      集群访问管理器
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-auth-configmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      aws-auth ConfigMap (已弃用)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      集群访问建议
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="集群访问建议">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#eks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      使EKS集群端点私有化
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      不要使用服务帐户令牌进行身份验证
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      对AWS资源实施最小权限访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      删除集群创建者主体的cluster-admin权限
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iam" class="md-nav__link">
+    <span class="md-ellipsis">
+      当多个用户需要对集群的相同访问权限时,请使用IAM角色
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rolebindingclusterrolebinding" class="md-nav__link">
+    <span class="md-ellipsis">
+      在创建RoleBinding和ClusterRoleBinding时实施最小权限访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用自动化流程创建集群
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iam_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用专用IAM角色创建集群
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      定期审核对集群的访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-auth-configmap_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      如果依赖于aws-auth configMap,请使用工具进行更改
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      身份验证和访问管理的替代方法
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks-pods" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS Pods的身份和凭据
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EKS Pods的身份和凭据">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kubernetes服务帐户
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iamirsa" class="md-nav__link">
+    <span class="md-ellipsis">
+      IAM角色的服务帐户(IRSA)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eks-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS Pod身份
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EKS Pod身份">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#eks-podiam" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用EKS Pod身份的IAM角色
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#abaceks-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      ABAC和EKS Pod身份
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eks-podirsa" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS Pod身份与IRSA的比较
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks-pods_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS Pods的身份和凭据建议
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EKS Pods的身份和凭据建议">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-node-daemonsetirsa" class="md-nav__link">
+    <span class="md-ellipsis">
+      将aws-node daemonset更新为使用IRSA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      限制对分配给工作节点的实例配置文件的访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#irsa" class="md-nav__link">
+    <span class="md-ellipsis">
+      将IRSA角色的信任策略范围缩小到服务帐户名称、命名空间和集群
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iam_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      为每个应用程序使用一个IAM角色
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#imdsimdsv2ec22" class="md-nav__link">
+    <span class="md-ellipsis">
+      当您的应用程序需要访问IMDS时,使用IMDSv2并将EC2实例的跳数增加到2
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      禁用自动挂载服务帐户令牌
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      为每个应用程序使用专用服务帐户
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root" class="md-nav__link">
+    <span class="md-ellipsis">
+      以非root用户运行应用程序
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      授予应用程序最小权限访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eks_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      检查并撤销对您的EKS集群的不必要的匿名访问
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#irsaaws-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      与IRSA一起重复使用AWS SDK会话
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      替代方法
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      工具和资源
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="_1">身份和访问管理<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p><a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html">身份和访问管理</a>(IAM)是一项AWS服务,执行两个基本功能:身份验证和授权。身份验证涉及对身份的验证,而授权则管理AWS资源可以执行的操作。在AWS中,资源可以是另一项AWS服务,例如EC2,或者是AWS <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/intro-structure.html#intro-structure-principal">主体</a>，如<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id.html#id_iam-users">IAM用户</a>或<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id.html#id_iam-roles">角色</a>。管理资源被允许执行的操作的规则表述为<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html">IAM策略</a>。</p>
+<h2 id="eks">控制对EKS集群的访问<a class="headerlink" href="#eks" title="Permanent link">&para;</a></h2>
+<p>Kubernetes项目支持多种不同的策略来验证对kube-apiserver服务的请求,例如Bearer令牌、X.509证书、OIDC等。EKS目前原生支持<a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#webhook-token-authentication">Webhook令牌身份验证</a>、<a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#service-account-tokens">服务帐户令牌</a>,以及从2021年2月21日开始支持OIDC身份验证。</p>
+<p>Webhook身份验证策略调用一个Webhook来验证Bearer令牌。在EKS上,这些Bearer令牌是由AWS CLI或<a href="https://github.com/kubernetes-sigs/aws-iam-authenticator">aws-iam-authenticator</a>客户端在运行<code>kubectl</code>命令时生成的。当您执行命令时,令牌被传递给kube-apiserver,后者将其转发给身份验证Webhook。如果请求格式正确,Webhook会调用令牌主体中嵌入的预签名URL。此URL验证请求的签名,并向kube-apiserver返回有关用户的信息,例如用户的帐户、Arn和UserId。</p>
+<p>要手动生成身份验证令牌,请在终端窗口中输入以下命令:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>aws<span class="w"> </span>eks<span class="w"> </span>get-token<span class="w"> </span>--cluster-name<span class="w"> </span>&lt;cluster_name&gt;
+</code></pre></div>
+<p>您也可以以编程方式获取令牌。以下是用Go编写的示例:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">package</span><span class="w"> </span><span class="nx">main</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">import</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="s">&quot;fmt&quot;</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="s">&quot;log&quot;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="s">&quot;sigs.k8s.io/aws-iam-authenticator/pkg/token&quot;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">)</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="kd">func</span><span class="w"> </span><span class="nx">main</span><span class="p">()</span><span class="w">  </span><span class="p">{</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="nx">g</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">token</span><span class="p">.</span><span class="nx">NewGenerator</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="nx">tk</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">g</span><span class="p">.</span><span class="nx">Get</span><span class="p">(</span><span class="s">&quot;&lt;cluster_name&gt;&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">tk</span><span class="p">)</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="p">}</span>
+</code></pre></div>
+<p>输出应该类似于此:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ExecCredential&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;apiVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;client.authentication.k8s.io/v1alpha1&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">&quot;spec&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">&quot;expirationTimestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2020-02-19T16:08:27Z&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">&quot;token&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;k8s-aws-v1.aHR0cHM6Ly9zdHMuYW1hem9uYXdzLmNvbS8_QWN0aW9uPUdldENhbGxlcklkZW50aXR5JlZlcnNpb249MjAxMS0wNi0xNSZYLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFKTkdSSUxLTlNSQzJXNVFBJTJGMjAyMDAyMTklMkZ1cy1lYXN0LTElMkZzdHMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDIwMDIxOVQxNTU0MjdaJlgtQW16LUV4cGlyZXM9NjAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JTNCeC1rOHMtYXdzLWlkJlgtQW16LVNpZ25hdHVyZT0yMjBmOGYzNTg1ZTMyMGRkYjVlNjgzYTVjOWE0MDUzMDFhZDc2NTQ2ZjI0ZjI4MTExZmRhZDA5Y2Y2NDhhMzkz&quot;</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="p">}</span>
+</code></pre></div>
+<p>每个令牌都以<code>k8s-aws-v1.</code>开头,后跟一个base64编码的字符串。解码该字符串后,应该类似于以下内容:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>https://sts.amazonaws.com/?Action<span class="o">=</span>GetCallerIdentity<span class="p">&amp;</span><span class="nv">Version</span><span class="o">=</span><span class="m">2011</span>-06-15<span class="p">&amp;</span>X-Amz-Algorithm<span class="o">=</span>AWS4-HMAC-SHA256<span class="p">&amp;</span>X-Amz-Credential<span class="o">=</span>XXXXJPFRILKNSRC2W5QA%2F20200219%2Fus-xxxx-1%2Fsts%2Faws4_request<span class="p">&amp;</span>X-Amz-Date<span class="o">=</span>20200219T155427Z<span class="p">&amp;</span>X-Amz-Expires<span class="o">=</span><span class="m">60</span><span class="p">&amp;</span>X-Amz-SignedHeaders<span class="o">=</span>host%3Bx-k8s-aws-id<span class="p">&amp;</span>X-Amz-Signature<span class="o">=</span>XXXf8f3285e320ddb5e683a5c9a405301ad76546f24f28111fdad09cf648a393
+</code></pre></div>
+<p>该令牌由一个预签名的URL组成,其中包含Amazon凭证和签名。有关更多详细信息,请参见<a href="https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html">https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html</a>。</p>
+<p>该令牌的生存时间(TTL)为15分钟,之后需要生成一个新令牌。当您使用<code>kubectl</code>等客户端时,这会自动处理,但是如果您使用Kubernetes仪表板,每当令牌过期时,您都需要生成一个新令牌并重新进行身份验证。</p>
+<p>一旦用户的身份由AWS IAM服务验证,kube-apiserver就会读取<code>kube-system</code>命名空间中的<code>aws-auth</code> ConfigMap,以确定要与用户关联的RBAC组。<code>aws-auth</code> ConfigMap用于在IAM主体(即IAM用户和角色)和Kubernetes RBAC组之间创建静态映射。RBAC组可以在Kubernetes RoleBinding或ClusterRoleBinding中引用。它们类似于IAM角色,因为它们定义了可以对一组Kubernetes资源(对象)执行的一组操作(动词)。</p>
+<h3 id="_2">集群访问管理器<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>集群访问管理器是管理AWS IAM主体对Amazon EKS集群访问的首选方式,它是EKS v1.23及更高版本集群(新的或现有的)的一项可选功能。它简化了AWS IAM和Kubernetes RBAC之间的身份映射,消除了在AWS和Kubernetes API之间切换或编辑<code>aws-auth</code> ConfigMap进行访问管理的需要,从而减少了操作开销,并有助于解决对创建集群的AWS IAM主体自动授予的<code>cluster-admin</code>权限的配置错误。</p>
+<p>此API依赖于两个概念:</p>
+<ul>
+<li><strong>访问条目:</strong>与允许身份验证到Amazon EKS集群的AWS IAM主体(用户或角色)直接链接的集群身份。</li>
+<li><strong>访问策略:</strong>是Amazon EKS特定的策略,为访问条目提供在Amazon EKS集群中执行操作的授权。</li>
+</ul>
+<blockquote>
+<p>在发布时,Amazon EKS仅支持预定义和AWS托管的策略。访问策略不是IAM实体,而是由Amazon EKS定义和管理的。</p>
+</blockquote>
+<p>集群访问管理器允许将上游RBAC与支持允许和传递(但不拒绝)Kubernetes AuthZ决策的访问策略相结合,关于API服务器请求。当上游RBAC和Amazon EKS授权器都无法确定请求评估的结果时,会发生拒绝决策。</p>
+<p>通过此功能,Amazon EKS支持三种身份验证模式:</p>
+<ol>
+<li><code>CONFIG_MAP</code>继续独占使用<code>aws-auth</code> configMap。</li>
+<li><code>API_AND_CONFIG_MAP</code>从EKS访问条目API和<code>aws-auth</code> configMap中获取经过身份验证的IAM主体,优先考虑访问条目。这是将现有的<code>aws-auth</code>权限迁移到访问条目的理想选择。</li>
+<li><code>API</code>完全依赖于EKS访问条目API。这是新的<strong>推荐方法</strong>。</li>
+</ol>
+<p>要开始使用,集群管理员可以创建或更新Amazon EKS集群,将首选身份验证设置为<code>API_AND_CONFIG_MAP</code>或<code>API</code>方法,并定义访问条目以授予所需的AWS IAM主体访问权限。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>aws<span class="w"> </span>eks<span class="w"> </span>create-cluster<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span>--name<span class="w"> </span>&lt;CLUSTER_NAME&gt;<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span>--role-arn<span class="w"> </span>&lt;CLUSTER_ROLE_ARN&gt;<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span>--resources-vpc-config<span class="w"> </span><span class="nv">subnetIds</span><span class="o">=</span>&lt;value&gt;,endpointPublicAccess<span class="o">=</span>true,endpointPrivateAccess<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span>--logging<span class="w"> </span><span class="s1">&#39;{&quot;clusterLogging&quot;:[{&quot;types&quot;:[&quot;api&quot;,&quot;audit&quot;,&quot;authenticator&quot;,&quot;controllerManager&quot;,&quot;scheduler&quot;],&quot;enabled&quot;:true}]}&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span>--access-config<span class="w"> </span><span class="nv">authenticationMode</span><span class="o">=</span>API_AND_CONFIG_MAP,bootstrapClusterCreatorAdminPermissions<span class="o">=</span><span class="nb">false</span>
+</code></pre></div>
+<p>上述命令是一个示例,用于创建一个不具有集群创建者管理权限的Amazon EKS集群。</p>
+<p>可以使用<code>update-cluster-config</code>命令更新Amazon EKS集群配置以启用<code>API</code>身份验证模式,要在使用<code>CONFIG_MAP</code>的现有集群上执行此操作,您必须先更新为<code>API_AND_CONFIG_MAP</code>,然后再更新为<code>API</code>。<strong>这些操作不可逆</strong>,这意味着无法从<code>API</code>切换到<code>API_AND_CONFIG_MAP</code>或<code>CONFIG_MAP</code>,也无法从<code>API_AND_CONFIG_MAP</code>切换到<code>CONFIG_MAP</code>。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>aws<span class="w"> </span>eks<span class="w"> </span>update-cluster-config<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span>--name<span class="w"> </span>&lt;CLUSTER_NAME&gt;<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span>--access-config<span class="w"> </span><span class="nv">authenticationMode</span><span class="o">=</span>API
+</code></pre></div>
+<p>该API支持添加和撤销对集群的访问权限,以及验证指定集群的现有访问策略和访问条目的命令。默认策略是根据Kubernets RBAC创建的,如下所示。</p>
+<table>
+<thead>
+<tr>
+<th>EKS访问策略</th>
+<th>Kubernetes RBAC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AmazonEKSClusterAdminPolicy</td>
+<td>cluster-admin</td>
+</tr>
+<tr>
+<td>AmazonEKSAdminPolicy</td>
+<td>admin</td>
+</tr>
+<tr>
+<td>AmazonEKSEditPolicy</td>
+<td>edit</td>
+</tr>
+<tr>
+<td>AmazonEKSViewPolicy</td>
+<td>view</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>aws<span class="w"> </span>eks<span class="w"> </span>list-access-policies
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="o">{</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="s2">&quot;accessPolicies&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">        </span><span class="o">{</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">            </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;AmazonEKSAdminPolicy&quot;</span>,
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">            </span><span class="s2">&quot;arn&quot;</span>:<span class="w"> </span><span class="s2">&quot;arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy&quot;</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">        </span><span class="o">}</span>,
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">        </span><span class="o">{</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">            </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;AmazonEKSClusterAdminPolicy&quot;</span>,
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">            </span><span class="s2">&quot;arn&quot;</span>:<span class="w"> </span><span class="s2">&quot;arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy&quot;</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">        </span><span class="o">}</span>,
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">        </span><span class="o">{</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">            </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;AmazonEKSEditPolicy&quot;</span>,
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">            </span><span class="s2">&quot;arn&quot;</span>:<span class="w"> </span><span class="s2">&quot;arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy&quot;</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">        </span><span class="o">}</span>,
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="w">        </span><span class="o">{</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">            </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;AmazonEKSViewPolicy&quot;</span>,
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">            </span><span class="s2">&quot;arn&quot;</span>:<span class="w"> </span><span class="s2">&quot;arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy&quot;</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="w">        </span><span class="o">}</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="w">    </span><span class="o">]</span>
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="o">}</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>$<span class="w"> </span>aws<span class="w"> </span>eks<span class="w"> </span>list-access-entries<span class="w"> </span>--cluster-name<span class="w"> </span>&lt;CLUSTER_NAME&gt;
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="o">{</span>
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="w">    </span><span class="s2">&quot;accessEntries&quot;</span>:<span class="w"> </span><span class="o">[]</span>
+<a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a><span class="o">}</span>
+</code></pre></div>
+<blockquote>
+<p>当集群在没有集群创建者管理权限的情况下创建时,不会创建任何访问条目,这是默认创建的唯一条目。</p>
+</blockquote>
+<h3 id="aws-auth-configmap"><code>aws-auth</code> ConfigMap <em>(已弃用)</em><a class="headerlink" href="#aws-auth-configmap" title="Permanent link">&para;</a></h3>
+<p>Kubernetes与AWS身份验证集成的一种方式是通过<code>aws-auth</code> ConfigMap,它位于<code>kube-system</code>命名空间中。它负责将AWS IAM身份(用户、组和角色)的身份验证映射到Kubernetes基于角色的访问控制(RBAC)授权。<code>aws-auth</code> ConfigMap在Amazon EKS集群配置过程中自动创建。它最初是为了允许节点加入您的集群而创建的,但如前所述,您也可以使用此ConfigMap为IAM主体添加RBAC访问权限。</p>
+<p>要检查您集群的<code>aws-auth</code> ConfigMap,可以使用以下命令。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>kubectl<span class="w"> </span>-n<span class="w"> </span>kube-system<span class="w"> </span>get<span class="w"> </span>configmap<span class="w"> </span>aws-auth<span class="w"> </span>-o<span class="w"> </span>yaml
+</code></pre></div>
+<p>这是<code>aws-auth</code> ConfigMap的默认配置示例。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nt">data</span><span class="p">:</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="nt">mapRoles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="no">- groups:</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">      </span><span class="no">- system:bootstrappers</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">      </span><span class="no">- system:nodes</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">      </span><span class="no">- system:node-proxier</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">      </span><span class="no">rolearn: arn:aws:iam::&lt;AWS_ACCOUNT_ID&gt;:role/kube-system-&lt;SELF_GENERATED_UUID&gt;</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">      </span><span class="no">username: system:node:{{SessionName}}</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">  </span><span class="nt">creationTimestamp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2023-10-22T18:19:30Z&quot;</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aws-auth</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kube-system</span>
+</code></pre></div>
+<p>此ConfigMap的主要部分位于<code>data</code>中的<code>mapRoles</code>块中,它由3个参数组成。</p>
+<ul>
+<li><strong>groups:</strong> 将IAM角色映射到的Kubernetes组。这可以是默认组,也可以是在<code>clusterrolebinding</code>或<code>rolebinding</code>中指定的自定义组。在上面的示例中,我们只有系统组声明。</li>
+<li><strong>rolearn:</strong> 要映射到Kubernetes组的AWS IAM角色的ARN,使用以下格式<code>arn:&lt;PARTITION&gt;:iam::&lt;AWS_ACCOUNT_ID&gt;:role/role-name</code>。</li>
+<li><strong>username:</strong> 在Kubernetes中映射到AWS IAM角色的用户名。这可以是任何自定义名称。</li>
+</ul>
+<blockquote>
+<p>也可以为AWS IAM用户定义新的配置块<code>mapUsers</code>,在<code>data</code>中的<code>aws-auth</code> ConfigMap中,将<strong>rolearn</strong>参数替换为<strong>userarn</strong>,但作为<strong>最佳实践</strong>,始终建议使用<code>mapRoles</code>。</p>
+</blockquote>
+<p>要管理权限,您可以编辑<code>aws-auth</code> ConfigMap,添加或删除对Amazon EKS集群的访问权限。虽然可以手动编辑<code>aws-auth</code> ConfigMap,但建议使用诸如<code>eksctl</code>之类的工具,因为这是一个非常敏感的配置,不准确的配置可能会将您锁定在Amazon EKS集群之外。有关更多详细信息,请查看下面的<a href="https://aws.github.io/aws-eks-best-practices/security/docs/iam/#use-tools-to-make-changes-to-the-aws-auth-configmap">使用工具对aws-auth ConfigMap进行更改</a>部分。</p>
+<h2 id="_3">集群访问建议<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="eks_1">使EKS集群端点私有化<a class="headerlink" href="#eks_1" title="Permanent link">&para;</a></h3>
+<p>默认情况下,当您配置EKS集群时,API集群端点被设置为公共的,即可从互联网访问。尽管可从互联网访问,但端点仍被认为是安全的,因为它要求所有API请求都通过IAM进行身份验证,然后通过Kubernetes RBAC进行授权。但是,如果您的公司安全政策要求您限制从互联网访问API,或者阻止您在集群VPC之外路由流量,您可以:</p>
+<ul>
+<li>将EKS集群端点配置为私有。有关此主题的更多信息,请参见<a href="https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html">修改集群端点访问</a>。</li>
+<li>保留公共集群端点,并指定哪些CIDR块可以与集群端点通信。这些块实际上是一个允许列表,其中包含允许访问集群端点的公共IP地址。</li>
+<li>配置公共访问,设置一组允许列表CIDR块,并启用私有端点访问。这将允许从特定范围的公共IP访问,同时强制所有网络流量在kubelets(工作节点)和Kubernetes API之间通过在配置控制平面时配置的跨账户ENI。</li>
+</ul>
+<h3 id="_4">不要使用服务帐户令牌进行身份验证<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>服务帐户令牌是一个长期的静态凭据。如果它被泄露、丢失或被盗,攻击者可能会执行与该令牌相关的所有操作,直到删除该服务帐户。有时,您可能需要为从集群外部使用Kubernetes API的应用程序(例如CI/CD管道应用程序)授予例外。如果这些应用程序在AWS基础设施(如EC2实例)上运行,请考虑使用实例配置文件并将其映射到Kubernetes RBAC角色。</p>
+<h3 id="aws">对AWS资源实施最小权限访问<a class="headerlink" href="#aws" title="Permanent link">&para;</a></h3>
+<p>IAM用户不需要被分配AWS资源的特权才能访问Kubernetes API。如果您需要授予IAM用户对EKS集群的访问权限,请在<code>aws-auth</code> ConfigMap中为该用户创建一个条目,将其映射到特定的Kubernetes RBAC组。</p>
+<h3 id="cluster-admin">删除集群创建者主体的cluster-admin权限<a class="headerlink" href="#cluster-admin" title="Permanent link">&para;</a></h3>
+<p>默认情况下,Amazon EKS集群是使用永久的<code>cluster-admin</code>权限创建的,该权限绑定到集群创建者主体。使用集群访问管理器API,可以在使用<code>API_AND_CONFIG_MAP</code>或<code>API</code>身份验证模式时创建没有此权限设置的集群,将<code>--access-config bootstrapClusterCreatorAdminPermissions</code>设置为<code>false</code>。撤销此访问权限被认为是一种最佳实践,以避免对集群配置进行任何意外更改。撤销此访问的过程遵循与撤销对集群的任何其他访问相同的过程。</p>
+<p>该API使您能够仅取消IAM主体与访问策略的关联,在本例中为<code>AmazonEKSClusterAdminPolicy</code>。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span>aws<span class="w"> </span>eks<span class="w"> </span>list-associated-access-policies<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span>--cluster-name<span class="w"> </span>&lt;CLUSTER_NAME&gt;<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span>--principal-arn<span class="w"> </span>&lt;IAM_PRINCIPAL_ARN&gt;
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>$<span class="w"> </span>aws<span class="w"> </span>eks<span class="w"> </span>disassociate-access-policy<span class="w"> </span>--cluster-name<span class="w"> </span>&lt;CLUSTER_NAME&gt;<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span>--principal-arn<span class="w"> </span>&lt;IAM_PRINCIPAL_ARN.<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span>--policy-arn<span class="w"> </span>arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy
+</code></pre></div>
+<p>或者完全删除与<code>cluster-admin</code>权限关联的访问条目。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w"> </span>aws<span class="w"> </span>eks<span class="w"> </span>list-access-entries<span class="w"> </span>--cluster-name<span class="w"> </span>&lt;CLUSTER_NAME&gt;
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="o">{</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="s2">&quot;accessEntries&quot;</span>:<span class="w"> </span><span class="o">[]</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="o">}</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>$<span class="w"> </span>aws<span class="w"> </span>eks<span class="w"> </span>delete-access-entry<span class="w"> </span>--cluster-name<span class="w"> </span>&lt;CLUSTER_NAME&gt;<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">  </span>--principal-arn<span class="w"> </span>&lt;IAM_PRINCIPAL_ARN&gt;
+</code></pre></div>
+<blockquote>
+<p>如果需要,可以在事故、紧急情况或紧急情况下重新授予此访问权限,在这种情况下集群无法访问。</p>
+</blockquote>
+<p>如果集群仍配置有<code>CONFIG_MAP</code>身份验证方法,所有其他用户都应通过<code>aws-auth</code> ConfigMap被授予对集群的访问权限,并在配置<code>aws-auth</code> ConfigMap后,可以删除创建集群的实体分配的角色,并仅在事故、紧急情况或紧急情况下重新创建,或者当<code>aws-auth</code> ConfigMap已损坏且集群无法访问时重新创建。这在生产集群中特别有用。</p>
+<h3 id="iam">当多个用户需要对集群的相同访问权限时,请使用IAM角色<a class="headerlink" href="#iam" title="Permanent link">&para;</a></h3>
+<p>不要为每个个人IAM用户创建一个条目,而是让这些用户能够承担一个IAM角色,并将该角色映射到一个Kubernetes RBAC组。这将更容易维护,特别是当需要访问的用户数量增加时。</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>当使用<code>aws-auth</code> ConfigMap映射的IAM实体访问EKS集群时,Kubernetes审核日志中会记录描述的用户名。如果您使用IAM角色,实际承担该角色的用户不会被记录,无法进行审核。</p>
+</div>
+<p>如果仍在使用<code>aws-auth</code> configMap作为身份验证方法,在将K8s RBAC权限分配给IAM角色时,您应该包含{{SessionName}}在您的用户名中。这样,审核日志就会记录会话名称,以便您可以跟踪实际用户承担此角色,以及CloudTrail日志。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rolearn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arn:aws:iam::XXXXXXXXXXXX:role/testRole</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testRole:{{SessionName}}</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span><span class="nt">groups</span><span class="p">:</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">system:masters</span>
+</code></pre></div>
+<blockquote>
+<p>在Kubernetes 1.20及更高版本中,不再需要此更改,因为<code>user.extra.sessionName.0</code>已添加到Kubernetes审核日志中。</p>
+</blockquote>
+<h3 id="rolebindingclusterrolebinding">在创建RoleBinding和ClusterRoleBinding时实施最小权限访问<a class="headerlink" href="#rolebindingclusterrolebinding" title="Permanent link">&para;</a></h3>
+<p>与前面关于授予对AWS资源的访问权限的建议一样,RoleBinding和ClusterRoleBinding应该只包含执行特定功能所需的一组权限。除非绝对必要,否则避免在您的角色和ClusterRoles中使用<code>["*"]</code>。如果您不确定要分配哪些权限,可以考虑使用<a href="https://github.com/liggitt/audit2rbac">audit2rbac</a>等工具,根据Kubernetes审核日志中观察到的API调用自动生成角色和绑定。</p>
+<h3 id="_5">使用自动化流程创建集群<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>如前面几个步骤所示,当创建Amazon EKS集群时,如果不使用<code>API_AND_CONFIG_MAP</code>或<code>API</code>身份验证模式,并且不选择将<code>cluster-admin</code>权限委托给集群创建者,则创建集群的IAM实体用户或角色(如联合用户)会自动获得集群RBAC配置中的<code>system:masters</code>权限。即使这是一种最佳实践,如<a href="Rremove-the-cluster-admin-permissions-from-the-cluster-creator-principal">此处</a>所述,如果使用<code>CONFIG_MAP</code>身份验证方法依赖于<code>aws-auth</code> ConfigMap,此访问权限无法撤销。因此,最好使用与专用IAM角色绑定的基础设施自动化管道来创建集群,该角色没有被其他用户或实体假定的权限,并定期审核此角色的权限、策略和谁有权触发管道。此外,此角色不应用于对集群执行日常操作,而应仅用于通过SCM代码更改等管道触发的集群级别操作。</p>
+<h3 id="iam_1">使用专用IAM角色创建集群<a class="headerlink" href="#iam_1" title="Permanent link">&para;</a></h3>
+<p>当您创建Amazon EKS集群时,创建集群的IAM实体用户或角色(如联合用户)会自动获得集群RBAC配置中的<code>system:masters</code>权限。此访问权限无法删除,也不通过<code>aws-auth</code> ConfigMap进行管理。因此,最好使用专用IAM角色创建集群,并定期审核谁可以承担此角色。此角色不应用于对集群执行日常操作,而应通过<code>aws-auth</code> ConfigMap为此目的授予其他用户对集群的访问权限。配置<code>aws-auth</code> ConfigMap后,应该保护该角色,并仅在临时提升权限模式/紧急情况下使用,在这种情况下集群无法访问。这在没有直接用户访问配置的集群中特别有用。</p>
+<h3 id="_6">定期审核对集群的访问<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>需要访问的人可能会随时间而变化。计划定期审核<code>aws-auth</code> ConfigMap,查看谁被授予了访问权限,以及分配给他们的权限。您还可以使用<a href="https://github.com/aquasecurity/kubectl-who-can">kubectl-who-can</a>或<a href="https://github.com/FairwindsOps/rbac-lookup">rbac-lookup</a>等开源工具来检查绑定到特定服务帐户、用户或组的角色。我们将在<a href="../detective/">审计</a>部分进一步探讨这个主题。这篇<a href="https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2019/august/tools-and-methods-for-auditing-kubernetes-rbac-policies/?mkt_tok=eyJpIjoiWWpGa056SXlNV1E0WWpRNSIsInQiOiJBT1hyUTRHYkg1TGxBV0hTZnRibDAyRUZ0VzBxbndnRzNGbTAxZzI0WmFHckJJbWlKdE5WWDdUQlBrYVZpMnNuTFJ1R3hacVYrRCsxYWQ2RTRcL2pMN1BtRVA1ZFZcL0NtaEtIUDdZV3pENzNLcE1zWGVwUndEXC9Pb2tmSERcL1pUaGUifQ%3D%3D">文章</a>中提供了更多想法。</p>
+<h3 id="aws-auth-configmap_1">如果依赖于<code>aws-auth</code> configMap,请使用工具进行更改<a class="headerlink" href="#aws-auth-configmap_1" title="Permanent link">&para;</a></h3>
+<p>格式不正确的aws-auth ConfigMap可能会导致您无法访问集群。如果您需要对ConfigMap进行更改,请使用工具。</p>
+<p><strong>eksctl</strong>
+<code>eksctl</code> CLI包括一个用于向aws-auth ConfigMap添加身份映射的命令。</p>
+<p>查看CLI帮助:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$<span class="w"> </span>eksctl<span class="w"> </span>create<span class="w"> </span>iamidentitymapping<span class="w"> </span>--help
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>...
+</code></pre></div>
+<p>检查映射到您的Amazon EKS集群的身份。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$<span class="w"> </span>eksctl<span class="w"> </span>get<span class="w"> </span>iamidentitymapping<span class="w"> </span>--cluster<span class="w"> </span><span class="nv">$CLUSTER_NAME</span><span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>ARN<span class="w">                                                                   </span>USERNAME<span class="w">                        </span>GROUPS<span class="w">                                                  </span>ACCOUNT
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>arn:aws:iam::788355785855:role/kube-system-&lt;SELF_GENERATED_UUID&gt;<span class="w">      </span>system:node:<span class="o">{{</span>SessionName<span class="o">}}</span><span class="w">     </span>system:bootstrappers,system:nodes,system:node-proxier<span class="w">  </span>
+</code></pre></div>
+<p>使IAM角色成为集群管理员:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$<span class="w"> </span>eksctl<span class="w"> </span>create<span class="w"> </span>iamidentitymapping<span class="w"> </span>--cluster<span class="w">  </span>&lt;CLUSTER_NAME&gt;<span class="w"> </span>--region<span class="o">=</span>&lt;region&gt;<span class="w"> </span>--arn<span class="w"> </span>arn:aws:iam::123456:role/testing<span class="w"> </span>--group<span class="w"> </span>system:masters<span class="w"> </span>--username<span class="w"> </span>admin
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>...
+</code></pre></div>
+<p>有关更多信息,请查看<a href="https://eksctl.io/usage/iam-identity-mappings/"><code>eksctl</code>文档</a></p>
+<p><strong><a href="https://github.com/keikoproj/aws-auth">keikoproj的aws-auth</a></strong></p>
+<p>keikoproj的<code>aws-auth</code>包括一个cli和一个go库。</p>
+<p>下载并查看CLI帮助:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>go<span class="w"> </span>get<span class="w"> </span>github.com/keikoproj/aws-auth
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>...
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>$<span class="w"> </span>aws-auth<span class="w"> </span><span class="nb">help</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>...
+</code></pre></div>
+<p>或者,使用<a href="https://krew.sigs.k8s.io">krew插件管理器</a>为kubectl安装<code>aws-auth</code>。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>kubectl<span class="w"> </span>krew<span class="w"> </span>install<span class="w"> </span>aws-auth
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>...
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>$<span class="w"> </span>kubectl<span class="w"> </span>aws-auth
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>...
+</code></pre></div>
+<p>有关更多信息,包括go库,请<a href="https://github.com/keikoproj/aws-auth/blob/master/README.md">查看GitHub上的aws-auth文档</a>。</p>
+<p><strong><a href="https://github.com/kubernetes-sigs/aws-iam-authenticator/tree/master/cmd/aws-iam-authenticator">AWS IAM Authenticator CLI</a></strong></p>
+<p><code>aws-iam-authenticator</code>项目包括一个CLI,用于更新ConfigMap。</p>
+<p>在GitHub上<a href="https://github.com/kubernetes-sigs/aws-iam-authenticator/releases">下载一个发布版本</a>。</p>
+<p>将集群权限添加到IAM角色:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>./aws-iam-authenticator<span class="w"> </span>add<span class="w"> </span>role<span class="w"> </span>--rolearn<span class="w"> </span>arn:aws:iam::185309785115:role/lil-dev-role-cluster<span class="w"> </span>--username<span class="w"> </span>lil-dev-user<span class="w"> </span>--groups<span class="w"> </span>system:masters<span class="w"> </span>--kubeconfig<span class="w"> </span>~/.kube/config
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>...
+</code></pre></div>
+<h3 id="_7">身份验证和访问管理的替代方法<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>虽然IAM是访问EKS集群的首选方式,但也可以使用OIDC身份提供程序(如GitHub)使用身份验证代理和Kubernetes <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#user-impersonation">模拟</a>。AWS开源博客上发布了两种这样的解决方案的帖子:</p>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/opensource/authenticating-eks-github-credentials-teleport/">使用Teleport通过GitHub凭据对EKS进行身份验证</a></li>
+<li><a href="https://aws.amazon.com/blogs/opensource/consistent-oidc-authentication-across-multiple-eks-clusters-using-kube-oidc-proxy/">使用kube-oidc-proxy在多个EKS集群之间保持一致的OIDC身份验证</a></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>EKS原生支持OIDC身份验证,无需使用代理。有关更多信息,请阅读发布博客<a href="https://aws.amazon.com/blogs/containers/introducing-oidc-identity-provider-authentication-amazon-eks/">为Amazon EKS引入OIDC身份提供程序身份验证</a>。有关如何使用Dex(一个流行的开源OIDC提供程序,具有各种不同身份验证方法的连接器)配置EKS的示例,请参见<a href="https://aws.amazon.com/blogs/containers/using-dex-dex-k8s-authenticator-to-authenticate-to-amazon-eks/">使用Dex &amp; dex-k8s-authenticator对Amazon EKS进行身份验证</a>。如博客所述,通过OIDC提供程序验证的用户的用户名/组将出现在Kubernetes审核日志中。</p>
+</div>
+<p>您还可以使用<a href="https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html">AWS SSO</a>将AWS与外部身份提供程序(如Azure AD)联合。如果您决定使用它,AWS CLI v2.0包括一个选项,可以创建一个命名配置文件,使您可以轻松地将SSO会话与您当前的CLI会话相关联,并承担一个IAM角色。请注意,您必须在运行<code>kubectl</code>之前先承担一个角色,因为IAM角色用于确定用户的Kubernetes RBAC组。</p>
+<h2 id="eks-pods">EKS Pods的身份和凭据<a class="headerlink" href="#eks-pods" title="Permanent link">&para;</a></h2>
+<p>某些在Kubernetes集群中运行的应用程序需要权限来调用Kubernetes API才能正常工作。例如,<a href="https://github.com/kubernetes-sigs/aws-load-balancer-controller">AWS Load Balancer Controller</a>需要能够列出服务的端点。该控制器还需要能够调用AWS API来配置和配置ALB。在本节中,我们将探讨为Pods分配权限和特权的最佳实践。</p>
+<h3 id="kubernetes">Kubernetes服务帐户<a class="headerlink" href="#kubernetes" title="Permanent link">&para;</a></h3>
+<p>服务帐户是一种特殊类型的对象,允许您将Kubernetes RBAC角色分配给Pod。每个命名空间中都会自动创建一个默认服务帐户。当您在不引用特定服务帐户的情况下将Pod部署到命名空间中时,该命名空间的默认服务帐户将自动分配给Pod,并且该服务帐户(JWT)令牌将作为卷挂载到Pod中的<code>/var/run/secrets/kubernetes.io/serviceaccount</code>目录。解码该目录中的服务帐户令牌将显示以下元数据:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="p">{</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">  </span><span class="nt">&quot;iss&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;kubernetes/serviceaccount&quot;</span><span class="p">,</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">  </span><span class="nt">&quot;kubernetes.io/serviceaccount/namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="nt">&quot;kubernetes.io/serviceaccount/secret.name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default-token-5pv4z&quot;</span><span class="p">,</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">  </span><span class="nt">&quot;kubernetes.io/serviceaccount/service-account.name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">  </span><span class="nt">&quot;kubernetes.io/serviceaccount/service-account.uid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3b36ddb5-438c-11ea-9438-063a49b60fba&quot;</span><span class="p">,</span>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w">  </span><span class="nt">&quot;sub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;system:serviceaccount:default:default&quot;</span>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="p">}</span>
+</code></pre></div>
+<p>默认服务帐户对Kubernetes API具有以下权限。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterRole</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">    </span><span class="nt">rbac.authorization.kubernetes.io/autoupdate</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">  </span><span class="nt">creationTimestamp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2020-01-30T18:13:25Z&quot;</span>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">    </span><span class="nt">kubernetes.io/bootstrapping</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac-defaults</span>
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">system:discovery</span>
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="w">  </span><span class="nt">resourceVersion</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;43&quot;</span>
+<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="w">  </span><span class="nt">selfLink</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/apis/rbac.authorization.k8s.io/v1/clusterroles/system%3Adiscovery</span>
+<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="w">  </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">350d2ab8-438c-11ea-9438-063a49b60fba</span>
+<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="nt">rules</span><span class="p">:</span>
+<a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">nonResourceURLs</span><span class="p">:</span>
+<a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/api</span>
+<a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/api/*</span>
+<a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/apis</span>
+<a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/apis/*</span>
+<a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/healthz</span>
+<a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/openapi</span>
+<a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/openapi/*</span>
+<a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/version</span>
+<a id="__codelineno-19-23" name="__codelineno-19-23" href="#__codelineno-19-23"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/version/</span>
+<a id="__codelineno-19-24" name="__codelineno-19-24" href="#__codelineno-19-24"></a><span class="w">  </span><span class="nt">verbs</span><span class="p">:</span>
+<a id="__codelineno-19-25" name="__codelineno-19-25" href="#__codelineno-19-25"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">get</span>
+</code></pre></div>
+<p>此角色授权未经身份验证和经过身份验证的用户读取API信息,并被认为是安全的公开访问。</p>
+<p>当应用程序在Pod中调用Kubernetes API时,Pod需要被分配一个显式授予它权限调用这些API的服务帐户。与用户访问指南类似,绑定到服务帐户的角色或ClusterRole应该仅限于应用程序需要的API资源和方法,而不是其他资源和方法。要使用非默认服务帐户,只需将Pod的<code>spec.serviceAccountName</code>字段设置为您要使用的服务帐户的名称。有关创建服务帐户的更多信息,请参见<a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/#service-account-permissions">https://kubernetes.io/docs/reference/access-authn-authz/rbac/#service-account-permissions</a>。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>在Kubernetes 1.24及更早版本中,Kubernetes会自动为每个服务帐户创建一个密钥。此密钥被挂载到pod的/var/run/secrets/kubernetes.io/serviceaccount目录,并由pod用于对Kubernetes API服务器进行身份验证。在Kubernetes 1.24中,当pod运行时会动态生成一个服务帐户令牌,该令牌默认有效期为1小时。不会创建服务帐户的密钥。如果您有一个在集群外运行的应用程序需要对Kubernetes API进行身份验证,例如Jenkins,您需要创建一个类型为<code>kubernetes.io/service-account-token</code>的密钥,并添加一个引用服务帐户的注释,如<code>metadata.annotations.kubernetes.io/service-account.name: &lt;SERVICE_ACCOUNT_NAME&gt;</code>。这种方式创建的密钥不会过期。</p>
+</div>
+<h3 id="iamirsa">IAM角色的服务帐户(IRSA)<a class="headerlink" href="#iamirsa" title="Permanent link">&para;</a></h3>
+<p>IRSA是一个功能,允许您将IAM角色分配给Kubernetes服务帐户。它利用Kubernetes的<a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#serviceaccount-token-volume-projection">服务帐户令牌卷投射</a>功能。当配置有引用IAM角色的服务帐户的Pods时,Kubernetes API服务器将在启动时调用集群的公共OIDC发现端点。该端点以加密方式签署由Kubernetes颁发的OIDC令牌,并将其挂载为卷。这个签名的令牌允许Pod调用与IAM角色关联的AWS API。当调用AWS API时,AWS SDK会调用<code>sts:AssumeRoleWithWebIdentity</code>。在验证令牌的签名后,IAM会将Kubernetes颁发的令牌交换为临时的AWS角色凭证。</p>
+<p>使用IRSA时,重要的是<a href="#重复使用与IRSA关联的AWS SDK会话">重复使用AWS SDK会话</a>以避免不必要的AWS STS调用。</p>
+<p>解码IRSA的(JWT)令牌将产生类似于以下示例的输出:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="p">{</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">  </span><span class="nt">&quot;aud&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">    </span><span class="s2">&quot;sts.amazonaws.com&quot;</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">  </span><span class="p">],</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">  </span><span class="nt">&quot;exp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1582306514</span><span class="p">,</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">  </span><span class="nt">&quot;iat&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1582220114</span><span class="p">,</span>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="w">  </span><span class="nt">&quot;iss&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://oidc.eks.us-west-2.amazonaws.com/id/D43CF17C27A865933144EA99A26FB128&quot;</span><span class="p">,</span>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="w">  </span><span class="nt">&quot;kubernetes.io&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="w">    </span><span class="nt">&quot;namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="w">    </span><span class="nt">&quot;pod&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alpine-57b5664646-rf966&quot;</span><span class="p">,</span>
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="w">      </span><span class="nt">&quot;uid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5a20f883-5407-11ea-a85c-0e62b7a4a436&quot;</span>
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="w">    </span><span class="nt">&quot;serviceaccount&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a><span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;s3-read-only&quot;</span><span class="p">,</span>
+<a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a><span class="w">      </span><span class="nt">&quot;uid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;a720ba5c-5406-11ea-9438-063a49b60fba&quot;</span>
+<a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a><span class="w">  </span><span class="nt">&quot;nbf&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1582220114</span><span class="p">,</span>
+<a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a><span class="w">  </span><span class="nt">&quot;sub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;system:serviceaccount:default:s3-read-only&quot;</span>
+<a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a><span class="p">}</span>
+</code></pre></div>
+<p>这个特定的令牌通过承担一个IAM角色,为Pod授予对S3的只读权限。当应用程序尝试从S3读取时,该令牌将被交换为一组临时的IAM凭证,如下所示:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="p">{</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">    </span><span class="nt">&quot;AssumedRoleUser&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">        </span><span class="nt">&quot;AssumedRoleId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AROA36C6WWEJULFUYMPB6:abc&quot;</span><span class="p">,</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="w">        </span><span class="nt">&quot;Arn&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;arn:aws:sts::123456789012:assumed-role/eksctl-winterfell-addon-iamserviceaccount-de-Role1-1D61LT75JH3MB/abc&quot;</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">    </span><span class="nt">&quot;Audience&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sts.amazonaws.com&quot;</span><span class="p">,</span>
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="w">    </span><span class="nt">&quot;Provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/D43CF17C27A865933144EA99A26FB128&quot;</span><span class="p">,</span>
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="w">    </span><span class="nt">&quot;SubjectFromWebIdentityToken&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;system:serviceaccount:default:s3-read-only&quot;</span><span class="p">,</span>
+<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="w">    </span><span class="nt">&quot;Credentials&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="w">        </span><span class="nt">&quot;SecretAccessKey&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ORJ+8Adk+wW+nU8FETq7+mOqeA8Z6jlPihnV8hX1&quot;</span><span class="p">,</span>
+<a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="w">        </span><span class="nt">&quot;SessionToken&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FwoGZXIvYXdzEGMaDMLxAZkuLpmSwYXShiL9A1S0X87VBC1mHCrRe/pB2oes+l1eXxUYnPJyC9ayOoXMvqXQsomq0xs6OqZ3vaa5Iw1HIyA4Cv1suLaOCoU3hNvOIJ6C94H1vU0siQYk7DIq9Av5RZe+uE2FnOctNBvYLd3i0IZo1ajjc00yRK3v24VRq9nQpoPLuqyH2jzlhCEjXuPScPbi5KEVs9fNcOTtgzbVf7IG2gNiwNs5aCpN4Bv/Zv2A6zp5xGz9cWj2f0aD9v66vX4bexOs5t/YYhwuwAvkkJPSIGvxja0xRThnceHyFHKtj0H+bi/PWAtlI8YJcDX69cM30JAHDdQH+ltm/4scFptW1hlvMaP+WReCAaCrsHrAT+yka7ttw5YlUyvZ8EPog+j6fwHlxmrXM9h1BqdikomyJU00gm1++FJelfP+1zAwcyrxCnbRl3ARFrAt8hIlrT6Vyu8WvWtLxcI8KcLcJQb/LgkW+sCTGlYcY8z3zkigJMbYn07ewTL5Ss7LazTJJa758I7PZan/v3xQHd5DEc5WBneiV3iOznDFgup0VAMkIviVjVCkszaPSVEdK2NU7jtrh6Jfm7bU/3P6ZG+CkyDLIa8MBn9KPXeJd/y+jTk5Ii+fIwO/+mDpGNUribg6TPxhzZ8b/XdZO1kS1gVgqjXyVC+M+BRBh6C4H21w/eMzjCtDIpoxt5rGKL6Nu/IFMipoC4fgx6LIIHwtGYMG7SWQi7OsMAkiwZRg0n68/RqWgLzBt/4pfjSRYuk=&quot;</span><span class="p">,</span>
+<a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a><span class="w">        </span><span class="nt">&quot;Expiration&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2020-02-20T18:49:50Z&quot;</span><span class="p">,</span>
+<a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a><span class="w">        </span><span class="nt">&quot;AccessKeyId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;XXXX36C6WWEJUMHA3L7Z&quot;</span>
+<a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a><span class="p">}</span>
+</code></pre></div>
+<p>EKS控制平面的一个变异Webhook会将AWS角色ARN和Web身份令牌文件的路径注入到Pod中作为环境变量。这些值也可以手动提供。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nv">AWS_ROLE_ARN</span><span class="o">=</span>arn:aws:iam::AWS_ACCOUNT_ID:role/IAM_ROLE_NAME
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="nv">AWS_WEB_IDENTITY_TOKEN_FILE</span><span class="o">=</span>/var/run/secrets/eks.amazonaws.com/serviceaccount/token
+</code></pre></div>
+<p>kubelet将在令牌超过其总TTL的80%或24小时后自动轮换投射的令牌。AWS SDK负责在令牌轮换时重新加载令牌。有关IRSA的更多信息,请参见<a href="https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts-technical-overview.html">https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts-technical-overview.html</a>。</p>
+<h3 id="eks-pod">EKS Pod身份<a class="headerlink" href="#eks-pod" title="Permanent link">&para;</a></h3>
+<p><a href="https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html">EKS Pod身份</a>是一项在re:Invent 2023推出的功能,允许您将IAM角色分配给Kubernetes服务帐户,而无需为您的AWS帐户中的每个集群配置Open Id Connect (OIDC)身份提供程序(IDP)。要使用EKS Pod身份,您必须部署一个代理,该代理作为DaemonSet pod在每个合格的工作节点上运行。此代理作为EKS加载项提供给您,是使用EKS Pod身份功能的先决条件。您的应用程序必须使用<a href="https://docs.aws.amazon.com/eks/latest/userguide/pod-id-minimum-sdk.html">支持的AWS SDK版本</a>才能使用此功能。</p>
+<p>当为Pod配置EKS Pod身份时,EKS将在<code>/var/run/secrets/pods.eks.amazonaws.com/serviceaccount/eks-pod-identity-token</code>挂载并刷新一个pod身份令牌。此令牌将由AWS SDK用于与EKS Pod身份代理通信,EKS Pod身份代理使用pod身份令牌和代理的IAM角色来创建您的pod的临时凭证,方法是调用<a href="https://docs.aws.amazon.com/eks/latest/APIReference/API_auth_AssumeRoleForPodIdentity.html">AssumeRoleForPodIdentity API</a>。传递给您的pod的pod身份令牌是由您的EKS集群颁发的JWT,经过加密签名,包含适用于EKS Pod身份的适当JWT声明。</p>
+<p>要了解更多关于EKS Pod身份的信息,请查看<a href="https://aws.amazon.com/blogs/containers/amazon-eks-pod-identity-a-new-way-for-applications-on-eks-to-obtain-iam-credentials/">这篇博客</a>。</p>
+<p>您不需要对您的应用程序代码进行任何修改即可使用EKS Pod身份。支持的AWS SDK版本将通过使用<a href="https://docs.aws.amazon.com/sdkref/latest/guide/standardized-credentials.html">凭证提供程序链</a>自动发现通过EKS Pod身份提供的凭证。与IRSA一样,EKS pod身份在您的pod中设置变量,指导它们如何找到AWS凭证。</p>
+<h4 id="eks-podiam">使用EKS Pod身份的IAM角色<a class="headerlink" href="#eks-podiam" title="Permanent link">&para;</a></h4>
+<ul>
+<li>EKS Pod身份只能直接承担与EKS集群所在的同一AWS帐户中的IAM角色。要访问另一个AWS帐户中的IAM角色,您必须通过<a href="https://docs.aws.amazon.com/sdkref/latest/guide/feature-assume-role-credentials.html">在SDK配置中配置一个配置文件</a>或<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/sts_example_sts_AssumeRole_section.html">在应用程序代码中</a>来承担该角色。</li>
+<li>当为服务帐户配置EKS Pod身份时,配置Pod身份关联的人员或过程必须对该角色具有<code>iam:PassRole</code>授权。</li>
+<li>每个服务帐户最多只能与一个IAM角色关联,但您可以将同一IAM角色与多个服务帐户关联。</li>
+<li>与EKS Pod身份一起使用的IAM角色必须允许<code>pods.eks.amazonaws.com</code>服务主体承担它们,<em>并设置会话标签</em>。以下是一个示例角色信任策略,允许EKS Pod身份使用IAM角色:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="p">{</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">  </span><span class="nt">&quot;Version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2012-10-17&quot;</span><span class="p">,</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">  </span><span class="nt">&quot;Statement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Allow&quot;</span><span class="p">,</span>
+<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="w">      </span><span class="nt">&quot;Principal&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="w">        </span><span class="nt">&quot;Service&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pods.eks.amazonaws.com&quot;</span>
+<a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="w">      </span><span class="p">},</span>
+<a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a><span class="w">      </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="w">        </span><span class="s2">&quot;sts:AssumeRole&quot;</span><span class="p">,</span>
+<a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="w">        </span><span class="s2">&quot;sts:TagSession&quot;</span>
+<a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a><span class="w">      </span><span class="p">],</span>
+<a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a><span class="w">      </span><span class="nt">&quot;Condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a><span class="w">        </span><span class="nt">&quot;StringEquals&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a><span class="w">          </span><span class="nt">&quot;aws:SourceOrgId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${aws:ResourceOrgId}&quot;</span>
+<a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-23-17" name="__codelineno-23-17" href="#__codelineno-23-17"></a><span class="w">      </span><span class="p">}</span>
+<a id="__codelineno-23-18" name="__codelineno-23-18" href="#__codelineno-23-18"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-23-19" name="__codelineno-23-19" href="#__codelineno-23-19"></a><span class="w">  </span><span class="p">]</span>
+<a id="__codelineno-23-20" name="__codelineno-23-20" href="#__codelineno-23-20"></a><span class="p">}</span>
+</code></pre></div>
+<p>AWS建议使用像<code>aws:SourceOrgId</code>这样的条件键来帮助防范<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html#cross-service-confused-deputy-prevention">跨服务困惑代理问题</a>。在上面的示例角色信任策略中,<code>ResourceOrgId</code>是一个等于AWS Organizations组织ID的变量。EKS在使用EKS Pod身份承担角色时,会传入一个等于该值的<code>aws:SourceOrgId</code>值。</p>
+<h4 id="abaceks-pod">ABAC和EKS Pod身份<a class="headerlink" href="#abaceks-pod" title="Permanent link">&para;</a></h4>
+<p>当EKS Pod身份承担一个IAM角色时,它会设置以下会话标签:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">EKS Pod身份会话标签</th>
+<th style="text-align: left;">值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">kubernetes-namespace</td>
+<td style="text-align: left;">pod与EKS Pod身份关联的命名空间。</td>
+</tr>
+<tr>
+<td style="text-align: left;">kubernetes-service-account</td>
+<td style="text-align: left;">与EKS Pod身份关联的Kubernetes服务帐户名称。</td>
+</tr>
+<tr>
+<td style="text-align: left;">eks-cluster-arn</td>
+<td style="text-align: left;">EKS集群的ARN,例如<code>arn:${Partition}:eks:${Region}:${Account}:cluster/${ClusterName}</code>。集群ARN是唯一的,但如果在同一AWS帐户和同一区域中删除并重新创建具有相同名称的集群,它将具有相同的ARN。</td>
+</tr>
+<tr>
+<td style="text-align: left;">eks-cluster-name</td>
+<td style="text-align: left;">EKS集群的名称。请注意,EKS集群名称在您的AWS帐户内可能相同,而在其他AWS帐户中也可能相同。</td>
+</tr>
+<tr>
+<td style="text-align: left;">kubernetes-pod-name</td>
+<td style="text-align: left;">EKS中pod的名称。</td>
+</tr>
+<tr>
+<td style="text-align: left;">kubernetes-pod-uid</td>
+<td style="text-align: left;">EKS中pod的UID。</td>
+</tr>
+</tbody>
+</table>
+<p>这些会话标签允许您使用<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html">属性基础访问控制(ABAC)</a>来授予对您的AWS资源的访问权限,仅限于特定的Kubernetes服务帐户。在这样做时,_非常重要_的是要理解Kubernetes服务帐户只在命名空间内是唯一的,而Kubernetes命名空间只在EKS集群内是唯一的。可以通过使用<code>aws:PrincipalTag/&lt;tag-key&gt;</code>全局条件键(如<code>aws:PrincipalTag/eks-cluster-arn</code>)来访问这些会话标签。</p>
+<p>例如,如果您想授予对您帐户中某个S3存储桶的访问权限,只限于特定的服务帐户,您需要检查<code>eks-cluster-arn</code>和<code>kubernetes-namespace</code>标签,以及<code>kubernetes-service-account</code>标签,以确保只有来自预期集群的该服务帐户有权访问该资源,因为其他集群可能具有相同的<code>kubernetes-service-accounts</code>和<code>kubernetes-namespaces</code>。</p>
+<p>以下示例S3存储桶策略仅授予对附加该策略的S3存储桶中对象的访问权限,前提是<code>kubernetes-service-account</code>、<code>kubernetes-namespace</code>和<code>eks-cluster-arn</code>都符合预期值,其中EKS集群托管在AWS帐户<code>111122223333</code>中。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="p">{</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="w">    </span><span class="nt">&quot;Version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2012-10-17&quot;</span><span class="p">,</span>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="w">    </span><span class="nt">&quot;Statement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="w">        </span><span class="p">{</span>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="w">            </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Allow&quot;</span><span class="p">,</span>
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="w">            </span><span class="nt">&quot;Principal&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="w">                </span><span class="nt">&quot;AWS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;arn:aws:iam::111122223333:root&quot;</span>
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="w">            </span><span class="p">},</span>
+<a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a><span class="w">            </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;s3:*&quot;</span><span class="p">,</span>
+<a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a><span class="w">            </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w">            </span><span class="p">[</span>
+<a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a><span class="w">                </span><span class="s2">&quot;arn:aws:s3:::ExampleBucket/*&quot;</span>
+<a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a><span class="w">            </span><span class="p">],</span>
+<a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a><span class="w">            </span><span class="nt">&quot;Condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a><span class="w">                </span><span class="nt">&quot;StringEquals&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-24-15" name="__codelineno-24-15" href="#__codelineno-24-15"></a><span class="w">                    </span><span class="nt">&quot;aws:PrincipalTag/kubernetes-service-account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;s3objectservice&quot;</span><span class="p">,</span>
+<a id="__codelineno-24-16" name="__codelineno-24-16" href="#__codelineno-24-16"></a><span class="w">                    </span><span class="nt">&quot;aws:PrincipalTag/eks-cluster-arn&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;arn:aws:eks:us-west-2:111122223333:cluster/ProductionCluster&quot;</span><span class="p">,</span>
+<a id="__codelineno-24-17" name="__codelineno-24-17" href="#__codelineno-24-17"></a><span class="w">                    </span><span class="nt">&quot;aws:PrincipalTag/kubernetes-namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;s3datanamespace&quot;</span>
+<a id="__codelineno-24-18" name="__codelineno-24-18" href="#__codelineno-24-18"></a><span class="w">                </span><span class="p">}</span>
+<a id="__codelineno-24-19" name="__codelineno-24-19" href="#__codelineno-24-19"></a><span class="w">            </span><span class="p">}</span>
+<a id="__codelineno-24-20" name="__codelineno-24-20" href="#__codelineno-24-20"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-24-21" name="__codelineno-24-21" href="#__codelineno-24-21"></a><span class="w">    </span><span class="p">]</span>
+<a id="__codelineno-24-22" name="__codelineno-24-22" href="#__codelineno-24-22"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="eks-podirsa">EKS Pod身份与IRSA的比较<a class="headerlink" href="#eks-podirsa" title="Permanent link">&para;</a></h3>
+<p>EKS Pod身份和IRSA都是向EKS Pods提供临时AWS凭证的首选方式。除非您有特定的IRSA用例,否则我们建议您在使用EKS时使用EKS Pod身份。下表有助于比较这两个功能。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">#</th>
+<th style="text-align: left;">EKS Pod身份</th>
+<th style="text-align: left;">IRSA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">需要在您的AWS帐户中创建OIDC IDP的权限吗?</td>
+<td style="text-align: left;">否</td>
+<td style="text-align: left;">是</td>
+</tr>
+<tr>
+<td style="text-align: left;">每个集群都需要唯一的IDP设置吗</td>
+<td style="text-align: left;">否</td>
+<td style="text-align: left;">是</td>
+</tr>
+<tr>
+<td style="text-align: left;">为ABAC设置相关会话标签</td>
+<td style="text-align: left;">是</td>
+<td style="text-align: left;">否</td>
+</tr>
+<tr>
+<td style="text-align: left;">需要iam:PassRole检查吗?</td>
+<td style="text-align: left;">是</td>
+<td style="text-align: left;">否</td>
+</tr>
+<tr>
+<td style="text-align: left;">使用您AWS帐户的AWS STS配额?</td>
+<td style="text-align: left;">否</td>
+<td style="text-align: left;">是</td>
+</tr>
+<tr>
+<td style="text-align: left;">可以访问其他AWS帐户</td>
+<td style="text-align: left;">通过角色链接间接</td>
+<td style="text-align: left;">通过sts:AssumeRoleWithWebIdentity直接</td>
+</tr>
+<tr>
+<td style="text-align: left;">与AWS SDK兼容</td>
+<td style="text-align: left;">是</td>
+<td style="text-align: left;">是</td>
+</tr>
+<tr>
+<td style="text-align: left;">需要Pod身份代理Daemonset在节点上吗?</td>
+<td style="text-align: left;">是</td>
+<td style="text-align: left;">否</td>
+</tr>
+</tbody>
+</table>
+<h2 id="eks-pods_1">EKS Pods的身份和凭据建议<a class="headerlink" href="#eks-pods_1" title="Permanent link">&para;</a></h2>
+<h3 id="aws-node-daemonsetirsa">将aws-node daemonset更新为使用IRSA<a class="headerlink" href="#aws-node-daemonsetirsa" title="Permanent link">&para;</a></h3>
+<p>目前,aws-node daemonset配置为使用分配给EC2实例的角色来分配IP到Pods。该角色包括几个AWS托管策略,如AmazonEKS_CNI_Policy和EC2ContainerRegistryReadOnly,实际上允许在节点上运行的<strong>所有</strong>Pods附加/分离ENI、分配/取消分配IP地址或从ECR拉取映像。由于这会给您的集群带来风险,建议您将aws-node daemonset更新为使用IRSA。可以在此指南的<a href="https://github.com/aws/aws-eks-best-practices/tree/master/projects/enable-irsa/src">存储库</a>中找到一个脚本来执行此操作。</p>
+<p>aws-node daemonset目前不支持EKS Pod身份。</p>
+<h3 id="_8">限制对分配给工作节点的实例配置文件的访问<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p>当您使用IRSA或EKS Pod身份时,它会更新pod的凭证链,以先使用IRSA或EKS Pod身份,但是pod_仍然可以继承分配给工作节点的实例配置文件的权限_。使用IRSA或EKS Pod身份时,<strong>强烈</strong>建议您阻止对<a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html">实例元数据</a>的访问,以确保您的应用程序只拥有它们所需的权限,而不是它们的节点。</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>阻止对实例元数据的访问将阻止不使用IRSA或EKS Pod身份的Pods继承分配给工作节点的角色。</p>
+</div>
+<p>您可以通过要求实例仅使用IMDSv2并更新跳数到1来阻止对实例元数据的访问,如下例所示。您也可以将这些设置包含在节点组的启动模板中。<strong>不要</strong>禁用实例元数据,因为这将阻止依赖于实例元数据的组件(如节点终止处理程序)正常工作。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>$<span class="w"> </span>aws<span class="w"> </span>ec2<span class="w"> </span>modify-instance-metadata-options<span class="w"> </span>--instance-id<span class="w"> </span>&lt;value&gt;<span class="w"> </span>--http-tokens<span class="w"> </span>required<span class="w"> </span>--http-put-response-hop-limit<span class="w"> </span><span class="m">1</span>
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>...
+</code></pre></div>
+<p>如果您使用Terraform创建用于托管节点组的启动模板,请在代码片段中添加元数据块以配置跳数:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_launch_template&quot;</span><span class="w"> </span><span class="nv">&quot;foo&quot;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="w">  </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;foo&quot;</span>
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="w">  </span><span class="p">...</span>
+<a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="w">    </span><span class="nb">metadata_options</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="w">    </span><span class="na">http_endpoint</span><span class="w">               </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;enabled&quot;</span>
+<a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a><span class="w">    </span><span class="na">http_tokens</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;required&quot;</span>
+<a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a><span class="hll"><span class="w">    </span><span class="na">http_put_response_hop_limit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+</span><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a><span class="w">    </span><span class="na">instance_metadata_tags</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;enabled&quot;</span>
+<a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a><span class="w">  </span><span class="p">...</span>
+</code></pre></div>
+<p>您还可以通过操纵节点上的iptables来阻止Pod访问EC2元数据。有关此方法的更多信息,请参见<a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-data-retrieval.html#instance-metadata-limiting-access">限制对实例元数据服务的访问</a>。</p>
+<p>如果您有一个使用不支持IRSA或EKS Pod身份的较旧版本AWS SDK的应用程序,您应该更新SDK版本。</p>
+<h3 id="irsa">将IRSA角色的信任策略范围缩小到服务帐户名称、命名空间和集群<a class="headerlink" href="#irsa" title="Permanent link">&para;</a></h3>
+<p>信任策略可以缩小到命名空间或命名空间中的特定服务帐户。使用IRSA时,最好尽可能明确地制定角色信任策略,包括服务帐户名称。这将有效地防止同一命名空间中的其他Pods承担该角色。<code>eksctl</code>会在您使用它创建服务帐户/IAM角色时自动执行此操作。有关更多信息,请参见<a href="https://eksctl.io/usage/iamserviceaccounts/">https://eksctl.io/usage/iamserviceaccounts/</a>。</p>
+<p>在直接使用IAM时,这是在角色的信任策略中添加一个条件,使用条件来确保<code>:sub</code>声明是您期望的命名空间和服务帐户。例如,在我们有一个IRSA令牌的子声明为"system:serviceaccount:default:s3-read-only"之前。这是<code>default</code>命名空间,服务帐户是<code>s3-read-only</code>。您将使用以下条件来确保只有您的集群中给定命名空间的服务帐户才能承担该角色:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="w">  </span><span class="nt">&quot;Condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="w">      </span><span class="nt">&quot;StringEquals&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="w">          </span><span class="nt">&quot;oidc.eks.us-west-2.amazonaws.com/id/D43CF17C27A865933144EA99A26FB128:aud&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sts.amazonaws.com&quot;</span><span class="p">,</span>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="w">          </span><span class="nt">&quot;oidc.eks.us-west-2.amazonaws.com/id/D43CF17C27A865933144EA99A26FB128:sub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;system:serviceaccount:default:s3-read-only&quot;</span>
+<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="w">      </span><span class="p">}</span>
+<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a><span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="iam_2">为每个应用程序使用一个IAM角色<a class="headerlink" href="#iam_2" title="Permanent link">&para;</a></h3>
+<p>对于IRSA和EKS Pod身份,最佳实践是为每个应用程序提供一个自己的IAM角色。这可以提供更好的隔离,因为您可以修改一个应用程序而不影响另一个应用程序,并允许您应用最小权限原则,仅授予应用程序所需的权限。</p>
+<p>使用EKS Pod身份时,您可以跨多个服务帐户使用一个通用的IAM角色,并依赖于它们的会话属性进行访问控制。当以规模运营时,这特别有用,因为ABAC允许您使用更少的IAM角色进行操作。</p>
+<h3 id="imdsimdsv2ec22">当您的应用程序需要访问IMDS时,使用IMDSv2并将EC2实例的跳数增加到2<a class="headerlink" href="#imdsimdsv2ec22" title="Permanent link">&para;</a></h3>
+<p><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html">IMDSv2</a>要求您使用PUT请求来获取会话令牌。初始PUT请求必须包含会话令牌的TTL。较新版本的AWS SDK将自动处理这个问题以及令牌的续订。还需要注意的是,EC2实例上的默认跳数限制为1,以防止IP转发。因此,在EC2实例上运行的Pods请求会话令牌可能最终会超时,并回退到使用IMDSv1数据流。EKS通过_启用_v1和v2,并将跳数更改为2来添加对IMDSv2的支持,这是由eksctl或官方CloudFormation模板配置的节点。</p>
+<h3 id="_9">禁用自动挂载服务帐户令牌<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p>如果您的应用程序不需要调用Kubernetes API,请在应用程序的PodSpec中将<code>automountServiceAccountToken</code>属性设置为<code>false</code>,或者修补每个命名空间中的默认服务帐户,使其不会自动挂载到Pods上。例如:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>kubectl<span class="w"> </span>patch<span class="w"> </span>serviceaccount<span class="w"> </span>default<span class="w"> </span>-p<span class="w"> </span><span class="s1">$&#39;automountServiceAccountToken: false&#39;</span>
+</code></pre></div>
+<h3 id="_10">为每个应用程序使用专用服务帐户<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p>每个应用程序都应该有自己的专用服务帐户。这适用于Kubernetes API的服务帐户,以及IRSA和EKS Pod身份。</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>如果您在使用IRSA时采用蓝/绿集群升级方法,而不是执行就地集群升级,您将需要更新每个IRSA IAM角色的信任策略,以包含新集群的OIDC端点。蓝/绿集群升级是指您在旧集群旁边创建一个运行较新版本Kubernetes的集群,并使用负载均衡器或服务网格无缝地将流量从在旧集群上运行的服务转移到新集群。
+在使用蓝/绿集群升级和EKS Pod身份时,您将在新集群中创建pod身份关联,并更新IAM角色信任策略(如果有<code>sourceArn</code>条件)。</p>
+</div>
+<h3 id="root">以非root用户运行应用程序<a class="headerlink" href="#root" title="Permanent link">&para;</a></h3>
+<p>容器默认以root用户运行。虽然这允许它们读取Web身份令牌文件,但以root用户运行容器不被视为最佳实践。作为替代方案,请考虑在PodSpec中添加<code>spec.securityContext.runAsUser</code>属性。<code>runAsUser</code>的值是任意值。</p>
+<p>在以下示例中,Pod中的所有进程都将在<code>runAsUser</code>字段指定的用户ID下运行。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">security-context-demo</span>
+<a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a><span class="w">  </span><span class="nt">securityContext</span><span class="p">:</span>
+<a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="w">    </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a><span class="w">    </span><span class="nt">runAsGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000</span>
+<a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a><span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
+<a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sec-ctx-demo</span>
+<a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">busybox</span>
+<a id="__codelineno-29-12" name="__codelineno-29-12" href="#__codelineno-29-12"></a><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;sh&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;sleep</span><span class="nv"> </span><span class="s">1h&quot;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>当您以非root用户运行容器时,它会阻止容器读取IRSA服务帐户令牌,因为该令牌默认具有0600 [root]权限。如果您将容器的securityContext更新为包括fsgroup=65534 [Nobody],它将允许容器读取令牌。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="w">  </span><span class="nt">securityContext</span><span class="p">:</span>
+<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="w">    </span><span class="nt">fsGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">65534</span>
+</code></pre></div>
+<p>在Kubernetes 1.19及更高版本中,不再需要此更改,应用程序可以在不将它们添加到Nobody组的情况下读取IRSA服务帐户令牌。</p>
+<h3 id="_11">授予应用程序最小权限访问<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<p><a href="https://github.com/princespaghetti/actionhero">Action Hero</a>是一个您可以与应用程序一起运行的实用程序,可以识别应用程序需要的AWS API调用和相应的IAM权限。它类似于<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_access-advisor.html">IAM Access Advisor</a>,因为它可以帮助您逐步限制分配给应用程序的IAM角色的范围。有关授予AWS资源<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege">最小权限访问</a>的更多信息,请参阅文档。</p>
+<p>考虑为与IRSA和Pod身份一起使用的IAM角色设置<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html">权限边界</a>。您可以使用权限边界来确保IRSA或Pod身份使用的角色不能超过最大权限级别。有关使用权限边界的示例指南和示例权限边界策略,请参见<a href="https://github.com/aws-samples/example-permissions-boundary">此GitHub存储库</a>。</p>
+<h3 id="eks_2">检查并撤销对您的EKS集群的不必要的匿名访问<a class="headerlink" href="#eks_2" title="Permanent link">&para;</a></h3>
+<p>理想情况下,应该禁用所有API操作的匿名访问。匿名访问是通过为Kubernetes内置用户system:anonymous创建RoleBinding或ClusterRoleBinding来授予的。您可以使用<a href="https://github.com/FairwindsOps/rbac-lookup">rbac-lookup</a>工具识别system:anonymous用户在集群上拥有的权限:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>./rbac-lookup<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-P<span class="w"> </span><span class="s1">&#39;system:(anonymous)|(unauthenticated)&#39;</span>
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>system:anonymous<span class="w">               </span>cluster-wide<span class="w">        </span>ClusterRole/system:discovery
+<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>system:unauthenticated<span class="w">         </span>cluster-wide<span class="w">        </span>ClusterRole/system:discovery
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>system:unauthenticated<span class="w">         </span>cluster-wide<span class="w">        </span>ClusterRole/system:public-info-viewer
+</code></pre></div>
+<p>除了system:public-info-viewer之外的任何角色或ClusterRole都不应绑定到system:anonymous用户或system:unauthenticated组。</p>
+<p>可能有一些合法的理由允许对特定API启用匿名访问。如果这对您的集群来说是这种情况,请确保只有那些特定的API可以被匿名用户访问,并且在没有身份验证的情况下公开这些API不会使您的集群容易受到攻击。</p>
+<p>在Kubernetes/EKS版本1.14之前,system:unauthenticated组默认与system:discovery和system:basic-user ClusterRoles关联。请注意,即使您已将集群更新到1.14或更高版本,这些权限可能仍然启用在您的集群上,因为集群更新不会撤销这些权限。
+要检查除system:public-info-viewer之外哪些ClusterRoles有"system:unauthenticated",您可以运行以下命令(需要jq实用程序):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>ClusterRoleBinding<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.items[] | select(.subjects[]?.name ==&quot;system:unauthenticated&quot;) | select(.metadata.name != &quot;system:public-info-viewer&quot;) | .metadata.name&#39;</span>
+</code></pre></div>
+<p>并且可以使用以下命令从除"system:public-info-viewer"之外的所有角色中删除"system:unauthenticated":</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>kubectl<span class="w"> </span>get<span class="w"> </span>ClusterRoleBinding<span class="w"> </span>-o<span class="w"> </span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.items[] | select(.subjects[]?.name ==&quot;system:unauthenticated&quot;) | select(.metadata.name != &quot;system:public-info-viewer&quot;) | del(.subjects[] | select(.name ==&quot;system:unauthenticated&quot;))&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+</code></pre></div>
+<p>或者,您可以手动检查并删除,通过kubectl describe和kubectl edit。要检查system:unauthenticated组是否在您的集群上拥有system:discovery权限,请运行以下命令:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>kubectl<span class="w"> </span>describe<span class="w"> </span>clusterrolebindings<span class="w"> </span>system:discovery
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>
+<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>Name:<span class="w">         </span>system:discovery
+<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>Labels:<span class="w">       </span>kubernetes.io/bootstrapping<span class="o">=</span>rbac-defaults
+<a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a>Annotations:<span class="w">  </span>rbac.authorization.kubernetes.io/autoupdate:<span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a>Role:
+<a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a><span class="w">  </span>Kind:<span class="w">  </span>ClusterRole
+<a id="__codelineno-34-8" name="__codelineno-34-8" href="#__codelineno-34-8"></a><span class="w">  </span>Name:<span class="w">  </span>system:discovery
+<a id="__codelineno-34-9" name="__codelineno-34-9" href="#__codelineno-34-9"></a>Subjects:
+<a id="__codelineno-34-10" name="__codelineno-34-10" href="#__codelineno-34-10"></a><span class="w">  </span>Kind<span class="w">   </span>Name<span class="w">                    </span>Namespace
+<a id="__codelineno-34-11" name="__codelineno-34-11" href="#__codelineno-34-11"></a><span class="w">  </span>----<span class="w">   </span>----<span class="w">                    </span>---------
+<a id="__codelineno-34-12" name="__codelineno-34-12" href="#__codelineno-34-12"></a><span class="w">  </span>Group<span class="w">  </span>system:authenticated
+<a id="__codelineno-34-13" name="__codelineno-34-13" href="#__codelineno-34-13"></a><span class="w">  </span>Group<span class="w">  </span>system:unauthenticated
+</code></pre></div>
+<p>要检查system:unauthenticated组是否在您的集群上拥有system:basic-user权限,请运行以下命令:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>kubectl<span class="w"> </span>describe<span class="w"> </span>clusterrolebindings<span class="w"> </span>system:basic-user
+<a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>
+<a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a>Name:<span class="w">         </span>system:basic-user
+<a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a>Labels:<span class="w">       </span>kubernetes.io/bootstrapping<span class="o">=</span>rbac-defaults
+<a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a>Annotations:<span class="w">  </span>rbac.authorization.kubernetes.io/autoupdate:<span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a>Role:
+<a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a><span class="w">  </span>Kind:<span class="w">  </span>ClusterRole
+<a id="__codelineno-35-8" name="__codelineno-35-8" href="#__codelineno-35-8"></a><span class="w">  </span>Name:<span class="w">  </span>system:basic-user
+<a id="__codelineno-35-9" name="__codelineno-35-9" href="#__codelineno-35-9"></a>Subjects:
+<a id="__codelineno-35-10" name="__codelineno-35-10" href="#__codelineno-35-10"></a><span class="w">  </span>Kind<span class="w">   </span>Name<span class="w">                    </span>Namespace
+<a id="__codelineno-35-11" name="__codelineno-35-11" href="#__codelineno-35-11"></a><span class="w">  </span>----<span class="w">   </span>----<span class="w">                    </span>---------
+<a id="__codelineno-35-12" name="__codelineno-35-12" href="#__codelineno-35-12"></a><span class="w">  </span>Group<span class="w">  </span>system:authenticated
+<a id="__codelineno-35-13" name="__codelineno-35-13" href="#__codelineno-35-13"></a><span class="w">  </span>Group<span class="w">  </span>system:unauthenticated
+</code></pre></div>
+<p>如果system:unauthenticated组绑定到您集群上的system:discovery和/或system:basic-user ClusterRoles,您应该取消这些角色与system:unauthenticated组的关联。使用以下命令编辑system:discovery ClusterRoleBinding:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>kubectl<span class="w"> </span>edit<span class="w"> </span>clusterrolebindings<span class="w"> </span>system:discovery
+</code></pre></div>
+<p>上述命令将在编辑器中打开system:discovery ClusterRoleBinding的当前定义,如下所示:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="c1"># Please edit the object below. Lines beginning with a &#39;#&#39; will be ignored,</span>
+<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a><span class="c1"># and an empty file will abort the edit. If an error occurs while saving this file will be</span>
+<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a><span class="c1"># reopened with the relevant failures.</span>
+<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="c1">#</span>
+<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io/v1</span>
+<a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterRoleBinding</span>
+<a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+<a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a><span class="w">    </span><span class="nt">rbac.authorization.kubernetes.io/autoupdate</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
+<a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a><span class="w">  </span><span class="nt">creationTimestamp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2021-06-17T20:50:49Z&quot;</span>
+<a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a><span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a><span class="w">    </span><span class="nt">kubernetes.io/bootstrapping</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac-defaults</span>
+<a id="__codelineno-37-13" name="__codelineno-37-13" href="#__codelineno-37-13"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">system:discovery</span>
+<a id="__codelineno-37-14" name="__codelineno-37-14" href="#__codelineno-37-14"></a><span class="w">  </span><span class="nt">resourceVersion</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;24502985&quot;</span>
+<a id="__codelineno-37-15" name="__codelineno-37-15" href="#__codelineno-37-15"></a><span class="w">  </span><span class="nt">selfLink</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/system%3Adiscovery</span>
+<a id="__codelineno-37-16" name="__codelineno-37-16" href="#__codelineno-37-16"></a><span class="w">  </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">b7936268-5043-431a-a0e1-171a423abeb6</span>
+<a id="__codelineno-37-17" name="__codelineno-37-17" href="#__codelineno-37-17"></a><span class="nt">roleRef</span><span class="p">:</span>
+<a id="__codelineno-37-18" name="__codelineno-37-18" href="#__codelineno-37-18"></a><span class="w">  </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io</span>
+<a id="__codelineno-37-19" name="__codelineno-37-19" href="#__codelineno-37-19"></a><span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterRole</span>
+<a id="__codelineno-37-20" name="__codelineno-37-20" href="#__codelineno-37-20"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">system:discovery</span>
+<a id="__codelineno-37-21" name="__codelineno-37-21" href="#__codelineno-37-21"></a><span class="nt">subjects</span><span class="p">:</span>
+<a id="__codelineno-37-22" name="__codelineno-37-22" href="#__codelineno-37-22"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io</span>
+<a id="__codelineno-37-23" name="__codelineno-37-23" href="#__codelineno-37-23"></a><span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Group</span>
+<a id="__codelineno-37-24" name="__codelineno-37-24" href="#__codelineno-37-24"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">system:authenticated</span>
+<a id="__codelineno-37-25" name="__codelineno-37-25" href="#__codelineno-37-25"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rbac.authorization.k8s.io</span>
+<a id="__codelineno-37-26" name="__codelineno-37-26" href="#__codelineno-37-26"></a><span class="w">  </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Group</span>
+<a id="__codelineno-37-27" name="__codelineno-37-27" href="#__codelineno-37-27"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">system:unauthenticated</span>
+</code></pre></div>
+<p>从上述编辑器屏幕的"subjects"部分删除system:unauthenticated组的条目。</p>
+<p>对system:basic-user ClusterRoleBinding重复相同的步骤。</p>
+<h3 id="irsaaws-sdk">与IRSA一起重复使用AWS SDK会话<a class="headerlink" href="#irsaaws-sdk" title="Permanent link">&para;</a></h3>
+<p>当您使用IRSA时,使用AWS SDK编写的应用程序使用传递到您的Pods的令牌调用<code>sts:AssumeRoleWithWebIdentity</code>来生成临时AWS凭证。这与其他AWS计算服务不同,在其他AWS计算服务中,计算服务直接向AWS计算资源(如lambda函数)提供临时AWS凭证。这意味着每次初始化AWS SDK会话时,都会调用一次AWS STS的<code>AssumeRoleWithWebIdentity</code>。如果您的应用程序快速扩展并初始化许多AWS SDK会话,您可能会遇到来自AWS STS的节流,因为您的代码将为<code>AssumeRoleWithWebIdentity</code>进行许多调用。</p>
+<p>为了避免这种情况,我们建议在应用程序中重复使用AWS SDK会话,以避免不必要的<code>AssumeRoleWithWebIdentity</code>调用。</p>
+<p>在以下示例代码中,使用boto3 python SDK创建一个会话,并使用该会话创建客户端与Amazon S3和Amazon SQS进行交互。<code>AssumeRoleWithWebIdentity</code>只被调用一次,AWS SDK将在凭证过期时自动刷新<code>my_session</code>的凭证。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="kn">import</span> <span class="nn">boto3</span>
+<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>
+<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a><span class="c1"># 创建您自己的会话</span>
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a><span class="hll"><span class="n">my_session</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+</span><a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>
+<a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a><span class="c1"># 现在我们可以从我们的会话创建低级客户端</span>
+<a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a><span class="hll"><span class="n">sqs</span> <span class="o">=</span> <span class="n">my_session</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;sqs&#39;</span><span class="p">)</span>
+</span><a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a><span class="hll"><span class="n">s3</span> <span class="o">=</span> <span class="n">my_session</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;s3&#39;</span><span class="p">)</span>
+</span><a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a>
+<a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a><span class="n">s3response</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">list_buckets</span><span class="p">()</span>
+<a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a><span class="n">sqsresponse</span> <span class="o">=</span> <span class="n">sqs</span><span class="o">.</span><span class="n">list_queues</span><span class="p">()</span>
+<a id="__codelineno-38-12" name="__codelineno-38-12" href="#__codelineno-38-12"></a>
+<a id="__codelineno-38-13" name="__codelineno-38-13" href="#__codelineno-38-13"></a>
+<a id="__codelineno-38-14" name="__codelineno-38-14" href="#__codelineno-38-14"></a><span class="c1">#打印来自S3和SQS API的响应</span>
+<a id="__codelineno-38-15" name="__codelineno-38-15" href="#__codelineno-38-15"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;s3 response:&quot;</span><span class="p">)</span>
+<a id="__codelineno-38-16" name="__codelineno-38-16" href="#__codelineno-38-16"></a><span class="nb">print</span><span class="p">(</span><span class="n">s3response</span><span class="p">)</span>
+<a id="__codelineno-38-17" name="__codelineno-38-17" href="#__codelineno-38-17"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+<a id="__codelineno-38-18" name="__codelineno-38-18" href="#__codelineno-38-18"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sqs response:&quot;</span><span class="p">)</span>
+<a id="__codelineno-38-19" name="__codelineno-38-19" href="#__codelineno-38-19"></a><span class="nb">print</span><span class="p">(</span><span class="n">sqsresponse</span><span class="p">)</span>
+</code></pre></div>
+<p>如果您正在将应用程序从另一个AWS计算服务(如EC2)迁移到使用IRSA的EKS,这个细节尤其重要。在其他计算服务上,初始化AWS SDK会话不会调用AWS STS,除非您指示它这样做。</p>
+<h3 id="_12">替代方法<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<p>虽然IRSA和EKS Pod身份是_首选方式_来为Pod分配AWS身份,但它们要求您在应用程序中包含AWS SDK的最新版本。有关当前支持IRSA的SDK列表,请参见<a href="https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts-minimum-sdk.html">https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts-minimum-sdk.html</a>,对于EKS Pod身份,请参见<a href="https://docs.aws.amazon.com/eks/latest/userguide/pod-id-minimum-sdk.html">https://docs.aws.amazon.com/eks/latest/userguide/pod-id-minimum-sdk.html</a>。如果您有一个无法立即更新为兼容SDK的应用程序,社区中有几种解决方案可以将IAM角色分配给Kubernetes Pods,包括<a href="https://github.com/jtblin/kube2iam">kube2iam</a>和<a href="https://github.com/uswitch/kiam">kiam</a>。尽管AWS不认可、不赞同或支持使用这些解决方案,但它们被广泛用于社区,以实现与IRSA和EKS Pod身份类似的结果。</p>
+<p>如果您需要使用这些非AWS提供的解决方案,请谨慎行事,并确保您了解这样做的安全隐患。</p>
+<h2 id="_13">工具和资源<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://catalog.workshops.aws/eks-security-immersionday/en-US/2-identity-and-access-management">Amazon EKS安全沉浸式研讨会 - 身份和访问管理</a></li>
+<li><a href="https://github.com/aws-ia/terraform-aws-eks-blueprints/tree/main/patterns/fully-private-cluster">Terraform EKS蓝图模式 - 完全私有的Amazon EKS集群</a></li>
+<li><a href="https://github.com/aws-ia/terraform-aws-eks-blueprints/tree/main/patterns/sso-iam-identity-center">Terraform EKS蓝图模式 - IAM身份中心单点登录Amazon EKS集群</a></li>
+<li><a href="https://github.com/aws-ia/terraform-aws-eks-blueprints/tree/main/patterns/sso-okta">Terraform EKS蓝图模式 - Okta单点登录Amazon EKS集群</a></li>
+<li><a href="https://github.com/liggitt/audit2rbac">audit2rbac</a></li>
+<li><a href="https://github.com/mhausenblas/rbac.dev">rbac.dev</a> Kubernetes RBAC的其他资源列表,包括博客和工具</li>
+<li><a href="https://github.com/princespaghetti/actionhero">Action Hero</a></li>
+<li><a href="https://github.com/jtblin/kube2iam">kube2iam</a></li>
+<li><a href="https://github.com/uswitch/kiam">kiam</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+    
+  </body>
+</html>

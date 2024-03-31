@@ -1,0 +1,3136 @@
+
+<!doctype html>
+<html lang="zh-TW" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../scalability/docs/quotas/">
+      
+      
+        <link rel="next" href="../cost_optimization/cfm_framework/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>叢集升級 - EKS最佳實踐指南</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-VQGL8B2FH8"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-VQGL8B2FH8",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-VQGL8B2FH8",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳轉到
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="頁首">
+    <a href="../" title="EKS最佳實踐指南" class="md-header__button md-logo" aria-label="EKS最佳實踐指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EKS最佳實踐指南
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              叢集升級
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="選擇語言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../upgrades/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../ko/upgrades/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../zh/upgrades/" hreflang="zh" class="md-select__link">
+              中文（简体）
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh-TW" class="md-select__link">
+              中文（繁體）
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜尋" placeholder="搜尋" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="搜尋">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清除" aria-label="清除" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜尋引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-eks-best-practices" title="前往倉庫" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="導覽列" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="EKS最佳實踐指南" class="md-nav__button md-logo" aria-label="EKS最佳實踐指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    EKS最佳實踐指南
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-eks-best-practices" title="前往倉庫" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    指南
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    簡介
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    安全
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            安全
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/iam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    身份和訪問管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/pods/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pod 安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/multitenancy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多租戶
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/detective/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    偵查控制
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/network/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據加密和密鑰管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/runtime/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    運行時安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/hosts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基礎設施安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/compliance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    監管合規性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/incidents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    事故響應和取證
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/image/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    映像安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/docs/multiaccount/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多帳戶策略
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    叢集自動擴展
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            叢集自動擴展
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../karpenter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Karpenter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cluster-autoscaling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集自動擴展器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可靠性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            可靠性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reliability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reliability/docs/application/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    應用程式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reliability/docs/controlplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reliability/docs/dataplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Windows 容器
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Windows 容器
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/ami/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AMI 管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/gmsa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 容器的 gMSA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/hardening/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows Server 強化
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    掃描 Windows 映像
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/licensing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 版本和許可
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    日誌記錄
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    監控 Windows 容器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 網絡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/oom/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    內存和系統管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/patching/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基礎設施管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/scheduling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    調度
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 容器的 Pod 安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows/docs/storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存儲選項
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    網絡
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            網絡
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/subnets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VPC 和子網考量
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/vpc-cni/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon VPC CNI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/ip-optimization-strategies/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    優化 IP 地址利用率
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/ipv6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    運行 IPv6 叢集
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/custom-networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    自訂網路
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/prefix-mode/index_linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Linux 的前綴模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/prefix-mode/index_windows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 的前綴模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/sgpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    每個 Pod 的安全組
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/loadbalancing/loadbalancing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    負載均衡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡性能問題監控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可擴展性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            可擴展性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalability/docs/control-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalability/docs/data-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalability/docs/cluster-services/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集服務
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalability/docs/workloads/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    工作負載
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalability/docs/scaling_theory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    擴展背後的理論
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalability/docs/kcp_monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面監控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalability/docs/node_efficiency/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    節點效率和擴展
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalability/docs/kubernetes_slos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes SLO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalability/docs/quotas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    已知限制和服務配額
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    叢集升級
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    叢集升級
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      概述
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      升級前
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      保持集群最新
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      查看 EKS 發布日曆
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      了解共享責任模型如何應用於集群升級
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      就地升級集群
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      按順序升級控制平面和數據平面
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 EKS 文檔創建升級清單
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Kubernetes API 升級附加組件和組件
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      在升級前驗證 EKS 的基本要求
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="在升級前驗證 EKS 的基本要求">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      驗證可用 IP 地址
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eks-iam" class="md-nav__link">
+    <span class="md-ellipsis">
+      驗證 EKS IAM 角色
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      遷移到 EKS 附加組件
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      在升級控制平面之前識別和補救已刪除的 API 使用情況
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="在升級控制平面之前識別和補救已刪除的 API 使用情況">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      集群洞察
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kube-no-trouble" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kube-no-trouble
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pluto" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pluto
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      資源
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-kubectl-convert" class="md-nav__link">
+    <span class="md-ellipsis">
+      更新 Kubernetes 工作負載。使用 kubectl-convert 更新清單
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#poddisruptionbudgets-topologyspreadconstraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      配置 PodDisruptionBudgets 和 topologySpreadConstraints 以確保工作負載在數據平面升級期間的可用性
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#karpenter" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用托管節點組或 Karpenter 簡化數據平面升級
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      確認節點和控制平面的版本兼容性
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#karpenter_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      為 Karpenter 管理的節點啟用節點過期
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#karpenter_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Karpenter 的漂移功能管理節點
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eksctl" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 eksctl 自動升級自管理節點組
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      在升級前備份集群
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fargate" class="md-nav__link">
+    <span class="md-ellipsis">
+      在升級控制平面後重新啟動 Fargate 部署
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      評估藍/綠集群作為就地集群升級的替代方案
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-" class="md-nav__link">
+    <span class="md-ellipsis">
+      跟蹤 Kubernetes 項目中計劃的主要變更 - 提前思考
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      有關功能刪除的具體指導
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="有關功能刪除的具體指導">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#125-dockershim-docker-dds" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.25 中刪除 Dockershim - 使用 Docker 套接字檢測器(DDS)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#125-podsecuritypolicy-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.25 中刪除 PodSecurityPolicy - 遷移到 Pod 安全標準或策略即代碼解決方案
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#123-csi" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.23 中棄用內部存儲驅動程序 - 遷移到容器存儲接口(CSI)驅動程序
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      其他資源
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="其他資源">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clowdhaus-eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      ClowdHaus EKS 升級指南
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gonogo" class="md-nav__link">
+    <span class="md-ellipsis">
+      GoNoGo
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    成本優化
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            成本優化
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_optimization/cfm_framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    雲端財務管理框架
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_optimization/cost_opt_compute/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    計算
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_optimization/cost_opt_networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_optimization/cost_opt_storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存儲
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_optimization/cost_opt_observability/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    可觀察性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      概述
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      升級前
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      保持集群最新
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      查看 EKS 發布日曆
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      了解共享責任模型如何應用於集群升級
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      就地升級集群
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      按順序升級控制平面和數據平面
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 EKS 文檔創建升級清單
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Kubernetes API 升級附加組件和組件
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      在升級前驗證 EKS 的基本要求
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="在升級前驗證 EKS 的基本要求">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      驗證可用 IP 地址
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eks-iam" class="md-nav__link">
+    <span class="md-ellipsis">
+      驗證 EKS IAM 角色
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      遷移到 EKS 附加組件
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      在升級控制平面之前識別和補救已刪除的 API 使用情況
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="在升級控制平面之前識別和補救已刪除的 API 使用情況">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      集群洞察
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kube-no-trouble" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kube-no-trouble
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pluto" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pluto
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      資源
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-kubectl-convert" class="md-nav__link">
+    <span class="md-ellipsis">
+      更新 Kubernetes 工作負載。使用 kubectl-convert 更新清單
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#poddisruptionbudgets-topologyspreadconstraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      配置 PodDisruptionBudgets 和 topologySpreadConstraints 以確保工作負載在數據平面升級期間的可用性
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#karpenter" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用托管節點組或 Karpenter 簡化數據平面升級
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      確認節點和控制平面的版本兼容性
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#karpenter_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      為 Karpenter 管理的節點啟用節點過期
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#karpenter_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Karpenter 的漂移功能管理節點
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eksctl" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 eksctl 自動升級自管理節點組
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      在升級前備份集群
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fargate" class="md-nav__link">
+    <span class="md-ellipsis">
+      在升級控制平面後重新啟動 Fargate 部署
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      評估藍/綠集群作為就地集群升級的替代方案
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-" class="md-nav__link">
+    <span class="md-ellipsis">
+      跟蹤 Kubernetes 項目中計劃的主要變更 - 提前思考
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      有關功能刪除的具體指導
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="有關功能刪除的具體指導">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#125-dockershim-docker-dds" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.25 中刪除 Dockershim - 使用 Docker 套接字檢測器(DDS)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#125-podsecuritypolicy-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.25 中刪除 PodSecurityPolicy - 遷移到 Pod 安全標準或策略即代碼解決方案
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#123-csi" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.23 中棄用內部存儲驅動程序 - 遷移到容器存儲接口(CSI)驅動程序
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      其他資源
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="其他資源">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clowdhaus-eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      ClowdHaus EKS 升級指南
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gonogo" class="md-nav__link">
+    <span class="md-ellipsis">
+      GoNoGo
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="_1">集群升級最佳實踐<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>本指南向集群管理員展示如何規劃和執行其 Amazon EKS 升級策略。它還描述了如何升級自管理節點、托管節點組、Karpenter 節點和 Fargate 節點。它不包括有關 EKS Anywhere、自管理 Kubernetes、AWS Outposts 或 AWS Local Zones 的指導。</p>
+<h2 id="_2">概述<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Kubernetes 版本包括控制平面和數據平面。為確保順利運行,控制平面和數據平面都應運行相同的 <a href="https://kubernetes.io/releases/version-skew-policy/#supported-versions">Kubernetes 次要版本,如 1.24</a>。雖然 AWS 管理和升級控制平面,但更新數據平面上的工作節點是您的責任。</p>
+<ul>
+<li><strong>控制平面</strong> - 控制平面的版本由 Kubernetes API 服務器確定。在 Amazon EKS 集群中,AWS 負責管理此組件。可通過 AWS API 啟動控制平面升級。</li>
+<li><strong>數據平面</strong> - 數據平面版本與在個別節點上運行的 Kubelet 版本相關聯。同一集群中的節點可能運行不同的版本。您可以通過運行 <code>kubectl get nodes</code> 檢查所有節點的版本。</li>
+</ul>
+<h2 id="_3">升級前<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>如果您計劃在 Amazon EKS 中升級 Kubernetes 版本,在開始升級之前,您應該建立一些重要的政策、工具和程序。</p>
+<ul>
+<li><strong>了解棄用政策</strong> - 深入了解 <a href="https://kubernetes.io/docs/reference/using-api/deprecation-policy/">Kubernetes 棄用政策</a>的工作原理。了解可能影響您現有應用程序的任何即將到來的變更。較新版本的 Kubernetes 通常會淘汰某些 API 和功能,可能會對正在運行的應用程序造成問題。</li>
+<li><strong>查看 Kubernetes 變更日誌</strong> - 仔細查看 <a href="https://github.com/kubernetes/kubernetes/tree/master/CHANGELOG">Kubernetes 變更日誌</a>以及 <a href="https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html">Amazon EKS Kubernetes 版本</a>,了解對您的集群可能產生的任何影響,例如可能影響您工作負載的突破性變更。</li>
+<li><strong>評估集群附加組件的兼容性</strong> - Amazon EKS 不會在新版本發布或您將集群更新到新的 Kubernetes 次要版本後自動更新附加組件。查看 <a href="https://docs.aws.amazon.com/eks/latest/userguide/managing-add-ons.html#updating-an-add-on">更新附加組件</a>以了解任何現有集群附加組件與您打算升級到的集群版本的兼容性。</li>
+<li><strong>啟用控制平面日誌記錄</strong> - 啟用 <a href="https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html">控制平面日誌記錄</a>以捕獲升級過程中可能出現的日誌、錯誤或問題。考慮查看這些日誌是否有任何異常。在非生產環境中測試集群升級,或將自動化測試集成到您的持續集成工作流程中,以評估版本與您的應用程序、控制器和自定義集成的兼容性。</li>
+<li><strong>探索 eksctl 進行集群管理</strong> - 考慮使用 <a href="https://eksctl.io/">eksctl</a>管理您的 EKS 集群。它提供了 <a href="https://eksctl.io/usage/cluster-upgrade/">更新控制平面、管理附加組件和處理工作節點更新</a>的功能。</li>
+<li><strong>選擇托管節點組或 EKS on Fargate</strong> - 通過使用 <a href="https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html">EKS 托管節點組</a>或 <a href="https://docs.aws.amazon.com/eks/latest/userguide/fargate.html">EKS on Fargate</a>簡化和自動化工作節點升級。這些選項簡化了該過程,並減少了手動干預。</li>
+<li><strong>利用 kubectl 轉換插件</strong> - 利用 <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-kubectl-convert-plugin">kubectl 轉換插件</a>來促進 <a href="https://kubernetes.io/docs/tasks/tools/included/kubectl-convert-overview/">Kubernetes 清單文件</a>在不同 API 版本之間的轉換。這可以幫助確保您的配置與新的 Kubernetes 版本兼容。</li>
+</ul>
+<h2 id="_4">保持集群最新<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>保持 Kubernetes 更新對於安全高效的 EKS 環境至關重要,反映了 Amazon EKS 中的共享責任模型。通過將這些策略整合到您的操作工作流程中,您將能夠維護最新、安全的集群,充分利用最新的功能和改進。策略:</p>
+<ul>
+<li><strong>支持的版本政策</strong> - 與 Kubernetes 社區保持一致,Amazon EKS 通常提供三個活動的 Kubernetes 版本,並在每年棄用第四個版本。棄用通知在版本到達其支持結束日期前至少 60 天發出。更多詳情,請參考 <a href="https://aws.amazon.com/eks/eks-version-faq/">EKS 版本常見問題解答</a>。</li>
+<li><strong>自動升級政策</strong> - 我們強烈建議保持 EKS 集群與 Kubernetes 更新同步。Kubernetes 社區支持,包括錯誤修復和安全修補,通常會在一年後停止支持舊版本。棄用的版本也可能缺乏漏洞報告,這可能存在潛在風險。未能及時升級到版本的結束生命週期之前會觸發自動升級,這可能會中斷您的工作負載和系統。有關更多信息,請查看 <a href="https://aws.amazon.com/eks/eks-version-support-policy/">EKS 版本支持政策</a>。</li>
+<li><strong>創建升級手冊</strong> - 建立一個記錄良好的升級管理過程。作為您的主動方法的一部分,開發適合您升級過程的手冊和專門工具。這不僅增強了您的準備,而且還簡化了複雜的過渡。將集群升級至少一年一次作為標準做法。這一做法使您與持續的技術進步保持一致,從而提高環境的效率和安全性。</li>
+</ul>
+<h2 id="eks">查看 EKS 發布日曆<a class="headerlink" href="#eks" title="Permanent link">&para;</a></h2>
+<p><a href="https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html#kubernetes-release-calendar">查看 EKS Kubernetes 發布日曆</a>以了解新版本何時發布,以及特定版本何時停止支持。通常,EKS 每年發布 3 個 Kubernetes 次要版本,每個次要版本的支持期約為 14 個月。</p>
+<p>此外,查看上游 <a href="https://kubernetes.io/releases/">Kubernetes 發布信息</a>。</p>
+<h2 id="_5">了解共享責任模型如何應用於集群升級<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>您負責啟動集群控制平面和數據平面的升級。<a href="https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html">了解如何啟動升級。</a>當您啟動集群升級時,AWS 將管理升級集群控制平面。您負責升級數據平面,包括 Fargate pod 和 <a href="#使用-kubernetes-api-升級附加組件和組件">其他附加組件。</a>您必須驗證並計劃工作負載的升級,以確保它們在集群升級後不受影響並保持運行</p>
+<h2 id="_6">就地升級集群<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>EKS 支持就地集群升級策略。這將保留集群資源,並保持集群配置一致(例如 API 端點、OIDC、ENI、負載平衡器)。這對集群用戶的干擾較小,並將使用集群中現有的工作負載和資源,而無需重新部署工作負載或遷移外部資源(例如 DNS、存儲)。</p>
+<p>在執行就地集群升級時,請注意一次只能執行一個次要版本升級(例如,從 1.24 到 1.25)。</p>
+<p>這意味著,如果您需要更新多個版本,將需要一系列順序升級。計劃順序升級更加複雜,並且存在更高的停機風險。在這種情況下,<a href="#評估藍/綠集群作為就地集群升級的替代方案">評估藍/綠集群升級策略作為就地集群升級的替代方案。</a></p>
+<h2 id="_7">按順序升級控制平面和數據平面<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>要升級集群,您需要採取以下操作:</p>
+<ol>
+<li><a href="#使用-eks-文檔創建升級清單">查看 Kubernetes 和 EKS 發布說明。</a></li>
+<li><a href="#在升級前備份集群">備份集群(可選)。</a></li>
+<li><a href="#在升級控制平面之前識別和補救已刪除的 API 使用情況">識別並補救工作負載中已棄用和已刪除的 API 使用情況。</a></li>
+<li><a href="#跟蹤節點的版本偏差,確保托管節點組與控制平面在同一版本上升級之前">確保托管節點組(如果使用)與控制平面在同一個 Kubernetes 版本上。</a> EKS 托管節點組和 EKS Fargate 配置文件創建的節點只支持控制平面和數據平面之間 1 個次要版本的偏差。</li>
+<li><a href="https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html">使用 AWS 控制台或 CLI 升級集群控制平面。</a></li>
+<li><a href="#使用-kubernetes-api-升級附加組件和組件">查看附加組件的兼容性。</a>根據需要升級您的 Kubernetes 附加組件和自定義控制器。</li>
+<li><a href="https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html">更新 kubectl。</a></li>
+<li><a href="https://docs.aws.amazon.com/eks/latest/userguide/update-managed-node-group.html">升級集群數據平面。</a>將您的節點升級到與升級的集群相同的 Kubernetes 次要版本。</li>
+</ol>
+<h2 id="eks_1">使用 EKS 文檔創建升級清單<a class="headerlink" href="#eks_1" title="Permanent link">&para;</a></h2>
+<p>EKS Kubernetes <a href="https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html">版本文檔</a>包含每個版本的詳細變更列表。為每次升級構建一個清單。</p>
+<p>有關特定 EKS 版本升級指南,請查看文檔中每個版本的重要變更和注意事項。</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html#kubernetes-1.27">EKS 1.27</a></li>
+<li><a href="https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html#kubernetes-1.26">EKS 1.26</a></li>
+<li><a href="https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html#kubernetes-1.25">EKS 1.25</a></li>
+<li><a href="https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html#kubernetes-1.24">EKS 1.24</a></li>
+<li><a href="https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html#kubernetes-1.23">EKS 1.23</a></li>
+<li><a href="https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html#kubernetes-1.22">EKS 1.22</a></li>
+</ul>
+<h2 id="kubernetes-api">使用 Kubernetes API 升級附加組件和組件<a class="headerlink" href="#kubernetes-api" title="Permanent link">&para;</a></h2>
+<p>在升級集群之前,您應該了解正在使用的 Kubernetes 組件的版本。盤點集群組件,並識別直接使用 Kubernetes API 的組件。這包括監控和日誌記錄代理、集群自動縮放器、容器存儲驅動程序(例如 <a href="https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html">EBS CSI</a>、<a href="https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html">EFS CSI</a>)、入口控制器以及任何其他直接依賴 Kubernetes API 的工作負載或附加組件。</p>
+<div class="admonition 提示">
+<p class="admonition-title">提示</p>
+<p>關鍵集群組件通常安裝在 <code>*-system</code> 命名空間中</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>kubectl get ns | grep &#39;-system&#39;
+</code></pre></div>
+</div>
+<p>一旦您確定了依賴 Kubernetes API 的組件,請查看它們的文檔以了解版本兼容性和升級要求。例如,請參見 <a href="https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/deploy/installation/">AWS Load Balancer Controller</a> 文檔以了解版本兼容性。某些組件可能需要在繼續進行集群升級之前進行升級或更改配置。需要檢查的一些關鍵組件包括 <a href="https://github.com/coredns/coredns">CoreDNS</a>、<a href="https://kubernetes.io/docs/concepts/overview/components/#kube-proxy">kube-proxy</a>、<a href="https://github.com/aws/amazon-vpc-cni-k8s">VPC CNI</a>和存儲驅動程序。</p>
+<p>集群通常包含許多使用 Kubernetes API 的工作負載,這些工作負載對於工作負載功能至關重要,例如入口控制器、持續交付系統和監控工具。當您升級 EKS 集群時,您還必須升級附加組件和第三方工具,以確保它們與新版本兼容。</p>
+<p>以下是一些常見附加組件及其相關升級文檔的示例:</p>
+<ul>
+<li><strong>Amazon VPC CNI:</strong> 有關每個集群版本推薦的 Amazon VPC CNI 附加組件版本,請參見 <a href="https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html">更新 Kubernetes 自管理附加組件的 Amazon VPC CNI 插件</a>。<strong>當作為 Amazon EKS 附加組件安裝時,它只能升級一個次要版本。</strong></li>
+<li><strong>kube-proxy:</strong> 請參見 <a href="https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html">更新 Kubernetes kube-proxy 自管理附加組件</a>。</li>
+<li><strong>CoreDNS:</strong> 請參見 <a href="https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html">更新 CoreDNS 自管理附加組件</a>。</li>
+<li><strong>AWS Load Balancer Controller:</strong> AWS Load Balancer Controller 需要與您部署的 EKS 版本兼容。請參見<a href="https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html">安裝指南</a>了解更多信息。</li>
+<li><strong>Amazon Elastic Block Store (Amazon EBS) Container Storage Interface (CSI) 驅動程序:</strong> 有關安裝和升級信息,請參見 <a href="https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html">將 Amazon EBS CSI 驅動程序作為 Amazon EKS 附加組件進行管理</a>。</li>
+<li><strong>Amazon Elastic File System (Amazon EFS) Container Storage Interface (CSI) 驅動程序:</strong> 有關安裝和升級信息,請參見 <a href="https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html">Amazon EFS CSI 驅動程序</a>。</li>
+<li><strong>Kubernetes Metrics Server:</strong> 更多信息,請參見 GitHub 上的 <a href="https://kubernetes-sigs.github.io/metrics-server/">metrics-server</a>。</li>
+<li><strong>Kubernetes Cluster Autoscaler</strong><strong>:</strong> 要升級 Kubernetes Cluster Autoscaler 的版本,請更改部署中映像的版本。Cluster Autoscaler 與 Kubernetes 調度器緊密耦合。您在升級集群時始終需要升級它。查看 <a href="https://github.com/kubernetes/autoscaler/releases">GitHub 發布</a>以找到與您的 Kubernetes 次要版本對應的最新發布地址。</li>
+<li><strong>Karpenter:</strong> 有關安裝和升級信息,請參見 <a href="https://karpenter.sh/docs/upgrading/">Karpenter 文檔。</a></li>
+</ul>
+<h2 id="eks_2">在升級前驗證 EKS 的基本要求<a class="headerlink" href="#eks_2" title="Permanent link">&para;</a></h2>
+<p>AWS 要求您的帳戶中存在某些資源才能完成升級過程。如果這些資源不存在,則無法升級集群。控制平面升級需要以下資源:</p>
+<ol>
+<li>可用 IP 地址: Amazon EKS 需要從您在創建集群時指定的子網中最多五個可用 IP 地址才能更新集群。如果沒有,請在執行版本更新之前更新集群配置以包含新的集群子網。</li>
+<li>EKS IAM 角色: 控制平面 IAM 角色仍然存在於帳戶中,具有必要的權限。</li>
+<li>如果您的集群啟用了秘密加密,請確保集群 IAM 角色具有使用 AWS Key Management Service (AWS KMS) 密鑰的權限。</li>
+</ol>
+<h3 id="ip">驗證可用 IP 地址<a class="headerlink" href="#ip" title="Permanent link">&para;</a></h3>
+<p>要更新集群,Amazon EKS 需要從您在創建集群時指定的子網中最多五個可用 IP 地址。</p>
+<p>要驗證您的子網是否有足夠的 IP 地址來升級集群,您可以運行以下命令:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>CLUSTER=&lt;cluster name&gt;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>aws ec2 describe-subnets --subnet-ids \
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  $(aws eks describe-cluster --name ${CLUSTER} \
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  --query &#39;cluster.resourcesVpcConfig.subnetIds&#39; \
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  --output text) \
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  --query &#39;Subnets[*].[SubnetId,AvailabilityZone,AvailableIpAddressCount]&#39; \
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  --output table
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>----------------------------------------------------
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>|                  DescribeSubnets                 |
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>+---------------------------+--------------+-------+
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>|  subnet-067fa8ee8476abbd6 |  us-east-1a  |  8184 |
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>|  subnet-0056f7403b17d2b43 |  us-east-1b  |  8153 |
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>|  subnet-09586f8fb3addbc8c |  us-east-1a  |  8120 |
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>|  subnet-047f3d276a22c6bce |  us-east-1b  |  8184 |
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>+---------------------------+--------------+-------+
+</code></pre></div>
+<p><a href="https://github.com/aws/amazon-vpc-cni-k8s/blob/master/cmd/cni-metrics-helper/README.md">VPC CNI Metrics Helper</a> 可用於創建 CloudWatch 儀表板以監控 VPC 指標。
+Amazon EKS 建議在開始 Kubernetes 版本升級之前,如果您在最初創建集群時指定的子網中 IP 地址不足,請使用"UpdateClusterConfiguration"API 更新集群子網。請確認您將提供的新子網:</p>
+<ul>
+<li>屬於在集群創建期間選擇的相同 AZ 集合。</li>
+<li>屬於在集群創建期間提供的相同 VPC。</li>
+</ul>
+<p>如果現有 VPC CIDR 塊中的 IP 地址用完,請考慮關聯其他 CIDR 塊。AWS 允許將其他 CIDR 塊與您現有的集群 VPC 關聯,從而有效地擴展您的 IP 地址池。此擴展可通過引入其他私有 IP 範圍(RFC 1918)或必要時公共 IP 範圍(非 RFC 1918)來實現。您必須添加新的 VPC CIDR 塊並允許 VPC 刷新完成,然後 Amazon EKS 才能使用新的 CIDR。之後,您可以根據新設置的 CIDR 塊更新子網到 VPC。</p>
+<h3 id="eks-iam">驗證 EKS IAM 角色<a class="headerlink" href="#eks-iam" title="Permanent link">&para;</a></h3>
+<p>要驗證 IAM 角色是否可用並在您的帳戶中具有正確的信任策略,您可以運行以下命令:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>CLUSTER=&lt;cluster name&gt;
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>ROLE_ARN=$(aws eks describe-cluster --name ${CLUSTER} \
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  --query &#39;cluster.roleArn&#39; --output text)
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>aws iam get-role --role-name ${ROLE_ARN##*/} \
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  --query &#39;Role.AssumeRolePolicyDocument&#39;
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>{
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    &quot;Version&quot;: &quot;2012-10-17&quot;,
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    &quot;Statement&quot;: [
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>        {
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>            &quot;Effect&quot;: &quot;Allow&quot;,
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>            &quot;Principal&quot;: {
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>                &quot;Service&quot;: &quot;eks.amazonaws.com&quot;
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>            },
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>            &quot;Action&quot;: &quot;sts:AssumeRole&quot;
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>        }
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>    ]
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>}
+</code></pre></div>
+<h2 id="eks_3">遷移到 EKS 附加組件<a class="headerlink" href="#eks_3" title="Permanent link">&para;</a></h2>
+<p>Amazon EKS 自動安裝諸如 Amazon VPC CNI 插件、<code>kube-proxy</code> 和 CoreDNS 等附加組件,用於每個集群。附加組件可以是自管理的,也可以安裝為 Amazon EKS 附加組件。Amazon EKS 附加組件是一種使用 EKS API 管理附加組件的替代方式。</p>
+<p>您可以使用 Amazon EKS 附加組件以單個命令更新版本。例如:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>aws eks update-addon —cluster-name my-cluster —addon-name vpc-cni —addon-version version-number \
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>--service-account-role-arn arn:aws:iam::111122223333:role/role-name —configuration-values &#39;{}&#39; —resolve-conflicts PRESERVE
+</code></pre></div>
+<p>檢查您是否有任何 EKS 附加組件:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>aws eks list-addons --cluster-name &lt;cluster name&gt;
+</code></pre></div>
+<div class="admonition 警告">
+<p class="admonition-title">警告</p>
+<p>EKS 附加組件不會在控制平面升級期間自動升級。您必須啟動 EKS 附加組件更新,並選擇所需的版本。</p>
+<ul>
+<li>您負責從所有可用版本中選擇一個兼容版本。<a href="#使用-kubernetes-api-升級附加組件和組件">查看有關附加組件版本兼容性的指南。</a></li>
+<li>Amazon EKS 附加組件只能升級一個次要版本。</li>
+</ul>
+</div>
+<p><a href="https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html">了解哪些組件可用作 EKS 附加組件,以及如何入門。</a></p>
+<p><a href="https://aws.amazon.com/blogs/containers/amazon-eks-add-ons-advanced-configuration/">了解如何為 EKS 附加組件提供自定義配置。</a></p>
+<h2 id="api">在升級控制平面之前識別和補救已刪除的 API 使用情況<a class="headerlink" href="#api" title="Permanent link">&para;</a></h2>
+<p>您應該在升級 EKS 控制平面之前識別已刪除 API 的使用情況。為此,我們建議使用可以檢查正在運行的集群或靜態呈現的 Kubernetes 清單文件的工具。</p>
+<p>對靜態清單文件進行檢查通常更準確。如果對活動集群進行運行,這些工具可能會返回錯誤的正數。</p>
+<p>Kubernetes API 的棄用並不意味著 API 已被刪除。您應該查看 <a href="https://kubernetes.io/docs/reference/using-api/deprecation-policy/">Kubernetes 棄用政策</a>以了解 API 刪除如何影響您的工作負載。</p>
+<h3 id="_8">集群洞察<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p><a href="https://docs.aws.amazon.com/eks/latest/userguide/cluster-insights.html">集群洞察</a>是一項功能,提供有關可能影響升級 EKS 集群到更新版本 Kubernetes 的問題的見解。這些見解由 Amazon EKS 管理和維護,並提供如何補救的建議。利用集群洞察,您可以最大限度地減少升級到更新 Kubernetes 版本的工作量。</p>
+<p>要查看 EKS 集群的見解,您可以運行命令:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>aws eks list-insights --region &lt;region-code&gt; --cluster-name &lt;my-cluster&gt;
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>{
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    &quot;insights&quot;: [
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>        {
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>            &quot;category&quot;: &quot;UPGRADE_READINESS&quot;, 
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>            &quot;name&quot;: &quot;Deprecated APIs removed in Kubernetes v1.29&quot;, 
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>            &quot;insightStatus&quot;: {
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>                &quot;status&quot;: &quot;PASSING&quot;, 
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>                &quot;reason&quot;: &quot;No deprecated API usage detected within the last 30 days.&quot;
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>            }, 
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>            &quot;kubernetesVersion&quot;: &quot;1.29&quot;, 
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>            &quot;lastTransitionTime&quot;: 1698774710.0, 
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>            &quot;lastRefreshTime&quot;: 1700157422.0, 
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>            &quot;id&quot;: &quot;123e4567-e89b-42d3-a456-579642341238&quot;, 
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>            &quot;description&quot;: &quot;Checks for usage of deprecated APIs that are scheduled for removal in Kubernetes v1.29. Upgrading your cluster before migrating to the updated APIs supported by v1.29 could cause application impact.&quot;
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>        }
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>    ]
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>}
+</code></pre></div></p>
+<p>要獲得有關收到的見解的更詳細輸出,您可以運行命令:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>aws eks describe-insight --region &lt;region-code&gt; --id &lt;insight-id&gt; --cluster-name &lt;my-cluster&gt;
+</code></pre></div></p>
+<p>您還可以在 <a href="https://console.aws.amazon.com/eks/home#/clusters">Amazon EKS 控制台</a>中查看見解。在集群列表中選擇您的集群後,見解結果位於 <code>Upgrade Insights</code> 選項卡下。</p>
+<p>如果您發現集群洞察的 <code>"status": ERROR</code>狀態,您必須在執行集群升級之前解決該問題。運行 <code>aws eks describe-insight</code> 命令,它將提供以下補救建議: </p>
+<p>受影響的資源:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&quot;resources&quot;: [
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>      {
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>        &quot;insightStatus&quot;: {
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>          &quot;status&quot;: &quot;ERROR&quot;
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>        },
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>        &quot;kubernetesResourceUri&quot;: &quot;/apis/policy/v1beta1/podsecuritypolicies/null&quot;
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>      }
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>]
+</code></pre></div></p>
+<p>已棄用的 API:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>&quot;deprecationDetails&quot;: [
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>      {
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>        &quot;usage&quot;: &quot;/apis/flowcontrol.apiserver.k8s.io/v1beta2/flowschemas&quot;, 
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>        &quot;replacedWith&quot;: &quot;/apis/flowcontrol.apiserver.k8s.io/v1beta3/flowschemas&quot;, 
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>        &quot;stopServingVersion&quot;: &quot;1.29&quot;, 
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>        &quot;clientStats&quot;: [], 
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>        &quot;startServingReplacementVersion&quot;: &quot;1.26&quot;
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>      }
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>]
+</code></pre></div></p>
+<p>建議採取的行動:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>&quot;recommendation&quot;: &quot;Update manifests and API clients to use newer Kubernetes APIs if applicable before upgrading to Kubernetes v1.26.&quot;
+</code></pre></div></p>
+<p>通過 EKS 控制台或 CLI 利用集群洞察可以加快成功升級 EKS 集群版本的過程。了解更多信息,請參考以下資源:
+* <a href="https://docs.aws.amazon.com/eks/latest/userguide/cluster-insights.html">官方 EKS 文檔</a>
+* <a href="https://aws.amazon.com/blogs/containers/accelerate-the-testing-and-verification-of-amazon-eks-upgrades-with-upgrade-insights/">集群洞察發布博客</a>。</p>
+<h3 id="kube-no-trouble">Kube-no-trouble<a class="headerlink" href="#kube-no-trouble" title="Permanent link">&para;</a></h3>
+<p><a href="https://github.com/doitintl/kube-no-trouble">Kube-no-trouble</a>是一個開源命令行工具,其中包含 <code>kubent</code> 命令。當您運行 <code>kubent</code> 而不帶任何參數時,它將使用您當前的 KubeConfig 上下文,掃描集群並打印一份報告,其中列出了哪些 API 將被棄用和刪除。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>kubent
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>4:17PM INF &gt;&gt;&gt; Kube No Trouble `kubent` &lt;&lt;&lt;
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>4:17PM INF version 0.7.0 (git sha d1bb4e5fd6550b533b2013671aa8419d923ee042)
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>4:17PM INF Initializing collectors and retrieving data
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>4:17PM INF Target K8s version is 1.24.8-eks-ffeb93d
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>4:l INF Retrieved 93 resources from collector name=Cluster
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>4:17PM INF Retrieved 16 resources from collector name=&quot;Helm v3&quot;
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>4:17PM INF Loaded ruleset name=custom.rego.tmpl
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>4:17PM INF Loaded ruleset name=deprecated-1-16.rego
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>4:17PM INF Loaded ruleset name=deprecated-1-22.rego
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>4:17PM INF Loaded ruleset name=deprecated-1-25.rego
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>4:17PM INF Loaded ruleset name=deprecated-1-26.rego
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>4:17PM INF Loaded ruleset name=deprecated-future.rego
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>__________________________________________________________________________________________
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>&gt;&gt;&gt; Deprecated APIs removed in 1.25 &lt;&lt;&lt;
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>------------------------------------------------------------------------------------------
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>KIND                NAMESPACE     NAME             API_VERSION      REPLACE_WITH (SINCE)
+<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>PodSecurityPolicy   &lt;undefined&gt;   eks.privileged   policy/v1beta1   &lt;removed&gt; (1.21.0)
+</code></pre></div>
+<p>它也可以用於掃描靜態清單文件和 Helm 包。建議將 <code>kubent</code> 作為持續集成(CI)過程的一部分運行,以在部署清單之前識別問題。掃描清單文件也比掃描活動集群更準確。</p>
+<p>Kube-no-trouble 提供了一個示例 <a href="https://github.com/doitintl/kube-no-trouble/blob/master/docs/k8s-sa-and-role-example.yaml">Service Account 和 Role</a>具有適當的權限來掃描集群。</p>
+<h3 id="pluto">Pluto<a class="headerlink" href="#pluto" title="Permanent link">&para;</a></h3>
+<p>另一個選擇是 <a href="https://pluto.docs.fairwinds.com/">pluto</a>,它類似於 <code>kubent</code>,因為它支持掃描活動集群、清單文件、Helm 圖表,並有一個您可以包含在 CI 流程中的 GitHub Action。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>pluto detect-all-in-cluster
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>NAME             KIND                VERSION          REPLACEMENT   REMOVED   DEPRECATED   REPL AVAIL  
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>eks.privileged   PodSecurityPolicy   policy/v1beta1                 false     true         true
+</code></pre></div>
+<h3 id="_9">資源<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p>為了在升級之前驗證您的集群不使用已棄用的 API,您應該監控:</p>
+<ul>
+<li>指標 <code>apiserver_requested_deprecated_apis</code> 自 Kubernetes v1.19 起:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>kubectl get --raw /metrics | grep apiserver_requested_deprecated_apis
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>apiserver_requested_deprecated_apis{group=&quot;policy&quot;,removed_release=&quot;1.25&quot;,resource=&quot;podsecuritypolicies&quot;,subresource=&quot;&quot;,version=&quot;v1beta1&quot;} 1
+</code></pre></div>
+<ul>
+<li><a href="https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html">審核日誌</a>中帶有 <code>k8s.io/deprecated</code> 設置為 <code>true</code> 的事件:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>CLUSTER=&quot;&lt;cluster_name&gt;&quot;
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>QUERY_ID=$(aws logs start-query \
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a> --log-group-name /aws/eks/${CLUSTER}/cluster \
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a> --start-time $(date -u --date=&quot;-30 minutes&quot; &quot;+%s&quot;) # or date -v-30M &quot;+%s&quot; on MacOS \
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a> --end-time $(date &quot;+%s&quot;) \
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a> --query-string &#39;fields @message | filter `annotations.k8s.io/deprecated`=&quot;true&quot;&#39; \
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a> --query queryId --output text)
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>echo &quot;Query started (query id: $QUERY_ID), please hold ...&quot; &amp;&amp; sleep 5 # give it some time to query
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>aws logs get-query-results --query-id $QUERY_ID
+</code></pre></div>
+<p>這將輸出如果使用了已棄用的 API 的行:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>{
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>    &quot;results&quot;: [
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>        [
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>            {
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>                &quot;field&quot;: &quot;@message&quot;,
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>                &quot;value&quot;: &quot;{\&quot;kind\&quot;:\&quot;Event\&quot;,\&quot;apiVersion\&quot;:\&quot;audit.k8s.io/v1\&quot;,\&quot;level\&quot;:\&quot;Request\&quot;,\&quot;auditID\&quot;:\&quot;8f7883c6-b3d5-42d7-967a-1121c6f22f01\&quot;,\&quot;stage\&quot;:\&quot;ResponseComplete\&quot;,\&quot;requestURI\&quot;:\&quot;/apis/policy/v1beta1/podsecuritypolicies?allowWatchBookmarks=true\\u0026resourceVersion=4131\\u0026timeout=9m19s\\u0026timeoutSeconds=559\\u0026watch=true\&quot;,\&quot;verb\&quot;:\&quot;watch\&quot;,\&quot;user\&quot;:{\&quot;username\&quot;:\&quot;system:apiserver\&quot;,\&quot;uid\&quot;:\&quot;8aabfade-da52-47da-83b4-46b16cab30fa\&quot;,\&quot;groups\&quot;:[\&quot;system:masters\&quot;]},\&quot;sourceIPs\&quot;:[\&quot;::1\&quot;],\&quot;userAgent\&quot;:\&quot;kube-apiserver/v1.24.16 (linux/amd64) kubernetes/af930c1\&quot;,\&quot;objectRef\&quot;:{\&quot;resource\&quot;:\&quot;podsecuritypolicies\&quot;,\&quot;apiGroup\&quot;:\&quot;policy\&quot;,\&quot;apiVersion\&quot;:\&quot;v1beta1\&quot;},\&quot;responseStatus\&quot;:{\&quot;metadata\&quot;:{},\&quot;code\&quot;:200},\&quot;requestReceivedTimestamp\&quot;:\&quot;2023-10-04T12:36:11.849075Z\&quot;,\&quot;stageTimestamp\&quot;:\&quot;2023-10-04T12:45:30.850483Z\&quot;,\&quot;annotations\&quot;:{\&quot;authorization.k8s.io/decision\&quot;:\&quot;allow\&quot;,\&quot;authorization.k8s.io/reason\&quot;:\&quot;\&quot;,\&quot;k8s.io/deprecated\&quot;:\&quot;true\&quot;,\&quot;k8s.io/removed-release\&quot;:\&quot;1.25\&quot;}}&quot;
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>            },
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>[...]
+</code></pre></div>
+<h2 id="kubernetes-kubectl-convert">更新 Kubernetes 工作負載。使用 kubectl-convert 更新清單<a class="headerlink" href="#kubernetes-kubectl-convert" title="Permanent link">&para;</a></h2>
+<p>在識別需要更新的工作負載和清單後,您可能需要更改清單文件中的資源類型(例如從 PodSecurityPolicies 到 PodSecurityStandards)。這將需要更新資源規格,並根據正在替換的資源進行額外的研究。</p>
+<p>如果資源類型保持不變,但 API 版本需要更新,您可以使用 <code>kubectl-convert</code> 命令自動轉換您的清單文件。例如,將舊版本的 Deployment 轉換為 <code>apps/v1</code>。有關更多信息,請參見 Kubernetes 網站上的<a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-kubectl-convert-plugin">安裝 kubectl 轉換插件</a>。</p>
+<p><code>kubectl-convert -f &lt;file&gt; --output-version &lt;group&gt;/&lt;version&gt;</code></p>
+<h2 id="poddisruptionbudgets-topologyspreadconstraints">配置 PodDisruptionBudgets 和 topologySpreadConstraints 以確保工作負載在數據平面升級期間的可用性<a class="headerlink" href="#poddisruptionbudgets-topologyspreadconstraints" title="Permanent link">&para;</a></h2>
+<p>確保您的工作負載具有適當的 <a href="https://kubernetes.io/docs/concepts/workloads/pods/disruptions/#pod-disruption-budgets">PodDisruptionBudgets</a> 和 <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints">topologySpreadConstraints</a>,以確保在數據平面升級期間工作負載的可用性。並非每個工作負載都需要相同級別的可用性,因此您需要驗證工作負載的規模和要求。</p>
+<p>確保工作負載在多個可用區域和多個主機上使用拓撲傳播,這將提高您的信心,即工作負載將自動遷移到新的數據平面,而不會出現問題。</p>
+<p>以下是一個工作負載示例,它將始終保持 80% 的副本可用,並在區域和主機之間傳播副本</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>apiVersion: policy/v1
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>kind: PodDisruptionBudget
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>metadata:
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>  name: myapp
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>spec:
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>  minAvailable: &quot;80%&quot;
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>  selector:
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>    matchLabels:
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>      app: myapp
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>---
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>apiVersion: apps/v1
+<a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>kind: Deployment
+<a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>metadata:
+<a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>  name: myapp
+<a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>spec:
+<a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>  replicas: 10
+<a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>  selector:
+<a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>    matchLabels:
+<a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>      app: myapp
+<a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a>  template:
+<a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a>    metadata:
+<a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a>      labels:
+<a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>        app: myapp
+<a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a>    spec:
+<a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a>      containers:
+<a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a>      - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
+<a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a>        name: myapp
+<a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a>        resources:
+<a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a>          requests:
+<a id="__codelineno-15-30" name="__codelineno-15-30" href="#__codelineno-15-30"></a>            cpu: &quot;1&quot;
+<a id="__codelineno-15-31" name="__codelineno-15-31" href="#__codelineno-15-31"></a>            memory: 256M
+<a id="__codelineno-15-32" name="__codelineno-15-32" href="#__codelineno-15-32"></a>      topologySpreadConstraints:
+<a id="__codelineno-15-33" name="__codelineno-15-33" href="#__codelineno-15-33"></a>      - labelSelector:
+<a id="__codelineno-15-34" name="__codelineno-15-34" href="#__codelineno-15-34"></a>          matchLabels:
+<a id="__codelineno-15-35" name="__codelineno-15-35" href="#__codelineno-15-35"></a>            app: host-zone-spread
+<a id="__codelineno-15-36" name="__codelineno-15-36" href="#__codelineno-15-36"></a>        maxSkew: 2
+<a id="__codelineno-15-37" name="__codelineno-15-37" href="#__codelineno-15-37"></a>        topologyKey: kubernetes.io/hostname
+<a id="__codelineno-15-38" name="__codelineno-15-38" href="#__codelineno-15-38"></a>        whenUnsatisfiable: DoNotSchedule
+<a id="__codelineno-15-39" name="__codelineno-15-39" href="#__codelineno-15-39"></a>      - labelSelector:
+<a id="__codelineno-15-40" name="__codelineno-15-40" href="#__codelineno-15-40"></a>          matchLabels:
+<a id="__codelineno-15-41" name="__codelineno-15-41" href="#__codelineno-15-41"></a>            app: host-zone-spread
+<a id="__codelineno-15-42" name="__codelineno-15-42" href="#__codelineno-15-42"></a>        maxSkew: 2
+<a id="__codelineno-15-43" name="__codelineno-15-43" href="#__codelineno-15-43"></a>        topologyKey: topology.kubernetes.io/zone
+<a id="__codelineno-15-44" name="__codelineno-15-44" href="#__codelineno-15-44"></a>        whenUnsatisfiable: DoNotSchedule
+</code></pre></div>
+<p><a href="https://aws.amazon.com/resilience-hub/">AWS Resilience Hub</a>已將 Amazon Elastic Kubernetes Service (Amazon EKS)添加為支持的資源。Resilience Hub 提供了一個單一的地方來定義、驗證和跟蹤應用程序的彈性,以避免由於軟件、基礎設施或操作中斷而造成的不必要停機。</p>
+<h2 id="karpenter">使用托管節點組或 Karpenter 簡化數據平面升級<a class="headerlink" href="#karpenter" title="Permanent link">&para;</a></h2>
+<p>托管節點組和 Karpenter 都簡化了節點升級,但它們採取了不同的方法。</p>
+<p>托管節點組自動化了節點的配置和生命週期管理。這意味著您可以通過單個操作創建、自動更新或終止節點。</p>
+<p>在默認配置中,Karpenter 使用最新的兼容 EKS 優化 AMI 自動創建新節點。隨著 EKS 發布更新的 EKS 優化 AMI 或集群升級,Karpenter 將自動開始使用這些映像。<a href="#為-karpenter-管理的節點啟用節點過期">Karpenter 還實現了節點過期以更新節點。</a></p>
+<p><a href="https://karpenter.sh/docs/concepts/nodeclasses/">Karpenter 可以配置為使用自定義 AMI。</a>如果您在 Karpenter 中使用自定義 AMI,則您負責 kubelet 的版本。</p>
+<h2 id="_10">確認節點和控制平面的版本兼容性<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<p>在 Amazon EKS 中進行 Kubernetes 升級之前,確保您的托管節點組、自管理節點和控制平面之間的兼容性至關重要。兼容性由您使用的 Kubernetes 版本決定,並根據不同的情況而有所不同。策略:</p>
+<ul>
+<li><strong>Kubernetes v1.28+</strong> — **** 從 Kubernetes 版本 1.28 及以後,核心組件的版本策略更加寬鬆。具體來說,Kubernetes API 服務器和 kubelet 之間支持的版本偏差已從 n-2 延長到 n-3。例如,如果您的 EKS 控制平面版本為 1.28,您可以安全地使用最早版本為 1.25 的 kubelet。這種版本偏差在 <a href="https://docs.aws.amazon.com/eks/latest/userguide/fargate.html">AWS Fargate</a>、<a href="https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html">托管節點組</a>和 <a href="https://docs.aws.amazon.com/eks/latest/userguide/worker.html">自管理節點</a>之間得到支持。我們強烈建議保持您的 <a href="https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-amis.html">Amazon Machine Image (AMI)</a> 版本最新,以獲得安全性。較舊的 kubelet 版本可能由於潛在的常見漏洞和暴露(CVE)而存在安全風險,這可能會抵消使用較舊 kubelet 版本的好處。</li>
+<li><strong>Kubernetes &lt; v1.28</strong> — 如果您使用的版本低於 v1.28,API 服務器和 kubelet 之間支持的版本偏差為 n-2。例如,如果您的 EKS 版本是 1.27,您可以使用的最舊 kubelet 版本是 1.25。這種版本偏差適用於 <a href="https://docs.aws.amazon.com/eks/latest/userguide/fargate.html">AWS Fargate</a>、<a href="https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html">托管節點組</a>和 <a href="https://docs.aws.amazon.com/eks/latest/userguide/worker.html">自管理節點</a>。</li>
+</ul>
+<h2 id="karpenter_1">為 Karpenter 管理的節點啟用節點過期<a class="headerlink" href="#karpenter_1" title="Permanent link">&para;</a></h2>
+<p>Karpenter 實現節點升級的一種方式是使用節點過期的概念。這減少了節點升級所需的計劃。當您在配置器中設置 <strong>ttlSecondsUntilExpired</strong> 值時,這會激活節點過期。節點達到定義的秒數後,它們將被安全地排空和刪除。即使它們正在使用中,這也是如此,允許您用新配置的升級實例替換節點。當節點被替換時,Karpenter 使用最新的 EKS 優化 AMI。有關更多信息,請參見 Karpenter 網站上的 <a href="https://karpenter.sh/docs/concepts/deprovisioning/#methods">Deprovisioning</a>。</p>
+<p>Karpenter 不會自動為此值添加抖動。為了防止工作負載過度中斷,請定義 <a href="https://kubernetes.io/docs/tasks/run-application/configure-pdb/">pod 中斷預算</a>,如 Kubernetes 文檔所示。</p>
+<p>如果您在配置器上配置 <strong>ttlSecondsUntilExpired</strong>,這將適用於與配置器關聯的現有節點。</p>
+<h2 id="karpenter_2">使用 Karpenter 的漂移功能管理節點<a class="headerlink" href="#karpenter_2" title="Permanent link">&para;</a></h2>
+<p><a href="https://karpenter.sh/docs/concepts/deprovisioning/#drift">Karpenter 的漂移功能</a>可以自動升級 Karpenter 配置的節點,以保持與 EKS 控制平面的同步。Karpenter 漂移目前需要使用<a href="https://karpenter.sh/docs/concepts/settings/#feature-gates">功能門</a>來啟用。Karpenter 的默認配置使用與 EKS 集群控制平面相同的主版本和次版本的最新 EKS 優化 AMI。</p>
+<p>EKS 集群升級完成後,Karpenter 的漂移功能將檢測到 Karpenter 配置的節點正在使用舊版本的 EKS 優化 AMI,並自動隔離、排空和替換這些節點。為了支持 pod 遷移到新節點,請遵循 Kubernetes 最佳實踐,設置適當的 pod <a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">資源配額</a>和使用 <a href="https://kubernetes.io/docs/concepts/workloads/pods/disruptions/">pod 中斷預算</a>(PDB)。Karpenter 的停用將根據 pod 資源請求預先旋轉替換節點,並將尊重 PDB。</p>
+<h2 id="eksctl">使用 eksctl 自動升級自管理節點組<a class="headerlink" href="#eksctl" title="Permanent link">&para;</a></h2>
+<p>自管理節點組是在您的帳戶中部署並附加到集群的 EC2 實例,這是在 EKS 服務之外完成的。這通常由某種形式的自動化工具部署和管理。要升級自管理節點組,您應該參考您的工具文檔。</p>
+<p>例如,eksctl 支持 <a href="https://eksctl.io/usage/managing-nodegroups/#deleting-and-draining">刪除和排空自管理節點。</a></p>
+<p>一些常見的工具包括:</p>
+<ul>
+<li><a href="https://eksctl.io/usage/nodegroup-upgrade/">eksctl</a></li>
+<li><a href="https://kops.sigs.k8s.io/operations/updates_and_upgrades/">kOps</a></li>
+<li><a href="https://aws-ia.github.io/terraform-aws-eks-blueprints/node-groups/#self-managed-node-groups">EKS Blueprints</a></li>
+</ul>
+<h2 id="_11">在升級前備份集群<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<p>Kubernetes 的新版本為您的 Amazon EKS 集群引入了重大變更。升級集群後,您無法將其降級。</p>
+<p><a href="https://velero.io/">Velero</a>是一個社區支持的開源工具,可用於備份現有集群並將備份應用於新集群。</p>
+<p>請注意,您只能為 EKS 目前支持的 Kubernetes 版本創建新集群。如果您當前運行的版本仍受支持,且升級失敗,您可以使用原始版本創建一個新集群並恢復數據平面。請注意,Velero 不包括 AWS 資源(包括 IAM)在備份中。這些資源需要重新創建。</p>
+<h2 id="fargate">在升級控制平面後重新啟動 Fargate 部署<a class="headerlink" href="#fargate" title="Permanent link">&para;</a></h2>
+<p>要升級 Fargate 數據平面節點,您需要重新部署工作負載。您可以通過使用 <code>-o wide</code> 選項列出所有 pod 來識別在 Fargate 節點上運行的工作負載。任何以 <code>fargate-</code> 開頭的節點名稱都需要在集群中重新部署。</p>
+<h2 id="_12">評估藍/綠集群作為就地集群升級的替代方案<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<p>一些客戶更喜歡使用藍/綠升級策略。這可能有好處,但也有應該考慮的缺點。</p>
+<p>好處包括:</p>
+<ul>
+<li>可以一次性更改多個 EKS 版本(例如 1.23 到 1.25)</li>
+<li>能夠切換回舊集群</li>
+<li>創建一個新的集群,可以使用更新的系統(例如 terraform)進行管理</li>
+<li>工作負載可以逐個遷移</li>
+</ul>
+<p>一些缺點包括:</p>
+<ul>
+<li>API 端點和 OIDC 發生變化,需要更新使用者(例如 kubectl 和 CI/CD)</li>
+<li>需要在遷移期間並行運行 2 個集群,這可能很昂貴並限制區域容量</li>
+<li>如果工作負載相互依賴,需要更多協調才能一起遷移</li>
+<li>負載平衡器和外部 DNS 無法輕易跨多個集群</li>
+</ul>
+<p>雖然這種策略是可行的,但它比就地升級更昂貴,需要更多的協調和工作負載遷移時間。在某些情況下可能需要這樣做,應該仔細計劃。</p>
+<p>隨著自動化和聲明式系統(如 GitOps)的高度,這可能更容易完成。您需要採取額外的預防措施,以便為有狀態的工作負載備份和遷移數據。</p>
+<p>查看這些博客文章以了解更多信息:</p>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/containers/kubernetes-cluster-upgrade-the-blue-green-deployment-strategy/">Kubernetes 集群升級:藍/綠部署策略</a></li>
+<li><a href="https://aws.amazon.com/blogs/containers/blue-green-or-canary-amazon-eks-clusters-migration-for-stateless-argocd-workloads/">用於無狀態 ArgoCD 工作負載的藍/綠或金絲雀 Amazon EKS 集群遷移</a></li>
+</ul>
+<h2 id="kubernetes-">跟蹤 Kubernetes 項目中計劃的主要變更 - 提前思考<a class="headerlink" href="#kubernetes-" title="Permanent link">&para;</a></h2>
+<p>不要只關注下一個版本。查看 Kubernetes 的新版本發布,並識別主要變更。例如,一些應用程序直接使用 Docker API,並且在 Kubernetes <code>1.24</code> 中刪除了對 Docker 的容器運行時接口(CRI)(也稱為 Dockershim)的支持。這種變化需要更多時間來準備。</p>
+<p>查看您要升級到的版本的所有記錄變更,並記下任何所需的升級步驟。還要注意 Amazon EKS 托管集群特有的任何要求或過程。</p>
+<ul>
+<li><a href="https://github.com/kubernetes/kubernetes/tree/master/CHANGELOG">Kubernetes 變更日誌</a></li>
+</ul>
+<h2 id="_13">有關功能刪除的具體指導<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<h3 id="125-dockershim-docker-dds">1.25 中刪除 Dockershim - 使用 Docker 套接字檢測器(DDS)<a class="headerlink" href="#125-dockershim-docker-dds" title="Permanent link">&para;</a></h3>
+<p>1.25 的 EKS 優化 AMI 不再包含對 Dockershim 的支持。如果您依賴 Dockershim,例如掛載 Docker 套接字,則需要在將工作節點升級到 1.25 之前刪除這些依賴項。</p>
+<p>在升級到 1.25 之前,找出您在哪裡有對 Docker 套接字的依賴。我們建議使用 <a href="https://github.com/aws-containers/kubectl-detector-for-docker-socket">Docker 套接字檢測器(DDS),這是一個 kubectl 插件。</a>。</p>
+<h3 id="125-podsecuritypolicy-pod">1.25 中刪除 PodSecurityPolicy - 遷移到 Pod 安全標準或策略即代碼解決方案<a class="headerlink" href="#125-podsecuritypolicy-pod" title="Permanent link">&para;</a></h3>
+<p><code>PodSecurityPolicy</code> 在 Kubernetes 1.21 中<a href="https://kubernetes.io/blog/2021/04/06/podsecuritypolicy-deprecation-past-present-and-future/">被棄用</a>,並在 Kubernetes 1.25 中被刪除。如果您在集群中使用 PodSecurityPolicy,則必須在將集群升級到 1.25 版本之前遷移到內置的 Kubernetes Pod 安全標準(PSS)或策略即代碼解決方案,以避免中斷您的工作負載。</p>
+<p>AWS 在 EKS 文檔中發布了<a href="https://docs.aws.amazon.com/eks/latest/userguide/pod-security-policy-removal-faq.html">詳細的常見問題解答。</a></p>
+<p>查看 <a href="https://aws.github.io/aws-eks-best-practices/security/docs/pods/#pod-security-standards-pss-and-pod-security-admission-psa">Pod 安全標準(PSS)和 Pod 安全准入(PSA)</a>最佳實踐。</p>
+<p>查看 Kubernetes 網站上的 <a href="https://kubernetes.io/blog/2021/04/06/podsecuritypolicy-deprecation-past-present-and-future/">PodSecurityPolicy 棄用博客文章</a>。</p>
+<h3 id="123-csi">1.23 中棄用內部存儲驅動程序 - 遷移到容器存儲接口(CSI)驅動程序<a class="headerlink" href="#123-csi" title="Permanent link">&para;</a></h3>
+<p>容器存儲接口(CSI)被設計用於幫助 Kubernetes 替換其現有的內部存儲驅動程序機制。Amazon EBS 容器存儲接口(CSI)遷移功能默認在 Amazon EKS <code>1.23</code> 及更高版本的集群中啟用。如果您在 <code>1.22</code> 或更早的版本集群上運行 pod,則必須在將集群更新到 <code>1.23</code> 版本之前安裝 <a href="https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html">Amazon EBS CSI 驅動程序</a>,以避免服務中斷。</p>
+<p>查看 <a href="https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi-migration-faq.html">Amazon EBS CSI 遷移常見問題解答</a>。</p>
+<h2 id="_14">其他資源<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<h3 id="clowdhaus-eks">ClowdHaus EKS 升級指南<a class="headerlink" href="#clowdhaus-eks" title="Permanent link">&para;</a></h3>
+<p><a href="https://clowdhaus.github.io/eksup/">ClowdHaus EKS 升級指南</a>是一個 CLI,可幫助升級 Amazon EKS 集群。它可以分析集群是否存在任何需要補救的潛在問題。</p>
+<h3 id="gonogo">GoNoGo<a class="headerlink" href="#gonogo" title="Permanent link">&para;</a></h3>
+<p><a href="https://github.com/FairwindsOps/GoNoGo">GoNoGo</a>是一個處於 alpha 階段的工具,用於確定集群附加組件的升級信心。</p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u8907\u88fd", "clipboard.copy": "\u8907\u88fd", "search.result.more.one": "\u6b64\u9801\u5c1a\u6709 1 \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.more.other": "\u6b64\u9801\u5c1a\u6709 # \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.none": "\u6c92\u6709\u7b26\u5408\u7684\u9805\u76ee", "search.result.one": "\u627e\u5230 1 \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.other": "\u627e\u5230 # \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.placeholder": "\u6253\u5b57\u9032\u884c\u641c\u5c0b", "search.result.term.missing": "\u7f3a\u5c11\u5b57\u8a5e", "select.version": "\u9078\u64c7\u7248\u672c"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+    
+  </body>
+</html>

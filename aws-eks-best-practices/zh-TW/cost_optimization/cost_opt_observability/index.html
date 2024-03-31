@@ -1,0 +1,2750 @@
+
+<!doctype html>
+<html lang="zh-TW" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../cost_opt_storage/">
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>可觀察性 - EKS最佳實踐指南</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-VQGL8B2FH8"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-VQGL8B2FH8",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-VQGL8B2FH8",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#-" class="md-skip">
+          跳轉到
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="頁首">
+    <a href="../../" title="EKS最佳實踐指南" class="md-header__button md-logo" aria-label="EKS最佳實踐指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EKS最佳實踐指南
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              可觀察性
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="選擇語言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../cost_optimization/cost_opt_observability/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../ko/cost_optimization/cost_opt_observability/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../zh/cost_optimization/cost_opt_observability/" hreflang="zh" class="md-select__link">
+              中文（简体）
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh-TW" class="md-select__link">
+              中文（繁體）
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜尋" placeholder="搜尋" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="搜尋">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清除" aria-label="清除" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜尋引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-eks-best-practices" title="前往倉庫" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="導覽列" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="EKS最佳實踐指南" class="md-nav__button md-logo" aria-label="EKS最佳實踐指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    EKS最佳實踐指南
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-eks-best-practices" title="前往倉庫" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    指南
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    簡介
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    安全
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            安全
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/iam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    身份和訪問管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/pods/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pod 安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/multitenancy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多租戶
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/detective/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    偵查控制
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/network/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據加密和密鑰管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/runtime/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    運行時安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/hosts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基礎設施安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/compliance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    監管合規性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/incidents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    事故響應和取證
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/image/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    映像安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/multiaccount/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多帳戶策略
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    叢集自動擴展
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            叢集自動擴展
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../karpenter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Karpenter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cluster-autoscaling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集自動擴展器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可靠性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            可靠性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reliability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reliability/docs/application/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    應用程式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reliability/docs/controlplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reliability/docs/dataplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Windows 容器
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Windows 容器
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/ami/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AMI 管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/gmsa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 容器的 gMSA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/hardening/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows Server 強化
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    掃描 Windows 映像
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/licensing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 版本和許可
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    日誌記錄
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    監控 Windows 容器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 網絡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/oom/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    內存和系統管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/patching/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基礎設施管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/scheduling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    調度
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 容器的 Pod 安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存儲選項
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    網絡
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            網絡
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/subnets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VPC 和子網考量
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/vpc-cni/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon VPC CNI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/ip-optimization-strategies/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    優化 IP 地址利用率
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/ipv6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    運行 IPv6 叢集
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/custom-networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    自訂網路
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/prefix-mode/index_linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Linux 的前綴模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/prefix-mode/index_windows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 的前綴模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/sgpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    每個 Pod 的安全組
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/loadbalancing/loadbalancing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    負載均衡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡性能問題監控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可擴展性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            可擴展性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/control-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/data-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/cluster-services/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集服務
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/workloads/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    工作負載
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/scaling_theory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    擴展背後的理論
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/kcp_monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面監控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/node_efficiency/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    節點效率和擴展
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/kubernetes_slos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes SLO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/quotas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    已知限制和服務配額
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../upgrades/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集升級
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    成本優化
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            成本優化
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cfm_framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    雲端財務管理框架
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_opt_compute/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    計算
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_opt_networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_opt_storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存儲
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    可觀察性
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    可觀察性
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      簡介
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      日誌
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS 控制平面
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EKS 控制平面">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      優化您的控制平面日誌
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="優化您的控制平面日誌">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      將日誌流式傳輸到 S3
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS 數據平面
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EKS 數據平面">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      日誌保留
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      日誌存儲選項
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="日誌存儲選項">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      直接將日誌轉發到 S3
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloudwatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      僅將日誌轉發到 CloudWatch 進行短期分析
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloudwatch-amazon-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      從 CloudWatch 導出到 Amazon S3
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      減少日誌級別
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      利用過濾器
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      指標
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="指標">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      監控重要的指標並只收集您需要的
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      在適用的地方減少基數
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      考慮指標粒度
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      追蹤
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="追蹤">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      應用採樣規則
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-distro-for-opentelemetry-adot" class="md-nav__link">
+    <span class="md-ellipsis">
+      應用 AWS Distro for OpenTelemetry (ADOT) 的尾部採樣
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amazon-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      利用 Amazon S3 存儲選項
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      其他資源:
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      簡介
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      日誌
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS 控制平面
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EKS 控制平面">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      優化您的控制平面日誌
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="優化您的控制平面日誌">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      將日誌流式傳輸到 S3
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS 數據平面
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EKS 數據平面">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      日誌保留
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      日誌存儲選項
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="日誌存儲選項">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      直接將日誌轉發到 S3
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloudwatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      僅將日誌轉發到 CloudWatch 進行短期分析
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloudwatch-amazon-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      從 CloudWatch 導出到 Amazon S3
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      減少日誌級別
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      利用過濾器
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      指標
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="指標">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      監控重要的指標並只收集您需要的
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      在適用的地方減少基數
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      考慮指標粒度
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      追蹤
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="追蹤">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      應用採樣規則
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-distro-for-opentelemetry-adot" class="md-nav__link">
+    <span class="md-ellipsis">
+      應用 AWS Distro for OpenTelemetry (ADOT) 的尾部採樣
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amazon-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      利用 Amazon S3 存儲選項
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      其他資源:
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="-">成本優化 - 可觀測性<a class="headerlink" href="#-" title="Permanent link">&para;</a></h1>
+<h2 id="_1">簡介<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>可觀測性工具可幫助您有效地檢測、修復和調查您的工作負載。隨著您使用 EKS 的增加,遙測數據的成本自然會增加。有時,平衡您的運營需求和衡量對您的業務很重要的事情,同時保持可觀測性成本在可控範圍內,可能會很有挑戰性。本指南重點關注成本優化策略,涉及可觀測性的三個支柱:日誌、指標和追蹤。這些最佳實踐中的每一個都可以獨立應用,以符合您組織的優化目標。</p>
+<h2 id="_2">日誌<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>日誌在監控和排查集群中應用程序方面發揮著關鍵作用。有幾種策略可用於優化日誌成本。下面列出的最佳實踐策略包括檢查您的日誌保留策略,以實施對日誌數據保留時間的細粒度控制,根據重要性將日誌數據發送到不同的存儲選項,以及利用日誌過濾來縮小存儲的日誌消息類型。有效管理日誌遙測可以為您的環境帶來成本節省。</p>
+<h2 id="eks">EKS 控制平面<a class="headerlink" href="#eks" title="Permanent link">&para;</a></h2>
+<h3 id="_3">優化您的控制平面日誌<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>Kubernetes 控制平面是一組<a href="https://kubernetes.io/docs/concepts/overview/components/#control-plane-components">組件</a>管理集群,這些組件將不同類型的信息作為日誌流發送到 <a href="https://aws.amazon.com/cloudwatch/">Amazon CloudWatch</a> 中的日誌組。雖然啟用所有控制平面日誌類型有好處,但您應該了解每個日誌中的信息以及存儲所有日誌遙測的相關成本。您將被收取將日誌從集群發送到 Amazon CloudWatch Logs 的標準 <a href="https://aws.amazon.com/cloudwatch/pricing/">CloudWatch Logs 數據引入和存儲成本</a>。在啟用它們之前,請評估每個日誌流是否必要。</p>
+<p>例如,在非生產集群中,只選擇性地啟用特定的日誌類型,如 api 服務器日誌,僅用於分析,然後停用。但對於生產集群,您可能無法重現事件,解決問題需要更多日誌信息,那麼您可以啟用所有日誌類型。有關更多控制平面成本優化實施細節,請參考此<a href="https://aws.amazon.com/blogs/containers/understanding-and-cost-optimizing-amazon-eks-control-plane-logs/">博客</a>。</p>
+<h4 id="s3">將日誌流式傳輸到 S3<a class="headerlink" href="#s3" title="Permanent link">&para;</a></h4>
+<p>另一個成本優化最佳實踐是通過 CloudWatch Logs 訂閱將控制平面日誌流式傳輸到 S3。利用 CloudWatch Logs <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Subscriptions.html">訂閱</a>允許您選擇性地將日誌轉發到 S3,這提供了比無限期保留日誌在 CloudWatch 中更具成本效益的長期存儲。例如,對於生產集群,您可以創建一個關鍵日誌組,並利用訂閱在 15 天後將這些日誌流式傳輸到 S3。這將確保您可以快速訪問日誌以進行分析,同時也通過將日誌移動到更具成本效益的存儲來節省成本。</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>截至 2023 年 9 月 5 日,EKS 日誌在 Amazon CloudWatch Logs 中被歸類為供應商日誌。供應商日誌是由 AWS 服務代表客戶本地發佈的特定 AWS 服務日誌,並以批量折扣定價提供。請訪問 <a href="https://aws.amazon.com/cloudwatch/pricing/">Amazon CloudWatch 定價頁面</a>了解更多關於供應商日誌定價的信息。</p>
+</div>
+<h2 id="eks_1">EKS 數據平面<a class="headerlink" href="#eks_1" title="Permanent link">&para;</a></h2>
+<h3 id="_4">日誌保留<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>Amazon CloudWatch 的默認保留策略是無限期保留日誌,永不過期,並產生適用於您的 AWS 區域的存儲成本。為了減少存儲成本,您可以根據工作負載需求自定義每個日誌組的保留策略。</p>
+<p>在開發環境中,長時間的保留期可能不是必要的。但在生產環境中,您可以設置更長的保留策略,以滿足故障排查、合規性和容量規劃的要求。例如,如果您在節假日旺季運行電子商務應用程序,系統負載會更重,可能會出現問題,您將需要設置更長的日誌保留期,以進行詳細的故障排查和事後分析。</p>
+<p>您可以在 AWS CloudWatch 控制台或 <a href="https://docs.aws.amazon.com/cli/latest/reference/logs/put-retention-policy.html">AWS API</a> 中<a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html#SettingLogRetention">配置您的保留期</a>,持續時間從 1 天到 10 年不等,具體取決於每個日誌組。具有靈活的保留期可以節省日誌存儲成本,同時也保留了關鍵日誌。</p>
+<h3 id="_5">日誌存儲選項<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>存儲是觀測性成本的一大驅動因素,因此優化您的日誌存儲策略至關重要。您的策略應該與您的工作負載要求保持一致,同時保持性能和可擴展性。減少存儲日誌成本的一種策略是利用 AWS S3 存儲桶及其不同的存儲層。</p>
+<h4 id="s3_1">直接將日誌轉發到 S3<a class="headerlink" href="#s3_1" title="Permanent link">&para;</a></h4>
+<p>考慮將不太重要的日誌(如開發環境)直接轉發到 S3,而不是 Cloudwatch。這可以立即影響日誌存儲成本。一種選擇是使用 Fluentbit 直接將日誌轉發到 S3。您在 <code>[OUTPUT]</code> 部分定義這一點,這是 FluentBit 傳輸容器日誌以供保留的目的地。查看<a href="https://docs.fluentbit.io/manual/pipeline/outputs/s3#worker-support">此處</a>的其他配置參數。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>[OUTPUT]
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>        Name eks_to_s3
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        Match application.* 
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        bucket $S3_BUCKET name
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        region us-east-2
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        store_dir /var/log/fluentbit
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        total_file_size 30M
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        upload_timeout 3m
+</code></pre></div>
+<h4 id="cloudwatch">僅將日誌轉發到 CloudWatch 進行短期分析<a class="headerlink" href="#cloudwatch" title="Permanent link">&para;</a></h4>
+<p>對於更關鍵的日誌,例如生產環境,您可能需要立即分析數據,請考慮將日誌轉發到 CloudWatch。您在 <code>[OUTPUT]</code> 部分定義這一點,這是 FluentBit 傳輸容器日誌以供保留的目的地。查看<a href="https://docs.fluentbit.io/manual/pipeline/outputs/cloudwatch">此處</a>的其他配置參數。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[OUTPUT]
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>        Name eks_to_cloudwatch_logs
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        Match application.*
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        region us-east-2
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        log_group_name fluent-bit-cloudwatch
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        log_stream_prefix from-fluent-bit-
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        auto_create_group On
+</code></pre></div>
+<p>但這不會立即影響您的成本節省。要獲得更多節省,您將不得不將這些日誌導出到 Amazon S3。</p>
+<h4 id="cloudwatch-amazon-s3">從 CloudWatch 導出到 Amazon S3<a class="headerlink" href="#cloudwatch-amazon-s3" title="Permanent link">&para;</a></h4>
+<p>為了長期存儲 Amazon CloudWatch 日誌,我們建議將您的 Amazon EKS CloudWatch 日誌導出到 Amazon Simple Storage Service (Amazon S3)。您可以通過<a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/S3ExportTasksConsole.html">控制台</a>或 API 創建一個導出任務,將日誌轉發到 Amazon S3 存儲桶。這樣做後,Amazon S3 提供了許多選項來進一步降低成本。您可以定義自己的 <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html">Amazon S3 生命週期規則</a>將您的日誌移動到符合您需求的存儲類別,或利用 <a href="https://aws.amazon.com/s3/storage-classes/intelligent-tiering/">Amazon S3 Intelligent-Tiering</a> 存儲類別,讓 AWS 根據您的使用模式自動將數據移動到長期存儲。更多詳情請參考此<a href="https://aws.amazon.com/blogs/containers/understanding-and-cost-optimizing-amazon-eks-control-plane-logs/">博客</a>。例如,對於您的生產環境日誌,在 CloudWatch 中保留超過 30 天後,將其導出到 Amazon S3 存儲桶。然後,如果您需要在稍後的時間查看日誌,可以使用 Amazon Athena 查詢 Amazon S3 存儲桶中的數據。</p>
+<h3 id="_6">減少日誌級別<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>為您的應用程序實踐選擇性日誌記錄。您的應用程序和節點默認輸出日誌。對於您的應用程序日誌,請調整日誌級別以與工作負載和環境的重要性保持一致。例如,下面的 java 應用程序正在輸出 <code>INFO</code> 日誌,這是典型的默認應用程序配置,根據代碼可能會產生大量日誌數據。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.log4j.*</span><span class="p">;</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LogClass</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">   </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">org</span><span class="p">.</span><span class="na">apache</span><span class="p">.</span><span class="na">log4j</span><span class="p">.</span><span class="na">Logger</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Logger</span><span class="p">.</span><span class="na">getLogger</span><span class="p">(</span><span class="n">LogClass</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">   </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="hll"><span class="w">      </span><span class="n">log</span><span class="p">.</span><span class="na">setLevel</span><span class="p">(</span><span class="n">Level</span><span class="p">.</span><span class="na">INFO</span><span class="p">);</span>
+</span><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">      </span><span class="n">log</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="s">&quot;This is a DEBUG message, check this out!&quot;</span><span class="p">);</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">      </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&quot;This is an INFO message, nothing to see here!&quot;</span><span class="p">);</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">      </span><span class="n">log</span><span class="p">.</span><span class="na">warn</span><span class="p">(</span><span class="s">&quot;This is a WARN message, investigate this!&quot;</span><span class="p">);</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">      </span><span class="n">log</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="s">&quot;This is an ERROR message, check this out!&quot;</span><span class="p">);</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">      </span><span class="n">log</span><span class="p">.</span><span class="na">fatal</span><span class="p">(</span><span class="s">&quot;This is a FATAL message, investigate this!&quot;</span><span class="p">);</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">   </span><span class="p">}</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="p">}</span>
+</code></pre></div>
+<p>在開發環境中,將日誌級別更改為 <code>DEBUG</code>,因為這可以幫助您調試問題或在它們進入生產環境之前捕捉潛在問題。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="w">      </span><span class="n">log</span><span class="p">.</span><span class="na">setLevel</span><span class="p">(</span><span class="n">Level</span><span class="p">.</span><span class="na">DEBUG</span><span class="p">);</span>
+</code></pre></div>
+<p>在生產環境中,請考慮將日誌級別修改為 <code>ERROR</code> 或 <code>FATAL</code>。這將只在您的應用程序出現錯誤時輸出日誌,從而減少日誌輸出並幫助您關注有關應用程序狀態的重要數據。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="w">      </span><span class="n">log</span><span class="p">.</span><span class="na">setLevel</span><span class="p">(</span><span class="n">Level</span><span class="p">.</span><span class="na">ERROR</span><span class="p">);</span>
+</code></pre></div>
+<p>您可以微調各種 Kubernetes 組件的日誌級別。例如,如果您使用 <a href="https://bottlerocket.dev/">Bottlerocket</a> 作為 EKS 節點操作系統,有一些配置設置允許您調整 kubelet 進程的日誌級別。下面是這種配置設置的一個片段。請注意 <code>kubelet</code> 進程的默認<a href="https://github.com/bottlerocket-os/bottlerocket/blob/3f716bd68728f7fd825eb45621ada0972d0badbb/README.md?plain=1#L528">日誌級別</a>為 <strong>2</strong>,它調整了日誌詳細程度。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">[settings.kubernetes]</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="hll"><span class="n">log-level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;2&quot;</span>
+</span><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">image-gc-high-threshold-percent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;85&quot;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">image-gc-low-threshold-percent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;80&quot;</span>
+</code></pre></div>
+<p>對於開發環境,您可以將日誌級別設置為大於 <strong>2</strong> 的值,以查看更多事件,這對於調試很有用。對於生產環境,您可以將級別設置為 <strong>0</strong>,以僅查看關鍵事件。</p>
+<h3 id="_7">利用過濾器<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>當使用默認的 EKS Fluentbit 配置將容器日誌發送到 Cloudwatch 時,FluentBit 會捕獲並發送 <strong>ALL</strong> 應用程序容器日誌,並使用 Kubernetes 元數據對其進行enrichment,如下面的 <code>[INPUT]</code> 配置塊所示。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>    [INPUT]
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>        Name                tail
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>        Tag                 application.*
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>        Exclude_Path        /var/log/containers/cloudwatch-agent*, /var/log/containers/fluent-bit*, /var/log/containers/aws-node*, /var/log/containers/kube-proxy*
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>        Path                /var/log/containers/*.log
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>        Docker_Mode         On
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>        Docker_Mode_Flush   5
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>        Docker_Mode_Parser  container_firstline
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>        Parser              docker
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>        DB                  /var/fluent-bit/state/flb_container.db
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>        Mem_Buf_Limit       50MB
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>        Skip_Long_Lines     On
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>        Refresh_Interval    10
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>        Rotate_Wait         30
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>        storage.type        filesystem
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>        Read_from_Head      ${READ_FROM_HEAD}
+</code></pre></div>
+<p>上面的 <code>[INPUT]</code> 部分正在攝取所有容器日誌。這可能會產生大量可能不必要的數據。過濾掉這些數據可以減少發送到 CloudWatch 的日誌數據量,從而降低成本。您可以在日誌輸出到 CloudWatch 之前對其應用過濾器。Fluentbit 在 <code>[FILTER]</code> 部分定義這一點。例如,過濾掉附加到日誌事件的 Kubernetes 元數據可以減少您的日誌量。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>    [FILTER]
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>        Name                nest
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>        Match               application.*
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>        Operation           lift
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>        Nested_under        kubernetes
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>        Add_prefix          Kube.
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    [FILTER]
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>        Name                modify
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>        Match               application.*
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>        Remove              Kube.&lt;Metadata_1&gt;
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>        Remove              Kube.&lt;Metadata_2&gt;
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>        Remove              Kube.&lt;Metadata_3&gt;
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>    [FILTER]
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>        Name                nest
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>        Match               application.*
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>        Operation           nest
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>        Wildcard            Kube.*
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>        Nested_under        kubernetes
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>        Remove_prefix       Kube.
+</code></pre></div>
+<h2 id="_8">指標<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p><a href="https://aws-observability.github.io/observability-best-practices/signals/metrics/">指標</a>提供有關系統性能的寶貴信息。通過將所有系統相關或可用資源指標集中在一個中心位置,您可以獲得比較和分析性能數據的能力。這種集中式方法使您能夠做出更明智的戰略決策,如擴展或縮減資源。此外,指標在評估資源健康狀況方面發揮關鍵作用,允許您在必要時採取主動措施。通常,可觀測性成本隨遙測數據收集和保留而增加。以下是一些您可以實施的成本降低策略:只收集重要的指標,減少遙測數據的基數,並微調遙測數據收集的粒度。</p>
+<h3 id="_9">監控重要的指標並只收集您需要的<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p>第一個成本降低策略是減少您正在收集的指標數量,從而降低保留成本。</p>
+<ol>
+<li>首先,從您和/或您的利益相關方的要求出發,確定<a href="https://aws-observability.github.io/observability-best-practices/guides/#monitor-what-matters">最重要的指標</a>。成功指標因人而異!知道什麼是<em>好</em>,並據此進行測量。</li>
+<li>考慮深入研究您正在支持的工作負載,並確定其關鍵績效指標(KPI)a.k.a'黃金信號'。這些應該與業務和利益相關方的要求保持一致。使用 Amazon CloudWatch 和指標數學計算 SLI、SLO 和 SLA 對於管理服務可靠性至關重要。遵循此<a href="https://aws-observability.github.io/observability-best-practices/guides/operational/business/key-performance-indicators/#10-understanding-kpis-golden-signals">指南</a>中概述的最佳實踐,有效監控和維護您的 EKS 環境的性能。</li>
+<li>然後繼續通過基礎架構的不同層面,<a href="https://aws-observability.github.io/observability-best-practices/signals/metrics/#correlate-with-operational-metric-data">連接和相關</a>EKS 集群、節點和其他基礎架構指標與您的工作負載 KPI。將您的業務指標和運營指標存儲在一個您可以將它們相關起來並根據觀察到的影響得出結論的系統中。</li>
+<li>EKS 公開了來自控制平面、集群 kube-state-metrics、pod 和節點的指標。所有這些指標的相關性取決於您的需求,但您可能不需要跨不同層面的每個單一指標。您可以使用此<a href="https://aws-observability.github.io/observability-best-practices/guides/containers/oss/eks/best-practices-metrics-collection/">EKS 基本指標</a>指南作為監控 EKS 集群和您的工作負載整體健康狀況的基線。</li>
+</ol>
+<p>以下是一個 prometheus 抓取配置示例,我們使用 <code>relabel_config</code> 只保留 kubelet 指標,並使用 <code>metric_relabel_config</code> 丟棄所有容器指標。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="w">  </span><span class="nt">kubernetes_sd_configs</span><span class="p">:</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">endpoints</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="nt">namespaces</span><span class="p">:</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">      </span><span class="nt">names</span><span class="p">:</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kube-system</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span><span class="nt">bearer_token_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/run/secrets/kubernetes.io/serviceaccount/token</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span><span class="nt">tls_config</span><span class="p">:</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="nt">insecure_skip_verify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">  </span><span class="nt">relabel_configs</span><span class="p">:</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">__meta_kubernetes_service_label_k8s_app</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubelet</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">    </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">keep</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">  </span><span class="nt">metric_relabel_configs</span><span class="p">:</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">__name__</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container_(network_tcp_usage_total|network_udp_usage_total|tasks_state|cpu_load_average_10s)</span>
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="w">    </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">drop</span>
+</code></pre></div>
+<h3 id="_10">在適用的地方減少基數<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p>基數指的是特定指標集的數據值的唯一性,以及它的維度(例如 prometheus 標籤)。高基數指標具有許多維度,每個維度指標組合都具有更高的唯一性。較高的基數會導致更大的指標遙測數據大小和存儲需求,從而增加成本。</p>
+<p>在下面的高基數示例中,我們看到指標 Latency 具有維度 RequestID、CustomerID 和 Service,每個維度都有許多唯一值。基數是每個維度可能值的組合數量的度量。在 Prometheus 中,每組唯一的維度/標籤都被視為一個新的指標,因此高基數意味著更多指標。</p>
+<p><img alt="high cardinality" src="../../../images/high-cardinality.png" /></p>
+<p>在具有許多指標和每個指標維度/標籤(集群、命名空間、服務、pod、容器等)的 EKS 環境中,基數往往會增長。為了優化成本,請仔細考慮您正在收集的指標的基數。例如,如果您正在為可視化而在集群級別聚合特定指標,那麼您可以丟棄較低層級的標籤,如命名空間標籤。</p>
+<p>為了在 prometheus 中識別高基數指標,您可以運行以下 PROMQL 查詢來確定哪些抓取目標具有最高的指標數量(基數):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nv">topk_max</span><span class="o">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="kr">max_over_time</span><span class="o">(</span><span class="nv">scrape_samples_scraped</span><span class="p">[</span><span class="s">1h</span><span class="p">]</span><span class="o">))</span>
+</code></pre></div>
+<p>以下 PROMQL 查詢可以幫助您確定哪些抓取目標具有最高的指標變化(在給定的抓取中創建了多少新的指標系列)率:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nv">topk_max</span><span class="o">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="kr">max_over_time</span><span class="o">(</span><span class="nv">scrape_series_added</span><span class="p">[</span><span class="s">1h</span><span class="p">]</span><span class="o">))</span>
+</code></pre></div>
+<p>如果您使用 grafana,您可以使用 Grafana Lab 的 Mimirtool 分析您的 grafana 儀表板和 prometheus 規則,以識別未使用的高基數指標。按照<a href="https://grafana.com/docs/grafana-cloud/account-management/billing-and-usage/control-prometheus-metrics-usage/usage-analysis-mimirtool/?pg=blog&amp;plcmt=body-txt#analyze-and-reduce-metrics-usage-with-grafana-mimirtool">此指南</a>中的說明使用 <code>mimirtool analyze</code> 和 <code>mimirtool analyze prometheus</code> 命令來識別您的儀表板中未引用的活動指標。</p>
+<h3 id="_11">考慮指標粒度<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<p>每秒收集指標與每分鐘收集指標相比,可能會對收集和存儲的遙測量產生很大影響,從而增加成本。確定合理的抓取或指標收集間隔,在足夠的粒度以查看瞬態問題和足夠低的成本效率之間取得平衡。減少用於容量規劃和較長時間窗口分析的指標的粒度。</p>
+<p>以下是 AWS 開源版 OpenTelemetry (ADOT) EKS 插件收集器<a href="https://docs.aws.amazon.com/eks/latest/userguide/deploy-deployment.html">配置</a>的一個片段。</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>全局 prometheus 抓取間隔設置為 15 秒。這個抓取間隔可以增加,從而減少在 prometheus 中收集的指標數據量。</p>
+</div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">opentelemetry.io/v1alpha1</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OpenTelemetryCollector</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-collector-amp</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="nn">...</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">  </span><span class="nt">config</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">    </span><span class="no">extensions:</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">      </span><span class="no">sigv4auth:</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">        </span><span class="no">region: &quot;&lt;YOUR_AWS_REGION&gt;&quot;</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">        </span><span class="no">service: &quot;aps&quot;</span>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">    </span><span class="no">receivers:</span>
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">      </span><span class="no">#</span>
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">      </span><span class="no"># Scrape configuration for the Prometheus Receiver</span>
+<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w">      </span><span class="no"># This is the same configuration used when Prometheus is installed using the community Helm chart</span>
+<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w">      </span><span class="no"># </span>
+<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="w">      </span><span class="no">prometheus:</span>
+<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="w">        </span><span class="no">config:</span>
+<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="w">          </span><span class="no">global:</span>
+<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="hll"><span class="w">  </span><span class="nt">scrape_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15s</span>
+</span><a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">scrape_timeout</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+</code></pre></div>
+<h2 id="_12">追蹤<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<p>與追蹤相關的主要成本源自追蹤存儲生成。通過追蹤,目標是收集足夠的數據來診斷和理解性能方面的問題。但是,由於 X-Ray 追蹤成本基於轉發到 X-Ray 的數據,在數據轉發後刪除追蹤不會降低您的成本。讓我們檢討一下如何在保持數據以進行適當分析的同時降低追蹤成本。</p>
+<h3 id="_13">應用採樣規則<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<p>X-Ray 採樣率默認較為保守。定義採樣規則,您可以控制收集的數據量。這將提高性能效率,同時降低成本。通過<a href="https://docs.aws.amazon.com/xray/latest/devguide/xray-console-sampling.html#xray-console-custom">降低採樣率</a>,您可以只收集工作負載需要的請求跟蹤,同時保持較低的成本結構。</p>
+<p>例如,您有一個 java 應用程序,您想調試一個有問題的路由的所有請求的跟蹤。</p>
+<p><strong>通過 SDK 配置從 JSON 文件加載採樣規則</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="nt">&quot;rules&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;debug-eks&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">      </span><span class="nt">&quot;host&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">      </span><span class="nt">&quot;http_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">      </span><span class="nt">&quot;url_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/history/*&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">      </span><span class="nt">&quot;fixed_target&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">      </span><span class="nt">&quot;rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">      </span><span class="nt">&quot;service_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;debug-eks&quot;</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w">  </span><span class="p">],</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">  </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="nt">&quot;fixed_target&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="w">    </span><span class="nt">&quot;rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span>
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>通過控制台</strong></p>
+<p><img alt="console" src="../../../images/console.png" /></p>
+<h3 id="aws-distro-for-opentelemetry-adot">應用 AWS Distro for OpenTelemetry (ADOT) 的尾部採樣<a class="headerlink" href="#aws-distro-for-opentelemetry-adot" title="Permanent link">&para;</a></h3>
+<p>ADOT 尾部採樣允許您控制進入服務的追蹤量。但是,尾部採樣允許您在請求中的所有 span 完成後定義採樣策略,而不是在開始時。這進一步限制了轉發到 CloudWatch 的原始數據量,從而降低成本。</p>
+<p>例如,如果您對登陸頁面的流量採樣 1%,對支付頁面的請求採樣 10%,這可能會在 30 分鐘的時間內留下 300 個追蹤。使用 ADOT 尾部採樣規則過濾特定錯誤,您可能只剩下 200 個追蹤,這減少了存儲的追蹤數量。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nt">processors</span><span class="p">:</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="nt">groupbytrace</span><span class="p">:</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span><span class="nt">wait_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">    </span><span class="nt">num_traces</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span><span class="w"> </span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="hll"><span class="w">    </span><span class="nt">tail_sampling</span><span class="p">:</span>
+</span><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">    </span><span class="nt">decision_wait</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1s</span><span class="w"> </span><span class="c1"># This value should be smaller than wait_duration</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">    </span><span class="nt">policies</span><span class="p">:</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.....</span><span class="w"> </span><span class="c1"># Applicable policies**</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">  </span><span class="nt">batch/tracesampling</span><span class="p">:</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">    </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0s</span><span class="w"> </span><span class="c1"># No need to wait more since this will happen in previous processors</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">    </span><span class="nt">send_batch_max_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8196</span><span class="w"> </span><span class="c1"># This will still allow us to limit the size of the batches sent to subsequent exporters</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="nt">service</span><span class="p">:</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="w">  </span><span class="nt">pipelines</span><span class="p">:</span>
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="w">    </span><span class="nt">traces/tailsampling</span><span class="p">:</span>
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="w">      </span><span class="nt">receivers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">otlp</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="w">      </span><span class="nt">processors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">groupbytrace</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">tail_sampling</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">batch/tracesampling</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="w">      </span><span class="nt">exporters</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">awsxray</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<h3 id="amazon-s3">利用 Amazon S3 存儲選項<a class="headerlink" href="#amazon-s3" title="Permanent link">&para;</a></h3>
+<p>您應該利用 AWS S3 存儲桶及其不同的存儲類別來存儲追蹤。在保留期到期之前,將追蹤導出到 S3。使用 Amazon S3 生命週期規則將追蹤數據移動到符合您要求的存儲類別。</p>
+<p>例如,如果您有 90 天前的追蹤,<a href="https://aws.amazon.com/s3/storage-classes/intelligent-tiering/">Amazon S3 Intelligent-Tiering</a>可以根據您的使用模式自動將數據移動到長期存儲。您可以使用 <a href="https://aws.amazon.com/athena/">Amazon Athena</a>查詢 Amazon S3 中的數據,如果您需要稍後參考追蹤。這可以進一步降低您的分佈式追蹤成本。</p>
+<h2 id="_14">其他資源:<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://aws-observability.github.io/observability-best-practices/guides/">可觀測性最佳實踐指南</a></li>
+<li><a href="https://aws-observability.github.io/observability-best-practices/guides/containers/oss/eks/">最佳實踐指標收集</a></li>
+<li><a href="https://www.youtube.com/watch?v=zZPzXEBW4P8">AWS re:Invent 2022 - 亞馬遜的可觀測性最佳實踐(COP343)</a></li>
+<li><a href="https://www.youtube.com/watch?v=YiegAlC_yyc">AWS re:Invent 2022 - 可觀測性:現代應用程序的最佳實踐(COP344)</a></li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u8907\u88fd", "clipboard.copy": "\u8907\u88fd", "search.result.more.one": "\u6b64\u9801\u5c1a\u6709 1 \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.more.other": "\u6b64\u9801\u5c1a\u6709 # \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.none": "\u6c92\u6709\u7b26\u5408\u7684\u9805\u76ee", "search.result.one": "\u627e\u5230 1 \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.other": "\u627e\u5230 # \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.placeholder": "\u6253\u5b57\u9032\u884c\u641c\u5c0b", "search.result.term.missing": "\u7f3a\u5c11\u5b57\u8a5e", "select.version": "\u9078\u64c7\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+    
+  </body>
+</html>

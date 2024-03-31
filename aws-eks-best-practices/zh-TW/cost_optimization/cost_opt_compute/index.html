@@ -1,0 +1,2560 @@
+
+<!doctype html>
+<html lang="zh-TW" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../cfm_framework/">
+      
+      
+        <link rel="next" href="../cost_opt_networking/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>計算 - EKS最佳實踐指南</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-VQGL8B2FH8"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-VQGL8B2FH8",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-VQGL8B2FH8",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#-" class="md-skip">
+          跳轉到
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="頁首">
+    <a href="../../" title="EKS最佳實踐指南" class="md-header__button md-logo" aria-label="EKS最佳實踐指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EKS最佳實踐指南
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              計算
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="選擇語言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../cost_optimization/cost_opt_compute/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../ko/cost_optimization/cost_opt_compute/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../zh/cost_optimization/cost_opt_compute/" hreflang="zh" class="md-select__link">
+              中文（简体）
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh-TW" class="md-select__link">
+              中文（繁體）
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜尋" placeholder="搜尋" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="搜尋">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清除" aria-label="清除" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜尋引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-eks-best-practices" title="前往倉庫" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="導覽列" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="EKS最佳實踐指南" class="md-nav__button md-logo" aria-label="EKS最佳實踐指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    EKS最佳實踐指南
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-eks-best-practices" title="前往倉庫" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    指南
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    簡介
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    安全
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            安全
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/iam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    身份和訪問管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/pods/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pod 安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/multitenancy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多租戶
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/detective/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    偵查控制
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/network/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據加密和密鑰管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/runtime/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    運行時安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/hosts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基礎設施安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/compliance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    監管合規性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/incidents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    事故響應和取證
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/image/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    映像安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/multiaccount/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多帳戶策略
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    叢集自動擴展
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            叢集自動擴展
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../karpenter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Karpenter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cluster-autoscaling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集自動擴展器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可靠性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            可靠性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reliability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reliability/docs/application/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    應用程式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reliability/docs/controlplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reliability/docs/dataplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Windows 容器
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Windows 容器
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/ami/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AMI 管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/gmsa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 容器的 gMSA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/hardening/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows Server 強化
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    掃描 Windows 映像
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/licensing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 版本和許可
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    日誌記錄
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    監控 Windows 容器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 網絡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/oom/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    內存和系統管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/patching/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基礎設施管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/scheduling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    調度
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 容器的 Pod 安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存儲選項
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    網絡
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            網絡
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/subnets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VPC 和子網考量
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/vpc-cni/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon VPC CNI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/ip-optimization-strategies/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    優化 IP 地址利用率
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/ipv6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    運行 IPv6 叢集
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/custom-networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    自訂網路
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/prefix-mode/index_linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Linux 的前綴模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/prefix-mode/index_windows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 的前綴模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/sgpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    每個 Pod 的安全組
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/loadbalancing/loadbalancing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    負載均衡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡性能問題監控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可擴展性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            可擴展性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/control-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/data-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/cluster-services/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集服務
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/workloads/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    工作負載
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/scaling_theory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    擴展背後的理論
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/kcp_monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面監控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/node_efficiency/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    節點效率和擴展
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/kubernetes_slos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes SLO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/quotas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    已知限制和服務配額
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../upgrades/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集升級
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    成本優化
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            成本優化
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cfm_framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    雲端財務管理框架
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    計算
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    計算
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      合適調整您的工作負載
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      減少消耗
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      減少未使用的容量
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="減少未使用的容量">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#karpenter-cluster-autoscaler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Karpenter 和 Cluster Autoscaler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-autoscaler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cluster Autoscaler 優先擴展
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#descheduler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Descheduler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#karpenter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Karpenter 整合
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-autoscaler_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      通過調整 Cluster Autoscaler 參數來刪除利用不足的節點
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-autoscaler-karpenter" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Cluster Autoscaler 和 Karpenter 標記節點
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      多租戶集群
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      計劃的自動縮放
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      優化計算容量類型
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="優化計算容量類型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spot" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spot
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-edp" class="md-nav__link">
+    <span class="md-ellipsis">
+      節省方案、預留實例和 AWS EDP
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      按需
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fargate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fargate 計算
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      優化計算使用
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_opt_networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_opt_storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存儲
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost_opt_observability/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    可觀察性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      合適調整您的工作負載
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      減少消耗
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      減少未使用的容量
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="減少未使用的容量">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#karpenter-cluster-autoscaler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Karpenter 和 Cluster Autoscaler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-autoscaler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cluster Autoscaler 優先擴展
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#descheduler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Descheduler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#karpenter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Karpenter 整合
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-autoscaler_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      通過調整 Cluster Autoscaler 參數來刪除利用不足的節點
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-autoscaler-karpenter" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Cluster Autoscaler 和 Karpenter 標記節點
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      多租戶集群
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      計劃的自動縮放
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      優化計算容量類型
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="優化計算容量類型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spot" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spot
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-edp" class="md-nav__link">
+    <span class="md-ellipsis">
+      節省方案、預留實例和 AWS EDP
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      按需
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fargate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fargate 計算
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      優化計算使用
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="-">成本優化 - 計算和自動擴展<a class="headerlink" href="#-" title="Permanent link">&para;</a></h1>
+<p>作為開發人員,您會對應用程式的資源需求(如 CPU 和記憶體)做出估計,但如果您不持續調整它們,它們可能會過時,這可能會增加成本並降低性能和可靠性。持續調整應用程式的資源需求比第一次就正確更重要。</p>
+<p>以下提到的最佳實踐將幫助您構建和操作成本意識的工作負載,同時實現業務目標,最大限度地降低成本,並使您的組織最大化投資回報。優化集群計算成本的重要性順序如下:</p>
+<ol>
+<li>合適調整工作負載</li>
+<li>減少未使用的容量</li>
+<li>優化計算容量類型(如 Spot)和加速器(如 GPU)</li>
+</ol>
+<h2 id="_1">合適調整您的工作負載<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>在大多數 EKS 集群中,大部分成本來自用於運行容器化工作負載的 EC2 實例。如果不了解您的工作負載需求,您將無法合適調整您的計算資源。這就是為什麼使用適當的請求和限制並根據需要調整這些設置非常重要。此外,依賴項(如實例大小和存儲選擇)可能會影響工作負載性能,從而對成本和可靠性產生各種意外後果。</p>
+<p><em>請求</em>應與實際利用率保持一致。如果容器的請求過高,將會有未使用的容量,這是總集群成本的一個重要因素。每個 pod 中的容器(如應用程式和 sidecar)都應設置自己的請求和限制,以確保 pod 限制的總和盡可能準確。</p>
+<p>利用諸如 <a href="https://www.youtube.com/watch?v=DfmQWYiwFDk">Goldilocks</a>、<a href="https://www.youtube.com/watch?v=uITOzpf82RY">KRR</a> 和 <a href="https://aws.amazon.com/blogs/containers/aws-and-kubecost-collaborate-to-deliver-cost-monitoring-for-eks-customers/">Kubecost</a> 等工具來估計容器的資源請求和限制。根據應用程式的性質、性能/成本要求和複雜性,您需要評估哪些指標最適合擴展,應用程式性能在什麼時候會下降(飽和點),以及如何相應地調整請求和限制。請參考<a href="https://aws.github.io/aws-eks-best-practices/scalability/docs/node_efficiency/#application-right-sizing">應用程式合適調整</a>以獲取更多指導。</p>
+<p>我們建議使用水平 Pod 自動縮放器 (HPA) 來控制應該運行的應用程式副本數量,使用垂直 Pod 自動縮放器 (VPA) 來調整每個副本所需的請求和限制,以及使用 <a href="http://karpenter.sh/">Karpenter</a> 或 <a href="https://github.com/kubernetes/autoscaler">Cluster Autoscaler</a> 等節點自動縮放器來持續調整集群中的總節點數量。本文檔後面部分記錄了使用 Karpenter 和 Cluster Autoscaler 進行成本優化的技術。</p>
+<p>垂直 Pod 自動縮放器可以調整分配給容器的請求和限制,使工作負載以最佳方式運行。您應該以審核模式運行 VPA,這樣它就不會自動進行更改並重新啟動您的 pod。它將根據觀察到的指標提出更改建議。對於任何影響生產工作負載的更改,您都應該先在非生產環境中進行審查和測試,因為這些更改可能會影響應用程式的可靠性和性能。</p>
+<h2 id="_2">減少消耗<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>節省資金的最佳方法是配置更少的資源。一種方法是根據當前需求調整工作負載。您應該從確保您的工作負載定義了它們的需求並動態擴展開始任何成本優化工作。這將需要從您的應用程式獲取指標,並設置配置,如 <a href="https://kubernetes.io/docs/tasks/run-application/configure-pdb/"><code>PodDisruptionBudgets</code></a> 和 <a href="https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/deploy/pod_readiness_gate/">Pod Readiness Gates</a>，以確保您的應用程式可以安全地動態擴展和縮減。</p>
+<p>水平 Pod 自動縮放器是一個靈活的工作負載自動縮放器,可以根據性能和可靠性要求調整所需的副本數量。它有一個靈活的模型,可以根據 CPU、記憶體或自定義指標(如隊列深度、連接到 pod 的數量等)來定義何時擴展和縮減。</p>
+<p>Kubernetes Metrics Server 可以啟用對內置指標(如 CPU 和記憶體使用率)的縮放,但如果您想根據其他指標(如 Amazon CloudWatch 或 SQS 隊列深度)進行縮放,您應該考慮使用事件驅動自動縮放項目,如 <a href="https://keda.sh/">KEDA</a>。請參考<a href="https://aws.amazon.com/blogs/mt/proactive-autoscaling-of-kubernetes-workloads-with-keda-using-metrics-ingested-into-amazon-cloudwatch/">此博客文章</a>了解如何將 KEDA 與 CloudWatch 指標一起使用。如果您不確定要監控和縮放哪些指標,請查看<a href="https://aws-observability.github.io/observability-best-practices/guides/#monitor-what-matters">關於監控重要指標的最佳實踐</a>。</p>
+<p>減少工作負載消耗會在集群中產生多餘的容量,並通過適當的自動縮放配置允許您自動縮減節點並減少總支出。我們建議您不要嘗試手動優化計算容量。Kubernetes 調度器和節點自動縮放器被設計來為您處理這個過程。</p>
+<h2 id="_3">減少未使用的容量<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>在確定了應用程式的正確大小並減少了過多的請求後,您可以開始減少配置的計算容量。如果您已經按照上述部分採取了正確的措施,您應該能夠動態地做到這一點。AWS 中使用的兩個主要節點自動縮放器如下。</p>
+<h3 id="karpenter-cluster-autoscaler">Karpenter 和 Cluster Autoscaler<a class="headerlink" href="#karpenter-cluster-autoscaler" title="Permanent link">&para;</a></h3>
+<p>Karpenter 和 Kubernetes Cluster Autoscaler 都將根據創建或刪除 pod 以及計算需求的變化來調整集群中的節點數量。它們的主要目標是相同的,但 Karpenter 採取了不同的節點管理配置和取消配置方法,這可以幫助降低成本並優化整個集群的使用情況。</p>
+<p>隨著集群規模的增長和工作負載種類的增加,預先配置節點組和實例變得越來越困難。就像調整工作負載請求一樣,設置一個初始基線並根據需要持續調整非常重要。</p>
+<h3 id="cluster-autoscaler">Cluster Autoscaler 優先擴展<a class="headerlink" href="#cluster-autoscaler" title="Permanent link">&para;</a></h3>
+<p>Kubernetes Cluster Autoscaler 通過根據應用程式的擴展和縮減來擴展和縮減節點組(稱為節點組)來工作。如果您不動態縮放工作負載,Cluster Autoscaler 將無法幫助您節省資金。Cluster Autoscaler 要求集群管理員事先為工作負載創建節點組。節點組需要配置為使用具有相同"配置文件"的實例,即大致相同的 CPU 和記憶體。</p>
+<p>您可以有多個節點組,Cluster Autoscaler 可以配置為設置優先縮放級別,每個節點組可以包含不同大小的節點。節點組可以具有不同的容量類型,優先擴展器可用於首先縮放較便宜的組。</p>
+<p>以下是使用 <code>ConfigMap</code> 優先使用保留容量而不是按需實例的集群配置示例片段。您可以使用相同的技術來優先使用 Graviton 或 Spot 實例而不是其他類型。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eksctl.io/v1alpha5</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterConfig</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-cluster</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nt">managedNodeGroups</span><span class="p">:</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">managed-ondemand</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="nt">minSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nt">maxSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="nt">instanceType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">m5.xlarge</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">managed-reserved</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="nt">minSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="nt">maxSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="nt">instanceType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c5.2xlarge</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster-autoscaler-priority-expander</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kube-system</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nt">data</span><span class="p">:</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">priorities</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|-</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="no">10:</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="no">- .*ondemand.*</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="no">50:</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">      </span><span class="no">- .*reserved.*</span>
+</code></pre></div>
+<p>使用節點組可以幫助底層計算資源按預期執行,例如跨 AZ 分佈節點,但並非所有工作負載都有相同的要求或期望,最好讓應用程式明確聲明其要求。有關 Cluster Autoscaler 的更多信息,請參見<a href="https://aws.github.io/aws-eks-best-practices/cluster-autoscaling/">最佳實踐部分</a>。</p>
+<h3 id="descheduler">Descheduler<a class="headerlink" href="#descheduler" title="Permanent link">&para;</a></h3>
+<p>Cluster Autoscaler 可以根據需要調度新 pod 或節點利用率下降來增加或減少集群容量。它不會在 pod 調度到節點後採取整體性的 pod 放置視角。如果您正在使用 Cluster Autoscaler,您還應該查看 <a href="https://github.com/kubernetes-sigs/descheduler">Kubernetes descheduler</a>,以避免浪費集群中的容量。</p>
+<p>如果您的集群中有 10 個節點,每個節點的利用率為 60%,則您沒有使用集群中 40% 的配置容量。使用 Cluster Autoscaler,您可以將每個節點的利用率閾值設置為 60%,但這只會在利用率低於 60% 時嘗試縮減單個節點。</p>
+<p>使用 descheduler,它可以在 pod 已經調度或節點已經添加到集群後查看集群容量和利用率。它試圖保持集群的總容量高於指定的閾值。它還可以根據節點污點或新加入集群的節點刪除 pod,以確保 pod 在其最佳計算環境中運行。請注意,descheduler 不會調度被驅逐 pod 的替換,而是依賴默認調度器來完成這項工作。</p>
+<h3 id="karpenter">Karpenter 整合<a class="headerlink" href="#karpenter" title="Permanent link">&para;</a></h3>
+<p>Karpenter 採取了一種"無組"的節點管理方法。這種方法對於不同類型的工作負載更加靈活,需要集群管理員進行更少的前期配置。與預先定義組並根據工作負載需求擴展每個組不同,Karpenter 使用配置器和節點模板來定義可以創建的 EC2 實例類型以及實例的設置。</p>
+<p>裝箱是利用更多實例資源的做法,通過將更多工作負載打包到更少的、最佳大小的實例上。雖然這有助於通過只配置工作負載使用的資源來降低計算成本,但它也有一些權衡。它可能需要更長的時間來啟動新的工作負載,因為在大規模擴展事件期間需要向集群添加容量。在設置裝箱時,請考慮成本優化、性能和可用性之間的平衡。</p>
+<p>Karpenter 可以持續監控和裝箱以提高實例資源利用率並降低計算成本。Karpenter 還可以為您的工作負載選擇更具成本效益的工作節點。這可以通過在配置器中打開"整合"標誌來實現(下面的示例代碼片段)。下面的示例顯示了一個啟用整合的配置器。在撰寫本指南時,Karpenter 不會用更便宜的 Spot 實例替換正在運行的 Spot 實例。有關 Karpenter 整合的更多詳細信息,請參考<a href="https://aws.amazon.com/blogs/containers/optimizing-your-kubernetes-compute-costs-with-karpenter-consolidation/">此博客</a>。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">karpenter.sh/v1alpha5</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Provisioner</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">enable-binpacking</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="nt">consolidation</span><span class="p">:</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<p>對於可能不可中斷的工作負載,例如沒有檢查點的長時間批處理作業,請考慮使用 <code>do-not-evict</code> 註釋對 pod 進行註釋。通過選擇不驅逐 pod,您告訴 Karpenter 它不應該自願刪除包含此 pod 的節點。但是,如果在節點正在排空時添加了 <code>do-not-evict</code> pod,剩餘的 pod 仍將被驅逐,但該 pod 將阻止終止,直到將其刪除。在任何情況下,該節點都將被隔離,以防止將其他工作調度到該節點。以下是一個示例,展示如何設置註釋:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">label-demo</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">production</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">  </span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="hll"><span class="w">    </span><span class="s">&quot;karpenter.sh/do-not-evict&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
+</span><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+</code></pre></div>
+<h3 id="cluster-autoscaler_1">通過調整 Cluster Autoscaler 參數來刪除利用不足的節點<a class="headerlink" href="#cluster-autoscaler_1" title="Permanent link">&para;</a></h3>
+<p>節點利用率定義為請求資源之和除以容量。默認情況下,<code>scale-down-utilization-threshold</code> 設置為 50%。此參數可以與 <code>scale-down-unneeded-time</code> 一起使用,後者確定節點在被縮減之前應該保持未使用的時間 - 默認為 10 分鐘。縮減節點上仍在運行的 pod 將由 kube-scheduler 調度到其他節點。調整這些設置可以幫助刪除利用不足的節點,但重要的是您要先測試這些值,以免過早強制集群縮減。</p>
+<p>您可以通過確保受昂貴驅逐保護的 pod 具有 Cluster Autoscaler 識別的標籤來防止縮減發生。為此,請確保具有昂貴驅逐 pod 具有註釋 <code>cluster-autoscaler.kubernetes.io/safe-to-evict=false</code>。以下是設置註釋的示例 yaml:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">label-demo</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">production</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">  </span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="hll"><span class="w">    </span><span class="s">&quot;cluster-autoscaler.kubernetes.io/safe-to-evict&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;false&quot;</span>
+</span><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+</code></pre></div>
+<h3 id="cluster-autoscaler-karpenter">使用 Cluster Autoscaler 和 Karpenter 標記節點<a class="headerlink" href="#cluster-autoscaler-karpenter" title="Permanent link">&para;</a></h3>
+<p>AWS 資源<a href="https://docs.aws.amazon.com/tag-editor/latest/userguide/tagging.html">標籤</a>用於組織您的資源,並在詳細級別跟踪您的 AWS 成本。它們與成本跟踪的 Kubernetes 標籤沒有直接關係。建議從 Kubernetes 資源標籤開始,並利用像 <a href="https://aws.amazon.com/blogs/containers/aws-and-kubecost-collaborate-to-deliver-cost-monitoring-for-eks-customers/">Kubecost</a> 這樣的工具來獲取基於 Kubernetes 標籤在 pod、命名空間等上的基礎設施成本報告。</p>
+<p>工作節點需要有標籤,以在 AWS Cost Explorer 中顯示計費信息。對於 Cluster Autoscaler,使用<a href="https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html">啟動模板</a>在托管節點組內標記您的工作節點。對於自管理節點組,使用 <a href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-tagging.html">EC2 自動縮放組</a>標記您的實例。對於 Karpenter 配置的實例,使用<a href="https://karpenter.sh/docs/concepts/nodeclasses/#spectags">節點模板中的 spec.tags</a>進行標記。</p>
+<h3 id="_4">多租戶集群<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>在與不同團隊共享的集群上工作時,您可能無法看到在同一節點上運行的其他工作負載。雖然資源請求可以幫助隔離一些"吵雜鄰居"問題,如 CPU 共享,但它們可能無法隔離所有資源邊界,如磁盤 I/O 耗盡。不能隔離或限制工作負載使用的每個可消耗資源。消耗共享資源速度高於其他工作負載的工作負載應該通過節點<a href="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/">污點和容忍</a>進行隔離。這種工作負載的另一種高級技術是<a href="https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/#static-policy">CPU 固定</a>,它可以確保容器獲得專有 CPU 而不是共享 CPU。</p>
+<p>在節點級別隔離工作負載可能更昂貴,但您可能能夠調度<a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-qos/#besteffort">最佳努力</a>作業,或利用<a href="https://aws.amazon.com/ec2/pricing/reserved-instances/">預留實例</a>、<a href="https://aws.amazon.com/ec2/graviton/">Graviton 處理器</a>或<a href="https://aws.amazon.com/ec2/spot/">Spot</a>等額外節省。</p>
+<p>共享集群也可能有集群級別的資源限制,如 IP 耗盡、Kubernetes 服務限制或 API 縮放請求。您應該查看<a href="https://aws.github.io/aws-eks-best-practices/scalability/docs/control-plane/">可擴展性最佳實踐指南</a>以確保您的集群避免這些限制。</p>
+<p>您可以在命名空間或 Karpenter 配置器級別隔離資源。<a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">資源配額</a>提供了一種設置命名空間中工作負載可以使用的資源限制的方法。這可以作為一個很好的初步防護措施,但應該不斷評估,以確保它不會人為地限制工作負載的擴展。</p>
+<p>Karpenter 配置器可以<a href="https://karpenter.sh/docs/concepts/nodepools/#speclimitsresources">設置集群中某些可消耗資源</a>的限制(如 CPU、GPU),但您需要配置租戶應用程式以使用適當的配置器。這可以防止單個配置器在集群中創建太多節點,但應該不斷評估,以確保限制設置得不太低,從而阻止工作負載擴展。</p>
+<h3 id="_5">計劃的自動縮放<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>您可能需要在週末和非工作時間縮減集群。這對於測試和非生產集群特別相關,在它們不使用時,您希望將其縮減到零。像 <a href="https://github.com/kubecost/cluster-turndown">cluster-turndown</a> 和 <a href="https://codeberg.org/hjacobs/kube-downscaler">kube-downscaler</a> 這樣的解決方案可以根據 cron 計劃將副本縮減到零。</p>
+<h2 id="_6">優化計算容量類型<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>在優化集群中的總計算容量並利用裝箱之後,您應該查看您在集群中配置的計算類型以及您如何支付這些資源。AWS 有<a href="https://aws.amazon.com/savingsplans/compute-pricing/">計算節省方案</a>可以降低您的計算成本,我們將其歸類為以下容量類型:</p>
+<ul>
+<li>Spot</li>
+<li>節省方案</li>
+<li>按需</li>
+<li>Fargate</li>
+</ul>
+<p>每種容量類型都有不同的管理開銷、可用性和長期承諾權衡,您需要決定哪種適合您的環境。任何環境都不應該依賴單一容量類型,您可以在單個集群中混合使用多種運行類型,以優化特定工作負載要求和成本。</p>
+<h3 id="spot">Spot<a class="headerlink" href="#spot" title="Permanent link">&para;</a></h3>
+<p><a href="https://aws.amazon.com/ec2/spot/">Spot</a> 容量類型從可用區的備用容量中配置 EC2 實例。Spot 提供最大的折扣 - 高達 90% - 但這些實例可能會在需要它們的其他地方中斷。此外,可能並非始終有容量來配置新的 Spot 實例,並且現有的 Spot 實例可能會在<a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html">2 分鐘中斷通知</a>後被收回。如果您的應用程式有長時間的啟動或關閉過程,Spot 實例可能不是最佳選擇。</p>
+<p>Spot 計算應該使用各種實例類型,以降低沒有 Spot 容量可用的可能性。需要處理實例中斷,以安全地關閉節點。使用 Karpenter 或托管節點組配置的節點會自動支持<a href="https://aws.github.io/aws-eks-best-practices/karpenter/#enable-interruption-handling-when-using-spot">實例中斷通知</a>。如果您使用自管理節點,您將需要單獨運行<a href="https://github.com/aws/aws-node-termination-handler">節點終止處理程序</a>來優雅地關閉 Spot 實例。</p>
+<p>在單個集群中平衡 Spot 和按需實例是可能的。使用 Karpenter,您可以創建<a href="https://karpenter.sh/docs/concepts/scheduling/#on-demandspot-ratio-split">加權配置器</a>來實現不同容量類型的平衡。使用 Cluster Autoscaler,您可以創建<a href="https://aws.amazon.com/blogs/containers/amazon-eks-now-supports-provisioning-and-managing-ec2-spot-instances-in-managed-node-groups/">混合節點組,包含 Spot 和按需或預留實例</a>。</p>
+<p>以下是使用 Karpenter 優先使用 Spot 實例而不是按需實例的示例。在創建配置器時,您可以指定 Spot、按需或兩者(如下所示)。當您同時指定兩者,並且 pod 沒有明確指定是否需要使用 Spot 或按需時,Karpenter 會優先使用 Spot 實例,並使用<a href="https://aws.amazon.com/blogs/compute/introducing-price-capacity-optimized-allocation-strategy-for-ec2-spot-instances/">價格容量優化分配策略</a>進行配置。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">karpenter.sh/v1alpha5</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Provisioner</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spot-prioritized</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">  </span><span class="nt">requirements</span><span class="p">:</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;karpenter.sh/capacity-type&quot;</span><span class="w"> </span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">      </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">In</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="hll"><span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">values</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;spot&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;on-demand&quot;</span><span class="p p-Indicator">]</span>
+</span></code></pre></div>
+<h3 id="aws-edp">節省方案、預留實例和 AWS EDP<a class="headerlink" href="#aws-edp" title="Permanent link">&para;</a></h3>
+<p>您可以通過使用<a href="https://aws.amazon.com/savingsplans/compute-pricing/">計算節省方案</a>來降低計算支出。節省方案提供了 1 年或 3 年計算使用承諾的折扣價格。使用範圍可以涵蓋 EKS 集群中的 EC2 實例,也可以涵蓋 Lambda 和 Fargate 等任何計算使用。使用節省方案,您可以在承諾期內降低成本,並仍然可以選擇任何 EC2 實例類型。</p>
+<p>計算節省方案可以將您的 EC2 成本降低高達 66%,而無需承諾使用哪些實例類型、系列或區域。節省會自動應用於您使用的實例。</p>
+<p>EC2 實例節省方案提供高達 72% 的計算節省,承諾在特定區域和 EC2 系列(例如 C 系列實例)中使用。您可以在該區域內的任何 AZ 之間轉移使用,使用該系列的任何一代實例(例如 c5 或 c6),並使用該系列中的任何大小的實例。折扣將自動應用於您的帳戶中符合節省方案標準的任何實例。</p>
+<p><a href="https://aws.amazon.com/ec2/pricing/reserved-instances/">預留實例</a>類似於 EC2 實例節省方案,但它們還可以保證可用區或區域的容量,並相比按需實例降低成本 - 高達 72%。一旦計算出所需的預留容量,您就可以選擇保留它們的時間長度(1 年或 3 年)。折扣將自動應用於您在帳戶中運行這些 EC2 實例。</p>
+<p>客戶還可以選擇與 AWS 簽訂企業協議。企業協議使客戶能夠量身定制最適合其需求的協議。客戶可以根據 AWS EDP(企業折扣計劃)享受定價折扣。有關企業協議的更多信息,請聯繫您的 AWS 銷售代表。</p>
+<h3 id="_7">按需<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>按需 EC2 實例具有不受中斷(相比 Spot)和無長期承諾(相比節省方案)的可用性。如果您正在尋求降低集群中的成本,您應該減少使用按需 EC2 實例。</p>
+<p>在優化您的工作負載需求後,您應該能夠計算出集群的最小和最大容量。隨時間這個數字可能會變化,但很少會下降。考慮將最小值以下的所有內容用於節省方案,將超出最小值的容量用於 Spot。其他可能不會持續使用或需要可用性的內容可以使用按需。</p>
+<p>如本節所述,減少資源消耗並最大限度地利用您配置的資源是節省資金的最佳方法。使用 Cluster Autoscaler,您可以通過 <code>scale-down-utilization-threshold</code> 設置刪除利用不足的節點。使用 Karpenter,建議啟用整合。</p>
+<p>要手動識別可與您的工作負載一起使用的 EC2 實例類型,您應該使用 <a href="https://github.com/aws/amazon-ec2-instance-selector">ec2-instance-selector</a>,它可以顯示每個區域可用的實例以及與 EKS 兼容的實例。以下是在 us-east-1 區域中具有 x86 處理器架構、4 Gb 內存和 2 個 vCPU 的實例的使用示例。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>ec2-instance-selector<span class="w"> </span>--memory<span class="w"> </span><span class="m">4</span><span class="w"> </span>--vcpus<span class="w"> </span><span class="m">2</span><span class="w"> </span>--cpu-architecture<span class="w"> </span>x86_64<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span>-r<span class="w"> </span>us-east-1<span class="w"> </span>--service<span class="w"> </span>eks
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>c5.large
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>c5a.large
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>c5ad.large
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>c5d.large
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>c6a.large
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>c6i.large
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>t2.medium
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>t3.medium
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>t3a.medium
+</code></pre></div>
+<p>對於非生產環境,您可以在夜間和週末等閒置時間自動縮減集群。Kubecost 項目 <a href="https://github.com/kubecost/cluster-turndown">cluster-turndown</a> 是一個可以根據設定的時間表自動縮減集群的控制器示例。</p>
+<h3 id="fargate">Fargate 計算<a class="headerlink" href="#fargate" title="Permanent link">&para;</a></h3>
+<p>Fargate 計算是 EKS 集群的一種完全托管的計算選項。它通過在 Kubernetes 集群中每個節點上調度一個 pod 來提供 pod 隔離。它允許您根據工作負載的 CPU 和 RAM 需求調整計算節點的大小,以嚴格控制集群中的工作負載使用情況。</p>
+<p>Fargate 可以擴展到最小 .25 vCPU 和 0.5 GB 內存,最大 16 vCPU 和 120 GB 內存的工作負載。<a href="https://docs.aws.amazon.com/eks/latest/userguide/fargate-pod-configuration.html">pod 大小變化</a>有限制,您需要了解您的工作負載如何最適合 Fargate 配置。例如,如果您的工作負載需要 1 vCPU 和 0.5 GB 內存,Fargate pod 的最小大小將為 1 vCPU 和 2 GB 內存。</p>
+<p>雖然 Fargate 有許多好處,如無需管理 EC2 實例或操作系統,但由於每個部署的 pod 都被隔離為集群中的單獨節點,它可能需要比傳統 EC2 實例更多的計算容量。這需要對 Kubelet、日誌代理和您通常部署到節點的任何 DaemonSet 等進行更多複製。DaemonSet 在 Fargate 上不受支持,需要將其轉換為 pod "sidecar",並與應用程式一起運行。</p>
+<p>Fargate 無法從裝箱或 CPU 過度配置中獲益,因為工作負載的邊界是不可突發和不可共享的節點。Fargate 將為您節省 EC2 實例管理時間,這本身就有成本,但 CPU 和內存成本可能比其他 EC2 容量類型更高。Fargate pod 可以利用計算節省方案來降低按需成本。</p>
+<h2 id="_8">優化計算使用<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p>節省計算基礎設施成本的另一種方法是使用更高效的計算。這可以來自更高性能的通用計算,如<a href="https://aws.amazon.com/ec2/graviton/">Graviton 處理器</a>,它的成本最高可降低 20%,能源效率提高 60% - 或特定工作負載的加速器,如 GPU 和 <a href="https://aws.amazon.com/ec2/instance-types/f1/">FPGA</a>。您需要構建可以<a href="https://aws.amazon.com/blogs/containers/how-to-build-your-containers-for-arm-and-save-with-graviton-and-spot-instances-on-amazon-ecs/">在 arm 架構上運行</a>的容器,並<a href="https://aws.amazon.com/blogs/compute/running-gpu-accelerated-kubernetes-workloads-on-p3-and-p2-ec2-instances-with-amazon-eks/">為您的工作負載設置具有正確加速器</a>的節點。</p>
+<p>EKS 可以運行具有混合架構(例如 amd64 和 arm64)的集群,如果您的容器編譯為多個架構,您可以通過在配置器中允許兩種架構來利用 Karpenter 上的 Graviton 處理器。但為了保持一致的性能,建議您將每個工作負載保持在單一計算架構上,只有在沒有其他可用容量時才使用不同的架構。</p>
+<p>配置器可以配置為具有多個架構,工作負載也可以在其工作負載規範中請求特定的架構。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">karpenter.sh/v1alpha5</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Provisioner</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span><span class="nt">requirements</span><span class="p">:</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;kubernetes.io/arch&quot;</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">In</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">    </span><span class="nt">values</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;arm64&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;amd64&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>使用 Cluster Autoscaler,您將需要為 Graviton 實例創建一個節點組,並在您的工作負載上設置<a href="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/">節點容忍</a>來利用新的容量。</p>
+<p>GPU 和 FPGA 可以大大提高工作負載的性能,但工作負載需要優化以使用加速器。許多機器學習和人工智能類型的工作負載可以使用 GPU 進行計算,並且可以將實例添加到集群中並使用資源請求掛載到工作負載中。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containers</span><span class="p">:</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">      </span><span class="nt">resources</span><span class="p">:</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">          </span><span class="nt">limits</span><span class="p">:</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">            </span><span class="nt">nvidia.com/gpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1&quot;</span>
+</code></pre></div>
+<p>一些 GPU 硬件可以跨多個工作負載共享,因此可以配置和使用單個 GPU。要了解如何配置工作負載 GPU 共享,請參考<a href="https://aws.amazon.com/blogs/opensource/virtual-gpu-device-plugin-for-inference-workload-in-kubernetes/">虛擬 GPU 設備插件</a>以獲取更多信息。您也可以參考以下博客:</p>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/containers/gpu-sharing-on-amazon-eks-with-nvidia-time-slicing-and-accelerated-ec2-instances/">在 Amazon EKS 上使用 NVIDIA 時間分片和加速 EC2 實例共享 GPU</a></li>
+<li><a href="https://aws.amazon.com/blogs/containers/maximizing-gpu-utilization-with-nvidias-multi-instance-gpu-mig-on-amazon-eks-running-more-pods-per-gpu-for-enhanced-performance/">使用 NVIDIA 的多實例 GPU (MIG) 在 Amazon EKS 上最大化 GPU 利用率:為增強性能運行每個 GPU 上的更多 pod</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u8907\u88fd", "clipboard.copy": "\u8907\u88fd", "search.result.more.one": "\u6b64\u9801\u5c1a\u6709 1 \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.more.other": "\u6b64\u9801\u5c1a\u6709 # \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.none": "\u6c92\u6709\u7b26\u5408\u7684\u9805\u76ee", "search.result.one": "\u627e\u5230 1 \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.other": "\u627e\u5230 # \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.placeholder": "\u6253\u5b57\u9032\u884c\u641c\u5c0b", "search.result.term.missing": "\u7f3a\u5c11\u5b57\u8a5e", "select.version": "\u9078\u64c7\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+    
+  </body>
+</html>

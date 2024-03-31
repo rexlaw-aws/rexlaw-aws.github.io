@@ -1,0 +1,2915 @@
+
+<!doctype html>
+<html lang="zh-TW" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../controlplane/">
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>應用程式 - EKS最佳實踐指南</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-VQGL8B2FH8"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-VQGL8B2FH8",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-VQGL8B2FH8",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳轉到
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="頁首">
+    <a href="../../../" title="EKS最佳實踐指南" class="md-header__button md-logo" aria-label="EKS最佳實踐指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EKS最佳實踐指南
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              應用程式
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="選擇語言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../reliability/docs/application/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../ko/reliability/docs/application/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../zh/reliability/docs/application/" hreflang="zh" class="md-select__link">
+              中文（简体）
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh-TW" class="md-select__link">
+              中文（繁體）
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜尋" placeholder="搜尋" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="搜尋">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清除" aria-label="清除" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜尋引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-eks-best-practices" title="前往倉庫" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="導覽列" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="EKS最佳實踐指南" class="md-nav__button md-logo" aria-label="EKS最佳實踐指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    EKS最佳實踐指南
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-eks-best-practices" title="前往倉庫" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    指南
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    簡介
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    安全
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            安全
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/iam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    身份和訪問管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/pods/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pod 安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/multitenancy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多租戶
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/detective/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    偵查控制
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/network/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據加密和密鑰管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/runtime/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    運行時安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/hosts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基礎設施安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/compliance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    監管合規性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/incidents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    事故響應和取證
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/image/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    映像安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/docs/multiaccount/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多帳戶策略
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    叢集自動擴展
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            叢集自動擴展
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../karpenter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Karpenter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cluster-autoscaling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集自動擴展器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可靠性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            可靠性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    應用程式
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    應用程式
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      建議
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="建議">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      避免運行單個 Pod
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      運行多個副本
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      在節點上調度副本
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="在節點上調度副本">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Pod 反親和性規則
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pod_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Pod 拓撲傳播約束
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-metrics-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      運行 Kubernetes Metrics Server
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pod-hpa" class="md-nav__link">
+    <span class="md-ellipsis">
+      水平 Pod 自動縮放器 (HPA)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="水平 Pod 自動縮放器 (HPA)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      根據自定義或外部指標擴展應用程式
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pod-vpa" class="md-nav__link">
+    <span class="md-ellipsis">
+      垂直 Pod 自動縮放器 (VPA)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      更新應用程式
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="更新應用程式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      有一種機制來執行回滾
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用藍/綠部署
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用金絲雀部署
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      健康檢查和自我修復
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      建議
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="建議">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用存活探針刪除不健康的 Pod
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      對於啟動時間較長的應用程式,使用啟動探針
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用就緒探針檢測部分不可用
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      處理中斷
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      建議
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="建議">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Pod 中斷預算保護關鍵工作負載
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      實踐混沌工程
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用服務網格
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      服務網格
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      可觀察性
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      建議
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="建議">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      監控您的應用程式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Prometheus 客戶端庫公開應用程式指標
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用集中式日誌工具收集和持久化日誌
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用分佈式跟踪系統識別瓶頸
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../controlplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dataplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Windows 容器
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Windows 容器
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/ami/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AMI 管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/gmsa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 容器的 gMSA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/hardening/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows Server 強化
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    掃描 Windows 映像
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/licensing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 版本和許可
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    日誌記錄
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    監控 Windows 容器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 網絡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/oom/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    內存和系統管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/patching/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基礎設施管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/scheduling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    調度
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 容器的 Pod 安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存儲選項
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    網絡
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            網絡
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/subnets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VPC 和子網考量
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/vpc-cni/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon VPC CNI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/ip-optimization-strategies/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    優化 IP 地址利用率
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/ipv6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    運行 IPv6 叢集
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/custom-networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    自訂網路
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/prefix-mode/index_linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Linux 的前綴模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/prefix-mode/index_windows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 的前綴模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/sgpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    每個 Pod 的安全組
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/loadbalancing/loadbalancing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    負載均衡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡性能問題監控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可擴展性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            可擴展性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/control-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/data-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/cluster-services/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集服務
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/workloads/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    工作負載
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/scaling_theory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    擴展背後的理論
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/kcp_monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面監控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/node_efficiency/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    節點效率和擴展
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/kubernetes_slos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes SLO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/quotas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    已知限制和服務配額
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../upgrades/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集升級
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    成本優化
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            成本優化
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cfm_framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    雲端財務管理框架
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cost_opt_compute/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    計算
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cost_opt_networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cost_opt_storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存儲
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cost_opt_observability/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    可觀察性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      建議
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="建議">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      避免運行單個 Pod
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      運行多個副本
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      在節點上調度副本
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="在節點上調度副本">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Pod 反親和性規則
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pod_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Pod 拓撲傳播約束
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-metrics-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      運行 Kubernetes Metrics Server
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pod-hpa" class="md-nav__link">
+    <span class="md-ellipsis">
+      水平 Pod 自動縮放器 (HPA)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="水平 Pod 自動縮放器 (HPA)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      根據自定義或外部指標擴展應用程式
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pod-vpa" class="md-nav__link">
+    <span class="md-ellipsis">
+      垂直 Pod 自動縮放器 (VPA)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      更新應用程式
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="更新應用程式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      有一種機制來執行回滾
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用藍/綠部署
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用金絲雀部署
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      健康檢查和自我修復
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      建議
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="建議">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用存活探針刪除不健康的 Pod
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      對於啟動時間較長的應用程式,使用啟動探針
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用就緒探針檢測部分不可用
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      處理中斷
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      建議
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="建議">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pod_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Pod 中斷預算保護關鍵工作負載
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      實踐混沌工程
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用服務網格
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      服務網格
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      可觀察性
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      建議
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="建議">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      監控您的應用程式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Prometheus 客戶端庫公開應用程式指標
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用集中式日誌工具收集和持久化日誌
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用分佈式跟踪系統識別瓶頸
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="_1">運行高可用性應用程式<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>您的客戶期望您的應用程式隨時可用,包括在您進行變更時,尤其是在流量激增時。可擴展和有彈性的架構可以使您的應用程式和服務在不中斷的情況下持續運行,從而保持用戶滿意。可擴展的基礎設施會根據業務需求而增長和收縮。消除單點故障是提高應用程式可用性和使其具有彈性的關鍵步驟。</p>
+<p>使用 Kubernetes,您可以以高可用性和彈性的方式運行和管理您的應用程式。其聲明性管理確保一旦您設置了應用程式,Kubernetes 將持續努力<a href="https://kubernetes.io/docs/concepts/architecture/controller/#desired-vs-current">將當前狀態與所需狀態匹配</a>。</p>
+<h2 id="_2">建議<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="pod">避免運行單個 Pod<a class="headerlink" href="#pod" title="Permanent link">&para;</a></h3>
+<p>如果您的整個應用程式在單個 Pod 中運行,則如果該 Pod 被終止,您的應用程式將無法使用。不要使用單個 Pod 部署應用程式,而是創建 <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployments</a>。如果由 Deployment 創建的 Pod 失敗或被終止,Deployment <a href="https://kubernetes.io/docs/concepts/architecture/controller/">控制器</a>將啟動一個新的 Pod 以確保指定數量的副本 Pod 始終在運行。</p>
+<h3 id="_3">運行多個副本<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>使用 Deployment 運行應用程式的多個副本 Pod 可以以高可用性的方式運行它。如果一個副本失敗,其餘副本仍將繼續運行,雖然容量會有所下降,直到 Kubernetes 創建另一個 Pod 來彌補損失。此外,您可以使用 <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/">Horizontal Pod Autoscaler</a> 根據工作負載需求自動擴展副本。</p>
+<h3 id="_4">在節點上調度副本<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>如果所有副本都在同一個節點上運行,並且該節點變得不可用,運行多個副本也不會很有用。考慮使用 pod 反親和性或 pod 拓撲傳播約束在多個工作節點上分散 Deployment 的副本。</p>
+<p>您還可以通過在多個可用性區域(AZ)中運行應用程式來進一步提高典型應用程式的可靠性。</p>
+<h4 id="pod_1">使用 Pod 反親和性規則<a class="headerlink" href="#pod_1" title="Permanent link">&para;</a></h4>
+<p>下面的清單告訴 Kubernetes 調度器<em>首選</em>將 Pod 放置在不同的節點和 AZ 上。它不要求不同的節點或 AZ,因為如果這樣做,一旦每個 AZ 中有一個 Pod 正在運行,Kubernetes 就無法再調度任何 Pod。如果您的應用程式只需要三個副本,您可以對 <code>topologyKey: topology.kubernetes.io/zone</code> 使用 <code>requiredDuringSchedulingIgnoredDuringExecution</code>,Kubernetes 調度器將不會在同一個 AZ 中調度兩個 Pod。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>apiVersion: apps/v1
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>kind: Deployment
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>metadata:
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  name: spread-host-az
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  labels:
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    app: web-server
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>spec:
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  replicas: 4
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>  selector:
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    matchLabels:
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>      app: web-server
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>  template:
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    metadata:
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>      labels:
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>        app: web-server
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    spec:
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>      affinity:
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>        podAntiAffinity:
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>          preferredDuringSchedulingIgnoredDuringExecution:
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>          - podAffinityTerm:
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>              labelSelector:
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>                matchExpressions:
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>                - key: app
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>                  operator: In
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>                  values:
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>                  - web-server
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>              topologyKey: topology.kubernetes.io/zone
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>            weight: 100
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>          - podAffinityTerm:
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>              labelSelector:
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>                matchExpressions:
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>                - key: app
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>                  operator: In
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>                  values:
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>                  - web-server
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>              topologyKey: kubernetes.io/hostname 
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>            weight: 99
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>      containers:
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>      - name: web-app
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>        image: nginx:1.16-alpine
+</code></pre></div>
+<h4 id="pod_2">使用 Pod 拓撲傳播約束<a class="headerlink" href="#pod_2" title="Permanent link">&para;</a></h4>
+<p>與 pod 反親和性規則類似,pod 拓撲傳播約束允許您在不同的故障(或拓撲)域(如主機或 AZ)中分佈您的應用程式。當您試圖確保容錯性和可用性,同時在不同的拓撲域中擁有多個副本時,這種方法效果很好。另一方面,pod 反親和性規則很容易產生一個拓撲域只有一個副本的結果,因為彼此具有反親和性的 Pod 會產生排斥效果。在這種情況下,在專用節點上的單個副本對於容錯性來說並不理想,也不是資源的有效利用。使用拓撲傳播約束,您可以更好地控制調度器應該在拓撲域之間應用的傳播或分佈。以下是此方法中一些重要的屬性:
+1. <code>maxSkew</code> 用於控制或確定拓撲域之間不平衡的最大程度。例如,如果一個應用程式有 10 個副本,並部署在 3 個 AZ 上,您無法實現完全均勻的分佈,但您可以影響分佈的不平衡程度。在這種情況下,<code>maxSkew</code> 可以是 1 到 10 之間的任何值。值為 1 意味著您可能最終會得到像 <code>4,3,3</code>、<code>3,4,3</code> 或 <code>3,3,4</code> 這樣的分佈在 3 個 AZ 上。相比之下,值為 10 意味著您可能最終會得到像 <code>10,0,0</code>、<code>0,10,0</code> 或 <code>0,0,10</code> 這樣的分佈在 3 個 AZ 上。
+2. <code>topologyKey</code> 是節點標籤的一個鍵,定義了應該用於 Pod 分佈的拓撲域類型。例如,區域傳播將具有以下鍵值對:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>topologyKey: &quot;topology.kubernetes.io/zone&quot;
+</code></pre></div>
+3. <code>whenUnsatisfiable</code> 屬性用於確定在無法滿足所需約束的情況下,您希望調度器如何響應。
+4. <code>labelSelector</code> 用於查找匹配的 Pod,以便調度器在根據您指定的約束決定在哪裡放置 Pod 時能夠感知它們。</p>
+<p>除了上述這些,您還可以閱讀 <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/">Kubernetes 文檔</a>中的其他字段。</p>
+<p><img alt="在 3 個 AZ 上的 Pod 拓撲傳播約束" src="../../../../reliability/docs/images/pod-topology-spread-constraints.jpg" /></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>apiVersion: apps/v1
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>kind: Deployment
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>metadata:
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  name: spread-host-az
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  labels:
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    app: web-server
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>spec:
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  replicas: 10
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  selector:
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    matchLabels:
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>      app: web-server
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>  template:
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    metadata:
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>      labels:
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>        app: web-server
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>    spec:
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>      topologySpreadConstraints:
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>      - maxSkew: 1
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>        topologyKey: &quot;topology.kubernetes.io/zone&quot;
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>        whenUnsatisfiable: ScheduleAnyway
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>        labelSelector:
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>          matchLabels:
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>            app: express-test
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>      containers:
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>      - name: web-app
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>        image: nginx:1.16-alpine
+</code></pre></div>
+<h3 id="kubernetes-metrics-server">運行 Kubernetes Metrics Server<a class="headerlink" href="#kubernetes-metrics-server" title="Permanent link">&para;</a></h3>
+<p>安裝 Kubernetes <a href="https://github.com/kubernetes-sigs/metrics-server">metrics server</a> 來幫助擴展您的應用程式。Kubernetes 自動縮放器附加組件如 <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/">HPA</a> 和 <a href="https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler">VPA</a> 需要跟踪應用程式的指標來對其進行擴展。metrics-server 收集可用於做出擴展決策的資源指標。這些指標是從 kubelet 收集的,並以 <a href="https://github.com/kubernetes/metrics">Metrics API 格式</a>提供。</p>
+<p>metrics-server 不保留任何數據,也不是監控解決方案。它的目的是將 CPU 和內存使用率指標暴露給其他系統。如果您想隨時間跟踪應用程式的狀態,您需要一個監控工具,如 Prometheus 或 Amazon CloudWatch。</p>
+<p>按照 <a href="https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html">EKS 文檔</a>在您的 EKS 集群中安裝 metrics-server。</p>
+<h2 id="pod-hpa">水平 Pod 自動縮放器 (HPA)<a class="headerlink" href="#pod-hpa" title="Permanent link">&para;</a></h2>
+<p>HPA 可以根據需求自動擴展您的應用程式,並幫助您在高峰流量期間避免影響您的客戶。它是 Kubernetes 中的一個控制迴圈,定期從提供資源指標的 API 查詢指標。</p>
+<p>HPA 可以從以下 API 檢索指標:
+1. <code>metrics.k8s.io</code> 也稱為資源指標 API - 提供 Pod 的 CPU 和內存使用率
+2. <code>custom.metrics.k8s.io</code> - 提供來自其他指標收集器(如 Prometheus)的指標;這些指標是 <strong>內部</strong> 於您的 Kubernetes 集群。 
+3. <code>external.metrics.k8s.io</code> - 提供 <strong>外部</strong> 於您的 Kubernetes 集群的指標(例如,SQS 隊列深度、ELB 延遲)。</p>
+<p>您必須使用這三個 API 之一來提供用於擴展應用程式的指標。</p>
+<h3 id="_5">根據自定義或外部指標擴展應用程式<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>您可以使用自定義或外部指標根據 CPU 或內存利用率以外的指標來擴展應用程式。<a href="https://github.com/kubernetes-sigs/custom-metrics-apiserver">自定義指標</a> API 服務器提供 <code>custom-metrics.k8s.io</code> API,HPA 可以使用它來自動縮放應用程式。</p>
+<p>您可以使用 <a href="https://github.com/directxman12/k8s-prometheus-adapter">Prometheus Adapter for Kubernetes Metrics APIs</a> 從 Prometheus 收集指標,並與 HPA 一起使用。在這種情況下,Prometheus 適配器將以 <a href="https://github.com/kubernetes/metrics/blob/master/pkg/apis/metrics/types.go">Metrics API 格式</a>公開 Prometheus 指標。</p>
+<p>部署 Prometheus 適配器後,您可以使用 kubectl 查詢自定義指標。
+<code>kubectl get —raw /apis/custom.metrics.k8s.io/v1beta1/</code></p>
+<p>外部指標顧名思義,提供了 Horizontal Pod Autoscaler 使用集群外部的指標來擴展部署的能力。例如,在批處理工作負載中,通常會根據 SQS 隊列中的作業數量來擴展副本數量。</p>
+<p>要使用 CloudWatch 指標自動縮放 Deployment,例如<a href="https://github.com/awslabs/k8s-cloudwatch-adapter/blob/master/samples/sqs/README.md">根據 SQS 隊列深度擴展批處理器應用程式</a>,您可以使用 <a href="https://github.com/awslabs/k8s-cloudwatch-adapter"><code>k8s-cloudwatch-adapter</code></a>。 <code>k8s-cloudwatch-adapter</code> 是一個社區項目,不由 AWS 維護。</p>
+<h2 id="pod-vpa">垂直 Pod 自動縮放器 (VPA)<a class="headerlink" href="#pod-vpa" title="Permanent link">&para;</a></h2>
+<p>VPA 自動調整 Pod 的 CPU 和內存預留,以幫助您"正確調整"應用程式的大小。對於需要垂直縮放(通過增加資源分配來完成)的應用程式,您可以使用 <a href="https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler">VPA</a> 自動縮放 Pod 副本或提供縮放建議。</p>
+<p>如果 VPA 需要縮放您的應用程式,您的應用程式可能會暫時無法使用,因為 VPA 的當前實現不會對 Pod 進行就地調整;相反,它將重新創建需要縮放的 Pod。</p>
+<p><a href="https://docs.aws.amazon.com/eks/latest/userguide/vertical-pod-autoscaler.html">EKS 文檔</a>包含設置 VPA 的演練。</p>
+<p><a href="https://github.com/FairwindsOps/goldilocks/">Fairwinds Goldilocks</a> 項目提供了一個儀表板,用於可視化 VPA 對 CPU 和內存請求和限制的建議。它的 VPA 更新模式允許您根據 VPA 建議自動縮放 Pod。</p>
+<h2 id="_6">更新應用程式<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>現代應用程式需要快速創新,同時具有高度的穩定性和可用性。Kubernetes 為您提供了工具,可以在不影響客戶的情況下持續更新您的應用程式。</p>
+<p>讓我們看看一些最佳實踐,使您能夠快速部署變更而不犧牲可用性。</p>
+<h3 id="_7">有一種機制來執行回滾<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>有一個撤銷按鈕可以避免災難。在將更新部署到生產集群之前,先在單獨的較低環境(測試或開發環境)中測試部署是一個最佳實踐。使用 CI/CD 管道可以幫助您自動化和測試部署。使用持續部署管道,如果升級出現問題,您可以快速回滾到舊版本。</p>
+<p>您可以使用 Deployments 來更新正在運行的應用程式。這通常是通過更新容器映像來完成的。您可以使用 <code>kubectl</code> 像這樣更新 Deployment:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>kubectl<span class="w"> </span>--record<span class="w"> </span>deployment.apps/nginx-deployment<span class="w"> </span><span class="nb">set</span><span class="w"> </span>image<span class="w"> </span>nginx-deployment<span class="w"> </span><span class="nv">nginx</span><span class="o">=</span>nginx:1.16.1
+</code></pre></div>
+<p><code>--record</code> 參數記錄對 Deployment 的更改,如果您需要執行回滾,這將很有幫助。 <code>kubectl rollout history deployment</code> 顯示您集群中 Deployments 的記錄更改。您可以使用 <code>kubectl rollout undo deployment &lt;DEPLOYMENT_NAME&gt;</code> 回滾更改。</p>
+<p>默認情況下,當您更新需要重新創建 Pod 的 Deployment 時,Deployment 將執行<a href="https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/">滾動更新</a>。換句話說,Kubernetes 只會更新 Deployment 中正在運行的 Pod 的一部分,而不是全部 Pod。您可以通過 <code>RollingUpdateStrategy</code> 屬性控制 Kubernetes 如何執行滾動更新。</p>
+<p>在<em>滾動更新</em> Deployment 時,您可以使用 <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#max-unavailable"><code>Max Unavailable</code></a> 屬性指定在更新期間最多可以有多少 Pod 不可用。Deployment 的 <code>Max Surge</code> 屬性允許您設置可以超過所需 Pod 數量的最大 Pod 數量。</p>
+<p>考慮調整 <code>max unavailable</code> 以確保滾動不會影響您的客戶。例如,Kubernetes 默認設置 25% 的 <code>max unavailable</code>,這意味著如果您有 100 個 Pod,在滾動期間可能只有 75 個 Pod 處於活動狀態。如果您的應用程式需要至少 80 個 Pod,這個滾動可能會造成中斷。相反,您可以將 <code>max unavailable</code> 設置為 20%,以確保在整個滾動過程中至少有 80 個功能正常的 Pod。</p>
+<h3 id="_8">使用藍/綠部署<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p>變更本質上是有風險的,但無法撤銷的變更可能會造成災難性後果。允許您有效地通過<em>回滾</em>來回到過去的變更程序使增強和實驗更加安全。藍/綠部署為您提供一種快速撤回變更的方法。在這種部署策略中,您為新版本創建一個環境。這個環境與當前版本的應用程式完全相同。一旦新環境配置好,就將流量路由到新環境。如果新版本產生了預期的結果而沒有產生錯誤,就終止舊環境。否則,將流量恢復到舊版本。</p>
+<p>您可以在 Kubernetes 中通過創建一個與現有版本的 Deployment 完全相同的新 Deployment 來執行藍/綠部署。一旦您驗證了新 Deployment 中的 Pod 正在無錯誤地運行,您就可以通過更改路由應用程式 Pod 的 Service 的 <code>selector</code> 規範來開始將流量發送到新 Deployment。</p>
+<p>許多持續集成工具,如 <a href="https://fluxcd.io">Flux</a>、<a href="https://www.jenkins.io">Jenkins</a> 和 <a href="https://spinnaker.io">Spinnaker</a>都允許您自動化藍/綠部署。AWS Containers Blog 包含一個使用 AWS Load Balancer Controller 的演練:<a href="https://aws.amazon.com/blogs/containers/using-aws-load-balancer-controller-for-blue-green-deployment-canary-deployment-and-a-b-testing/">使用 AWS Load Balancer Controller 進行藍/綠部署、金絲雀部署和 A/B 測試</a></p>
+<h3 id="_9">使用金絲雀部署<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p>金絲雀部署是藍/綠部署的一種變體,可以大大降低變更的風險。在這種部署策略中,您會在舊 Deployment 旁邊創建一個具有較少 Pod 的新 Deployment,並將少量流量引導到新 Deployment。如果指標表明新版本的性能與現有版本一樣好或更好,您就會逐步增加流量到新 Deployment 並擴展它,直到所有流量都被引導到新 Deployment。如果出現問題,您可以將所有流量路由到舊 Deployment 並停止向新 Deployment 發送流量。</p>
+<p>雖然 Kubernetes 本身沒有本地方式來執行金絲雀部署,但您可以使用像 <a href="https://github.com/weaveworks/flagger">Flagger</a> 這樣的工具與 <a href="https://docs.flagger.app/tutorials/istio-progressive-delivery">Istio</a> 或 <a href="https://docs.flagger.app/install/flagger-install-on-eks-appmesh">App Mesh</a> 一起使用。</p>
+<h2 id="_10">健康檢查和自我修復<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<p>沒有軟件是沒有 bug 的,但 Kubernetes 可以幫助您最小化軟件故障的影響。過去,如果應用程式崩潰,有人必須手動修復該情況,重新啟動應用程式。Kubernetes 使您能夠檢測 Pod 中的軟件故障,並自動用新的副本替換它們。有了 Kubernetes,您可以監控應用程式的健康狀況,並自動替換不健康的實例。</p>
+<p>Kubernetes 支持三種類型的<a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/">健康檢查</a>:</p>
+<ol>
+<li>存活探針</li>
+<li>啟動探針(Kubernetes 1.16+ 版本支持)</li>
+<li>就緒探針</li>
+</ol>
+<p><a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/">Kubelet</a>是 Kubernetes 代理,負責運行所有上述檢查。Kubelet 可以通過三種方式檢查 Pod 的健康狀況:kubelet 可以在 Pod 的容器內運行 shell 命令,向其容器發送 HTTP GET 請求,或在指定端口上打開 TCP 套接字。</p>
+<p>如果您選擇基於 <code>exec</code> 的探針,它在容器內運行 shell 腳本,請確保 shell 命令在 <code>timeoutSeconds</code> 值到期之前退出。否則,您的節點將有 <code>&lt;defunct&gt;</code> 進程,導致節點故障。</p>
+<h2 id="_11">建議<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<h3 id="pod_3">使用存活探針刪除不健康的 Pod<a class="headerlink" href="#pod_3" title="Permanent link">&para;</a></h3>
+<p>存活探針可以檢測到<em>死鎖</em>情況,即進程繼續運行,但應用程式變得無響應。例如,如果您正在運行一個監聽端口 80 的 web 服務,您可以配置一個存活探針來向 Pod 的端口 80 發送 HTTP GET 請求。Kubelet 將定期向 Pod 發送 GET 請求並期望收到響應;如果 Pod 在 200-399 之間響應,則 kubelet 認為該 Pod 是健康的;否則,該 Pod 將被標記為不健康。如果 Pod 持續失敗健康檢查,kubelet 將終止它。</p>
+<p>您可以使用 <code>initialDelaySeconds</code> 來延遲第一次探測。</p>
+<p>使用存活探針時,請確保您的應用程式不會陷入所有 Pod 同時失敗存活探針的情況,因為 Kubernetes 將嘗試替換所有 Pod,這將使您的應用程式離線。此外,Kubernetes 將繼續創建新的 Pod,它們也會失敗存活探針,給控制平面帶來不必要的壓力。避免將存活探針配置為依賴於 Pod 外部的因素,例如外部數據庫。換句話說,對於不響應的外部於 Pod 的數據庫,不應使您的 Pod 失敗存活探針。</p>
+<p>Sandor Szücs 的文章<a href="https://srcco.de/posts/kubernetes-liveness-probes-are-dangerous.html">存活探針很危險</a>描述了錯誤配置的探針可能造成的問題。</p>
+<h3 id="_12">對於啟動時間較長的應用程式,使用啟動探針<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<p>當您的應用程式需要額外的啟動時間時,您可以使用啟動探針來延遲存活和就緒探針。例如,需要從數據庫加載緩存的 Java 應用程式可能需要長達兩分鐘的時間才能完全啟動。在應用程式完全啟動之前,任何存活或就緒探針都可能失敗。配置啟動探針將允許 Java 應用程式在執行其他探針之前變為<em>健康</em>。</p>
+<p>在啟動探針成功之前,所有其他探針都是禁用的。您可以定義 Kubernetes 應該等待應用程式啟動的最長時間。如果在最大配置的時間之後,Pod 仍然失敗啟動探針,它將被終止,並創建一個新的 Pod。</p>
+<p>啟動探針類似於存活探針 - 如果它們失敗,Pod 將被重新創建。正如 Ricardo A. 在他的文章<a href="https://medium.com/swlh/fantastic-probes-and-how-to-configure-them-fef7e030bd2f">神奇的探針及其配置</a>中解釋的那樣,當應用程式的啟動時間不可預測時,應該使用啟動探針。如果您知道您的應用程式需要十秒鐘才能啟動,您應該使用帶有 <code>initialDelaySeconds</code> 的存活/就緒探針,而不是使用啟動探針。</p>
+<h3 id="_13">使用就緒探針檢測部分不可用<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<p>而存活探針檢測應用程序故障,需要通過終止 Pod 來解決(因此重新啟動應用程序),就緒探針檢測應用程序可能<em>暫時</em>不可用的情況。在這些情況下,應用程序可能暫時無法響應請求;但是,預計它將在此操作完成後再次健康。</p>
+<p>例如,在磁盤 I/O 操作期間,應用程序可能暫時無法處理請求。在這種情況下,終止應用程序的 Pod 並不是一個補救措施;同時,發送到 Pod 的其他請求也可能失敗。</p>
+<p>您可以使用就緒探針來檢測應用程序的暫時不可用,並在其再次可用之前停止向其發送請求。<em>與存活探針不同,就緒探針失敗不會導致 Pod 被重新創建,而是 Pod 將不會從 Kubernetes Service 接收任何流量</em>。當就緒探針成功時,Pod 將恢復接收來自 Service 的流量。</p>
+<p>就像存活探針一樣,避免配置依賴於 Pod 外部資源(如數據庫)的就緒探針。以下是一個配置不當的就緒探針可能導致應用程序無法正常運行的情況 - 如果 Pod 的就緒探針在應用程序的數據庫不可訪問時失敗,其他 Pod 副本也會同時失敗,因為它們共享相同的健康檢查標準。以這種方式設置探針將確保每當數據庫不可用時,Pod 的就緒探針都會失敗,Kubernetes 將停止向<em>所有</em> Pod 發送流量。</p>
+<p>使用就緒探針的一個副作用是,它們可能會增加更新 Deployment 所需的時間。新副本只有在就緒探針成功後才會接收流量;在此之前,舊副本將繼續接收流量。</p>
+<hr />
+<h2 id="_14">處理中斷<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<p>Pod 有有限的生命週期 - 即使您有長時間運行的 Pod,在適當的時候正確終止 Pod 也是明智的。根據您的升級策略,Kubernetes 集群升級可能需要您創建新的工作節點,這需要在新節點上重新創建所有 Pod。適當的終止處理和 Pod 中斷預算可以幫助您在從舊節點刪除 Pod 並在新節點上重新創建它們時避免服務中斷。</p>
+<p>升級工作節點的首選方式是創建新的工作節點並終止舊節點。在終止工作節點之前,您應該<code>排空</code>它。當工作節點被排空時,它的所有 Pod 都會<em>安全地</em>被驅逐。"安全地"是一個關鍵詞;當 Pod 從被驅逐的工作節點中驅逐時,不是簡單地向容器中的主進程(PID 1)發送 <code>SIGKILL</code> 信號。相反,會先發送 <code>SIGTERM</code> 信號,然後 Kubernetes 會在發送 <code>SIGKILL</code> 信號之前給進程一些時間(寬限期)。默認的寬限期是 30 秒;您可以通過在 kubectl 中使用 <code>grace-period</code> 標誌或在 Podspec 中聲明 <code>terminationGracePeriodSeconds</code> 來覆蓋默認值。</p>
+<p><code>kubectl delete pod &lt;pod name&gt; —grace-period=&lt;seconds&gt;</code></p>
+<p>在容器中,主進程並不總是 PID 1。考慮這個基於 Python 的示例容器:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$ kubectl exec python-app -it ps
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a> PID USER TIME COMMAND
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a> 1   root 0:00 {script.sh} /bin/sh ./script.sh
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a> 5   root 0:00 python app.py
+</code></pre></div>
+<p>在這個例子中,shell 腳本接收 <code>SIGTERM</code>,但實際的主進程(在這個例子中是 Python 應用程序)沒有收到 <code>SIGTERM</code> 信號。當 Pod 被終止時,Python 應用程序將被突然終止。通過將容器的 <a href="https://docs.docker.com/engine/reference/builder/#entrypoint"><code>ENTRYPOINT</code></a> 更改為啟動 Python 應用程序,可以解決這個問題。或者,您可以使用像 <a href="https://github.com/Yelp/dumb-init">dumb-init</a> 這樣的工具來確保您的應用程序可以處理信號。</p>
+<p>您還可以使用 <a href="https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks">Container hooks</a> 在容器啟動或停止時執行腳本或 HTTP 請求。 <code>PreStop</code> 掛鉤操作在容器收到 <code>SIGTERM</code> 信號之前運行,必須在發送此信號之前完成。 <code>terminationGracePeriodSeconds</code> 值從 <code>PreStop</code> 掛鉤操作開始執行時開始計算,而不是在發送 <code>SIGTERM</code> 信號時。</p>
+<h2 id="_15">建議<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<h3 id="pod_4">使用 Pod 中斷預算保護關鍵工作負載<a class="headerlink" href="#pod_4" title="Permanent link">&para;</a></h3>
+<p>Pod 中斷預算或 PDB 可以暫時阻止驅逐過程,如果應用程序的副本數量低於聲明的臨界值。一旦可用副本數量超過臨界值,驅逐過程將繼續。您可以使用 PDB 聲明 <code>minAvailable</code> 和 <code>maxUnavailable</code> 副本數量。例如,如果您希望您的應用程序至少有三個副本可用,您可以創建一個 PDB。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>apiVersion: policy/v1beta1
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>kind: PodDisruptionBudget
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>metadata:
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  name: my-svc-pdb
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>spec:
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>  minAvailable: 3
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>  selector:
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    matchLabels:
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>      app: my-svc
+</code></pre></div>
+<p>上述 PDB 策略告訴 Kubernetes 在三個或更多副本可用之前,暫停驅逐過程。節點排空尊重 <code>PodDisruptionBudgets</code>。在 EKS 托管節點組升級期間,<a href="https://docs.aws.amazon.com/eks/latest/userguide/managed-node-update-behavior.html">節點以 15 分鐘的超時時間排空</a>。15 分鐘後,如果不強制更新(在 EKS 控制台中稱為滾動更新),更新將失敗。如果強制更新,則 Pod 將被刪除。</p>
+<p>對於自管理節點,您也可以使用像 <a href="https://github.com/aws/aws-node-termination-handler">AWS Node Termination Handler</a> 這樣的工具,它可確保 Kubernetes 控制平面適當地響應可能導致您的 EC2 實例變得不可用的事件,例如 <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-instances-status-check_sched.html">EC2 維護</a>事件和 <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html">EC2 Spot 中斷</a>。它使用 Kubernetes API 將節點隔離,以確保不會調度新的 Pod,然後排空它,終止任何正在運行的 Pod。</p>
+<p>您可以使用 Pod 反親和性來調度 Deployment 的 Pod 在不同的節點上,以避免在節點升級期間出現 PDB 相關的延遲。</p>
+<h3 id="_16">實踐混沌工程<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>混沌工程是在分佈式系統上進行實驗的學科,以建立對系統在動盪條件下的能力的信心。</p>
+</blockquote>
+<p>在他的博客中,Dominik Tornow 解釋說,<a href="https://medium.com/@dominik.tornow/the-mechanics-of-kubernetes-ac8112eaa302">Kubernetes 是一個聲明性系統</a>,其中"<em>用戶提供系統的所需狀態的表示形式。系統然後考慮當前狀態和所需狀態,以確定從當前狀態過渡到所需狀態的一系列命令</em>"。這意味著 Kubernetes 始終存儲<em>所需狀態</em>,如果系統偏離,Kubernetes 將採取行動來恢復狀態。例如,如果工作節點變得不可用,Kubernetes 將重新調度 Pod 到另一個工作節點。同樣,如果一個 <code>replica</code> 崩潰,<a href="https://kubernetes.io/docs/concepts/architecture/controller/#design">Deployment 控制器</a>將創建一個新的 <code>replica</code>。通過這種方式,Kubernetes 控制器會自動修復故障。</p>
+<p>像 <a href="https://www.gremlin.com">Gremlin</a> 這樣的混沌工程工具可以幫助您測試 Kubernetes 集群的可靠性,並發現單點故障。引入人為混沌的工具可以揭示系統性的弱點,提供機會識別瓶頸和配置錯誤,並在受控環境中糾正問題。混沌工程哲學主張有目的地破壞事物,並壓力測試基礎設施,以最小化意外停機。</p>
+<h3 id="_17">使用服務網格<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h3>
+<p>您可以使用服務網格來提高應用程式的可靠性。服務網格可以實現服務到服務的通信,並增加微服務網絡的可觀察性。大多數服務網格產品通過在每個服務旁運行一個小型網絡代理來工作,該代理攔截和檢查應用程序的網絡流量。您可以在不修改應用程序的情況下將您的應用程序置於網格中。使用服務代理內置的功能,您可以生成網絡統計信息、創建訪問日誌,並為分佈式跟踪添加 HTTP 標頭。</p>
+<p>服務網格可以通過自動請求重試、超時、斷路器和速率限制等功能,幫助您的微服務更加可靠。</p>
+<p>如果您運營多個集群,您可以使用服務網格來實現跨集群的服務到服務通信。</p>
+<h3 id="_18">服務網格<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://aws.amazon.com/app-mesh/">AWS App Mesh</a></li>
+<li><a href="https://istio.io">Istio</a></li>
+<li><a href="http://linkerd.io">LinkerD</a></li>
+<li><a href="https://www.consul.io">Consul</a></li>
+</ul>
+<hr />
+<h2 id="_19">可觀察性<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h2>
+<p>可觀察性是一個包括監控、日誌和跟踪的總稱。基於微服務的應用程序本質上是分佈式的。與監控單一系統足夠的單體應用程序不同,在分佈式應用程序架構中,您需要監控每個組件的性能。您可以使用集群級別的監控、日誌和分佈式跟踪系統,在您的客戶受到影響之前識別集群中的問題。</p>
+<p>Kubernetes 內置的故障排除和監控工具有限。metrics-server 收集資源指標並將其存儲在內存中,但不持久化它們。您可以使用 kubectl 查看 Pod 的日誌,但 Kubernetes 不會自動保留日誌。分佈式跟踪的實現是在應用程序代碼級別或使用服務網格完成的。</p>
+<p>Kubernetes 的可擴展性在這裡發揮作用。Kubernetes 允許您引入首選的集中式監控、日誌和跟踪解決方案。</p>
+<h2 id="_20">建議<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h2>
+<h3 id="_21">監控您的應用程式<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h3>
+<p>需要監控的現代應用程式指標數量不斷增加。如果您有一種自動跟踪應用程式的方法,您就可以專注於解決客戶的挑戰。像 <a href="https://prometheus.io">Prometheus</a> 或 <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html">CloudWatch Container Insights</a> 這樣的集群範圍監控工具可以監控您的集群和工作負載,並在出現問題(最好是在問題惡化之前)時為您提供信號。</p>
+<p>監控工具允許您創建警報,您的運營團隊可以訂閱這些警報。考慮激活可能導致停機或影響應用程式性能的事件的警報規則。</p>
+<p>如果您不確定應該監控哪些指標,您可以從這些方法中獲取靈感:</p>
+<ul>
+<li><a href="https://www.weave.works/blog/a-practical-guide-from-instrumenting-code-to-specifying-alerts-with-the-red-method">RED 方法</a>。代表請求、錯誤和持續時間。</li>
+<li><a href="http://www.brendangregg.com/usemethod.html">USE 方法</a>。代表利用率、飽和度和錯誤。</li>
+</ul>
+<p>Sysdig 的文章<a href="https://sysdig.com/blog/alerting-kubernetes/">Kubernetes 上的最佳警報實踐</a>包含了可能影響您應用程式可用性的組件的全面列表。</p>
+<h3 id="prometheus">使用 Prometheus 客戶端庫公開應用程式指標<a class="headerlink" href="#prometheus" title="Permanent link">&para;</a></h3>
+<p>除了監控應用程式的狀態和聚合標準指標外,您還可以使用 <a href="https://prometheus.io/docs/instrumenting/clientlibs/">Prometheus 客戶端庫</a>公開應用程式特定的自定義指標,以提高應用程式的可觀察性。</p>
+<h3 id="_22">使用集中式日誌工具收集和持久化日誌<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h3>
+<p>EKS 中的日誌記錄分為兩類:控制平面日誌和應用程式日誌。EKS 控制平面日誌直接從控制平面提供審核和診斷日誌到您帳戶中的 CloudWatch Logs。應用程式日誌是在集群內運行的 Pod 產生的日誌。應用程式日誌包括運行業務邏輯應用程式的 Pod 以及 CoreDNS、Cluster Autoscaler、Prometheus 等 Kubernetes 系統組件產生的日誌。</p>
+<p><a href="https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html">EKS 提供五種類型的控制平面日誌</a>:</p>
+<ol>
+<li>Kubernetes API 服務器組件日誌</li>
+<li>審核</li>
+<li>驗證器</li>
+<li>控制器管理器</li>
+<li>調度器</li>
+</ol>
+<p>控制器管理器和調度器日誌可以幫助診斷控制平面問題,如瓶頸和錯誤。默認情況下,EKS 控制平面日誌不會發送到 CloudWatch Logs。您可以啟用控制平面日誌記錄,並選擇要為您帳戶中的每個集群捕獲的 EKS 控制平面日誌類型。</p>
+<p>收集應用程式日誌需要在您的集群中安裝日誌聚合工具,如 <a href="http://fluentbit.io">Fluent Bit</a>、<a href="https://www.fluentd.org">Fluentd</a> 或 <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/deploy-container-insights-EKS.html">CloudWatch Container Insights</a>。</p>
+<p>Kubernetes 日誌聚合工具以 DaemonSet 的形式運行,並從節點中刮取容器日誌。然後,應用程式日誌被發送到集中式目的地進行存儲。例如,CloudWatch Container Insights 可以使用 Fluent Bit 或 Fluentd 收集日誌並將其發送到 CloudWatch Logs 進行存儲。Fluent Bit 和 Fluentd 支持許多流行的日誌分析系統,如 Elasticsearch 和 InfluxDB,使您能夠通過修改 Fluent Bit 或 Fluentd 的日誌配置來更改日誌的存儲後端。</p>
+<h3 id="_23">使用分佈式跟踪系統識別瓶頸<a class="headerlink" href="#_23" title="Permanent link">&para;</a></h3>
+<p>典型的現代應用程序的組件分佈在網絡上,其可靠性取決於構成應用程序的每個組件的正常運行。您可以使用分佈式跟踪解決方案來了解請求的流向以及系統之間的通信方式。跟踪可以顯示應用程序網絡中存在的瓶頸,並防止可能導致級聯故障的問題。</p>
+<p>您有兩種實現應用程序跟踪的方法:您可以在代碼級別使用共享庫實現分佈式跟踪,也可以使用服務網格。</p>
+<p>在代碼級別實現跟踪可能是不利的。在這種方法中,您必須對代碼進行更改。如果您有多語言的應用程序,這會更加複雜。您還需要維護另一個跨服務的庫。</p>
+<p>像 <a href="http://linkerd.io">LinkerD</a>、<a href="http://istio.io">Istio</a> 和 <a href="https://aws.amazon.com/app-mesh/">AWS App Mesh</a> 這樣的服務網格可以在您的應用程序中實現分佈式跟踪,而無需對應用程序代碼進行大量更改。您可以使用服務網格來標準化指標生成、日誌記錄和跟踪。</p>
+<p>跟踪工具如 <a href="https://aws.amazon.com/xray/">AWS X-Ray</a> 和 <a href="https://www.jaegertracing.io">Jaeger</a> 支持共享庫和服務網格實現。</p>
+<p>考慮使用像 <a href="https://aws.amazon.com/xray/">AWS X-Ray</a> 或 <a href="https://www.jaegertracing.io">Jaeger</a> 這樣的跟踪工具,它們支持這兩種(共享庫和服務網格)實現,這樣如果您後來採用服務網格,您就不需要切換工具。</p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u8907\u88fd", "clipboard.copy": "\u8907\u88fd", "search.result.more.one": "\u6b64\u9801\u5c1a\u6709 1 \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.more.other": "\u6b64\u9801\u5c1a\u6709 # \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.none": "\u6c92\u6709\u7b26\u5408\u7684\u9805\u76ee", "search.result.one": "\u627e\u5230 1 \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.other": "\u627e\u5230 # \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.placeholder": "\u6253\u5b57\u9032\u884c\u641c\u5c0b", "search.result.term.missing": "\u7f3a\u5c11\u5b57\u8a5e", "select.version": "\u9078\u64c7\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+    
+  </body>
+</html>

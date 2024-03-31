@@ -1,0 +1,3314 @@
+
+<!doctype html>
+<html lang="zh-TW" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../detective/">
+      
+      
+        <link rel="next" href="../data/">
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>網絡安全 - EKS最佳實踐指南</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-VQGL8B2FH8"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-VQGL8B2FH8",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-VQGL8B2FH8",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳轉到
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="頁首">
+    <a href="../../../" title="EKS最佳實踐指南" class="md-header__button md-logo" aria-label="EKS最佳實踐指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EKS最佳實踐指南
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              網絡安全
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="選擇語言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../security/docs/network/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../ko/security/docs/network/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../zh/security/docs/network/" hreflang="zh" class="md-select__link">
+              中文（简体）
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh-TW" class="md-select__link">
+              中文（繁體）
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜尋" placeholder="搜尋" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="搜尋">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清除" aria-label="清除" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜尋引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-eks-best-practices" title="前往倉庫" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="導覽列" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="EKS最佳實踐指南" class="md-nav__button md-logo" aria-label="EKS最佳實踐指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    EKS最佳實踐指南
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-eks-best-practices" title="前往倉庫" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    指南
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    簡介
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    安全
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            安全
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    身份和訪問管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pods/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pod 安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multitenancy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多租戶
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../detective/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    偵查控制
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    網絡安全
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    網絡安全
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      流量控制
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      網絡加密
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      網絡策略
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      建議
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="建議">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-" class="md-nav__link">
+    <span class="md-ellipsis">
+      開始使用網絡策略 - 遵循最小特權原則
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="開始使用網絡策略 - 遵循最小特權原則">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      創建默認拒絕策略
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      創建一個允許DNS查詢的規則
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      逐步添加規則,有選擇地允許命名空間/pod之間的流量
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      監控網絡策略執行
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      故障排除
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="故障排除">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vpc-network-policy-controllernode-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      監控vpc-network-policy-controller、node-agent日誌
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      記錄網絡流量元數據
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      安全組
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vs-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      何時使用網絡策略vs pod的安全組?
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="何時使用網絡策略vs pod的安全組?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      何時使用Kubernetes網絡策略
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-podsgp" class="md-nav__link">
+    <span class="md-ellipsis">
+      何時使用AWS pod的安全組(SGP)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pod_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用pod的安全組和網絡策略的最佳實踐
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      服務網格策略執行或Kubernetes網絡策略
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="服務網格策略執行或Kubernetes網絡策略">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      何時使用服務網格進行策略執行
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      選擇Kubernetes網絡策略用於簡單用例
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      第三方網絡策略引擎
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第三方網絡策略引擎">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#amazon-vpc-cni" class="md-nav__link">
+    <span class="md-ellipsis">
+      遷移到Amazon VPC CNI網絡策略引擎
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="遷移到Amazon VPC CNI網絡策略引擎">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      遷移工具
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      其他資源
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      傳輸中的加密
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="傳輸中的加密">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nitro" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nitro實例
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cnis" class="md-nav__link">
+    <span class="md-ellipsis">
+      容器網絡接口(CNIs)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      服務網格
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ingress控制器和負載均衡器
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ingress控制器和負載均衡器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      與AWS彈性負載均衡器一起使用加密
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cert-manageracmca" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用cert-manager的ACM私有CA
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="使用cert-manager的ACM私有CA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tlsca" class="md-nav__link">
+    <span class="md-ellipsis">
+      用於工作負載之間的相互TLS的短期CA模式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      ACM設置說明
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#istiocert-manageracmca" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用Istio和cert-manager的ACM私有CA
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="使用Istio和cert-manager的ACM私有CA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#istio" class="md-nav__link">
+    <span class="md-ellipsis">
+      Istio中證書簽名的工作原理(默認)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#istioacmca" class="md-nav__link">
+    <span class="md-ellipsis">
+      Istio中證書簽名的工作原理(使用ACM私有CA)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#istioca" class="md-nav__link">
+    <span class="md-ellipsis">
+      Istio與私有CA的設置說明
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      工具和資源
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據加密和密鑰管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    運行時安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hosts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基礎設施安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../compliance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    監管合規性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../incidents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    事故響應和取證
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../image/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    映像安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multiaccount/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多帳戶策略
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    叢集自動擴展
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            叢集自動擴展
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../karpenter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Karpenter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cluster-autoscaling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集自動擴展器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可靠性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            可靠性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reliability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reliability/docs/application/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    應用程式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reliability/docs/controlplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reliability/docs/dataplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Windows 容器
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Windows 容器
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/ami/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AMI 管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/gmsa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 容器的 gMSA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/hardening/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows Server 強化
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    掃描 Windows 映像
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/licensing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 版本和許可
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    日誌記錄
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    監控 Windows 容器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 網絡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/oom/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    內存和系統管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/patching/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基礎設施管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/scheduling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    調度
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 容器的 Pod 安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../windows/docs/storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存儲選項
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    網絡
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            網絡
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/subnets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VPC 和子網考量
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/vpc-cni/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon VPC CNI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/ip-optimization-strategies/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    優化 IP 地址利用率
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/ipv6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    運行 IPv6 叢集
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/custom-networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    自訂網路
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/prefix-mode/index_linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Linux 的前綴模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/prefix-mode/index_windows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 的前綴模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/sgpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    每個 Pod 的安全組
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/loadbalancing/loadbalancing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    負載均衡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../networking/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡性能問題監控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可擴展性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            可擴展性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/control-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/data-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/cluster-services/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集服務
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/workloads/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    工作負載
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/scaling_theory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    擴展背後的理論
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/kcp_monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面監控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/node_efficiency/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    節點效率和擴展
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/kubernetes_slos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes SLO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../scalability/docs/quotas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    已知限制和服務配額
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../upgrades/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集升級
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    成本優化
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            成本優化
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cfm_framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    雲端財務管理框架
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cost_opt_compute/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    計算
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cost_opt_networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cost_opt_storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存儲
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cost_optimization/cost_opt_observability/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    可觀察性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      流量控制
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      網絡加密
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      網絡策略
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      建議
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="建議">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-" class="md-nav__link">
+    <span class="md-ellipsis">
+      開始使用網絡策略 - 遵循最小特權原則
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="開始使用網絡策略 - 遵循最小特權原則">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      創建默認拒絕策略
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      創建一個允許DNS查詢的規則
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      逐步添加規則,有選擇地允許命名空間/pod之間的流量
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      監控網絡策略執行
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      故障排除
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="故障排除">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vpc-network-policy-controllernode-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      監控vpc-network-policy-controller、node-agent日誌
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      記錄網絡流量元數據
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      安全組
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vs-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      何時使用網絡策略vs pod的安全組?
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="何時使用網絡策略vs pod的安全組?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      何時使用Kubernetes網絡策略
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-podsgp" class="md-nav__link">
+    <span class="md-ellipsis">
+      何時使用AWS pod的安全組(SGP)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pod_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用pod的安全組和網絡策略的最佳實踐
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      服務網格策略執行或Kubernetes網絡策略
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="服務網格策略執行或Kubernetes網絡策略">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      何時使用服務網格進行策略執行
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      選擇Kubernetes網絡策略用於簡單用例
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      第三方網絡策略引擎
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第三方網絡策略引擎">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#amazon-vpc-cni" class="md-nav__link">
+    <span class="md-ellipsis">
+      遷移到Amazon VPC CNI網絡策略引擎
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="遷移到Amazon VPC CNI網絡策略引擎">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      遷移工具
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      其他資源
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      傳輸中的加密
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="傳輸中的加密">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nitro" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nitro實例
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cnis" class="md-nav__link">
+    <span class="md-ellipsis">
+      容器網絡接口(CNIs)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      服務網格
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ingress" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ingress控制器和負載均衡器
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ingress控制器和負載均衡器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      與AWS彈性負載均衡器一起使用加密
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cert-manageracmca" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用cert-manager的ACM私有CA
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="使用cert-manager的ACM私有CA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tlsca" class="md-nav__link">
+    <span class="md-ellipsis">
+      用於工作負載之間的相互TLS的短期CA模式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      ACM設置說明
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#istiocert-manageracmca" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用Istio和cert-manager的ACM私有CA
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="使用Istio和cert-manager的ACM私有CA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#istio" class="md-nav__link">
+    <span class="md-ellipsis">
+      Istio中證書簽名的工作原理(默認)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#istioacmca" class="md-nav__link">
+    <span class="md-ellipsis">
+      Istio中證書簽名的工作原理(使用ACM私有CA)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#istioca" class="md-nav__link">
+    <span class="md-ellipsis">
+      Istio與私有CA的設置說明
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      工具和資源
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="_1">網絡安全<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>網絡安全有幾個方面。第一個涉及應用限制網絡流量在服務之間流動的規則。第二個涉及在傳輸過程中對流量進行加密。在EKS上實施這些安全措施的機制是多樣的,但通常包括以下項目:</p>
+<h2 id="_2">流量控制<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>網絡策略</li>
+<li>安全組</li>
+</ul>
+<h2 id="_3">網絡加密<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Service Mesh</li>
+<li>容器網絡接口(CNIs)</li>
+<li>Ingress控制器和負載均衡器</li>
+<li>Nitro實例</li>
+<li>使用cert-manager的ACM私有CA</li>
+</ul>
+<h2 id="_4">網絡策略<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>在Kubernetes集群中,默認情況下允許所有Pod到Pod的通信。雖然這種靈活性可能有助於促進實驗,但它不被認為是安全的。Kubernetes網絡策略為您提供了一種機制,可以限制Pod之間(通常稱為East/West流量)以及Pod和外部服務之間的網絡流量。Kubernetes網絡策略在OSI模型的第3層和第4層運行。網絡策略使用pod、命名空間選擇器和標籤來識別源和目標pod,但也可以包括IP地址、端口號、協議或這些的組合。網絡策略可以應用於pod的入站或出站連接,通常稱為入口和出口規則。</p>
+<p>通過Amazon VPC CNI插件的原生網絡策略支持,您可以實施網絡策略來保護Kubernetes集群中的網絡流量。這與上游Kubernetes網絡策略API集成,確保兼容性和遵守Kubernetes標準。您可以使用上游API支持的不同<a href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">標識符</a>來定義策略。默認情況下,允許所有進出pod的流量。指定了具有policyType Ingress的網絡策略時,只允許從pod的節點和入口規則允許的連接進入pod。出口規則也是如此。如果定義了多個規則,則在做出決定時會考慮所有規則的聯合。因此,評估順序不會影響策略結果。</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>首次配置EKS集群時,VPC CNI網絡策略功能默認未啟用。確保您部署了受支持的VPC CNI附加組件版本,並在vpc-cni附加組件上將<code>ENABLE_NETWORK_POLICY</code>標誌設置為<code>true</code>以啟用此功能。請參考<a href="https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html">Amazon EKS用戶指南</a>以獲取詳細說明。</p>
+</div>
+<h2 id="_5">建議<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h3 id="-">開始使用網絡策略 - 遵循最小特權原則<a class="headerlink" href="#-" title="Permanent link">&para;</a></h3>
+<h4 id="_6">創建默認拒絕策略<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<p>與RBAC策略一樣,建議遵循最小特權訪問原則使用網絡策略。首先創建一個拒絕所有策略,限制命名空間內的所有入站和出站流量。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NetworkPolicy</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default-deny</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="nt">podSelector</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="nt">policyTypes</span><span class="p">:</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ingress</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Egress</span>
+</code></pre></div>
+<p><img alt="default-deny" src="../../../../security/docs/images/default-deny.jpg" /></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>上圖由<a href="https://orca.tufin.io/netpol/">Tufin</a>的網絡策略查看器創建。</p>
+</div>
+<h4 id="dns">創建一個允許DNS查詢的規則<a class="headerlink" href="#dns" title="Permanent link">&para;</a></h4>
+<p>當您有了默認拒絕所有的規則後,您可以開始添加其他規則,例如允許pod查詢CoreDNS進行名稱解析的規則。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NetworkPolicy</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allow-dns-access</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">podSelector</span><span class="p">:</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="nt">policyTypes</span><span class="p">:</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Egress</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="nt">egress</span><span class="p">:</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">to</span><span class="p">:</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">namespaceSelector</span><span class="p">:</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">        </span><span class="nt">matchLabels</span><span class="p">:</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">          </span><span class="nt">kubernetes.io/metadata.name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kube-system</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">      </span><span class="nt">podSelector</span><span class="p">:</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">        </span><span class="nt">matchLabels</span><span class="p">:</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">          </span><span class="nt">k8s-app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kube-dns</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">UDP</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">53</span>
+</code></pre></div>
+<p><img alt="allow-dns-access" src="../../../../security/docs/images/allow-dns-access.jpg" /></p>
+<h4 id="pod">逐步添加規則,有選擇地允許命名空間/pod之間的流量<a class="headerlink" href="#pod" title="Permanent link">&para;</a></h4>
+<p>了解應用程序的要求,並根據需要創建細粒度的入口和出口規則。下面的示例展示了如何限制<code>client-one</code>的入口流量到端口80的<code>app-one</code>。這有助於最小化攻擊面,降低未經授權訪問的風險。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NetworkPolicy</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allow-ingress-app-one</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="nt">podSelector</span><span class="p">:</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">      </span><span class="nt">k8s-app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-one</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span><span class="nt">policyTypes</span><span class="p">:</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ingress</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">  </span><span class="nt">ingress</span><span class="p">:</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from</span><span class="p">:</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">podSelector</span><span class="p">:</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">        </span><span class="nt">matchLabels</span><span class="p">:</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">          </span><span class="nt">k8s-app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">client-one</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+</code></pre></div>
+<p><img alt="allow-ingress-app-one" src="../../../../security/docs/images/allow-ingress-app-one.png" /></p>
+<h3 id="_7">監控網絡策略執行<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>使用網絡策略編輯器</strong></li>
+<li><a href="https://networkpolicy.io/">網絡策略編輯器</a>提供可視化、安全評分、從網絡流量日誌自動生成</li>
+<li>以交互方式構建網絡策略</li>
+<li><strong>審核日誌</strong></li>
+<li>定期審查您EKS集群的審核日誌</li>
+<li>審核日誌提供大量有關在集群上執行的操作的信息,包括對網絡策略的更改</li>
+<li>使用這些信息跟踪您的網絡策略隨時間的變化,並檢測任何未經授權或意外的變化</li>
+<li><strong>自動化測試</strong></li>
+<li>通過創建一個與生產環境相似的測試環境,並定期部署試圖違反網絡策略的工作負載來實施自動化測試。</li>
+<li><strong>監控指標</strong></li>
+<li>配置您的可觀察性代理程序,以刮取VPC CNI節點代理程序的Prometheus指標,這允許監控代理程序的健康狀況和SDK錯誤。</li>
+<li><strong>定期審核網絡策略</strong></li>
+<li>定期審核您的網絡策略,以確保它們符合當前的應用程序要求。隨著您的應用程序的發展,審核可以讓您有機會刪除冗餘的入口和出口規則,並確保您的應用程序沒有過多的權限。</li>
+<li><strong>使用Open Policy Agent(OPA)確保網絡策略存在</strong></li>
+<li>使用如下所示的OPA策略,確保在引入應用程序pod之前網絡策略始終存在。此策略拒絕引入具有<code>k8s-app: sample-app</code>標籤的k8s pod,如果不存在相應的網絡策略。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kr">package</span><span class="w"> </span><span class="nx">kubernetes</span><span class="p">.</span><span class="nx">admission</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">import</span><span class="w"> </span><span class="nx">data</span><span class="p">.</span><span class="nx">kubernetes</span><span class="p">.</span><span class="nx">networkpolicies</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nx">deny</span><span class="p">[</span><span class="nx">msg</span><span class="p">]</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nx">input</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">kind</span><span class="p">.</span><span class="nx">kind</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;Pod&quot;</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="nx">pod_label_value</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">{</span><span class="nx">v</span><span class="p">[</span><span class="s2">&quot;k8s-app&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">input</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">metadata</span><span class="p">.</span><span class="nx">labels</span><span class="p">}</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="nx">contains_label</span><span class="p">(</span><span class="nx">pod_label_value</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;sample-app&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="nx">np_label_value</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">{</span><span class="nx">v</span><span class="p">[</span><span class="s2">&quot;k8s-app&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">networkpolicies</span><span class="p">[</span><span class="nx">_</span><span class="p">].</span><span class="nx">spec</span><span class="p">.</span><span class="nx">podSelector</span><span class="p">.</span><span class="nx">matchLabels</span><span class="p">}</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="nx">not</span><span class="w"> </span><span class="nx">contains_label</span><span class="p">(</span><span class="nx">np_label_value</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;sample-app&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="nx">msg</span><span class="o">:=</span><span class="w"> </span><span class="nx">sprintf</span><span class="p">(</span><span class="s2">&quot;The Pod %v could not be created because it is missing an associated Network Policy.&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nx">input</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">object</span><span class="p">.</span><span class="nx">metadata</span><span class="p">.</span><span class="nx">name</span><span class="p">])</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">}</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="nx">contains_label</span><span class="p">(</span><span class="nx">arr</span><span class="p">,</span><span class="w"> </span><span class="nx">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="nx">arr</span><span class="p">[</span><span class="nx">_</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">val</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="_8">故障排除<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<h4 id="vpc-network-policy-controllernode-agent">監控vpc-network-policy-controller、node-agent日誌<a class="headerlink" href="#vpc-network-policy-controllernode-agent" title="Permanent link">&para;</a></h4>
+<p>啟用EKS控制平面控制器管理器日誌以診斷網絡策略功能。您可以將控制平面日誌流式傳輸到CloudWatch日誌組,並使用<a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html">CloudWatch日誌洞察</a>執行高級查詢。從日誌中,您可以查看哪些pod端點對象被解析為網絡策略,策略的協調狀態,以及調試策略是否按預期工作。</p>
+<p>此外,Amazon VPC CNI允許您啟用從EKS工作節點向<a href="https://aws.amazon.com/cloudwatch/">Amazon Cloudwatch</a>收集和導出策略執行日誌。啟用後,您可以利用<a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html">CloudWatch容器洞察</a>提供有關網絡策略使用情況的洞察。</p>
+<p>Amazon VPC CNI還提供了一個SDK,提供了一個與節點上的eBPF程序交互的接口。在部署<code>aws-node</code>到節點時,會安裝SDK。您可以在節點上的<code>/opt/cni/bin</code>目錄中找到SDK二進制文件。啟動時,SDK提供對基本功能的支持,如檢查eBPF程序和映射。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sudo<span class="w"> </span>/opt/cni/bin/aws-eks-na-cli<span class="w"> </span>ebpf<span class="w"> </span>progs
+</code></pre></div>
+<h4 id="_9">記錄網絡流量元數據<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h4>
+<p><a href="https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html">AWS VPC Flow Logs</a>捕獲通過VPC流動的流量的元數據,如源和目標IP地址和端口以及接受/丟棄的數據包。這些信息可以被分析,以查找VPC內部資源之間的可疑或異常活動。但是,由於pod的IP地址經常變化,因為它們被替換,Flow Logs可能不足以單獨使用。Calico Enterprise擴展了Flow Logs,添加了pod標籤和其他元數據,使得解釋pod之間的流量更加容易。</p>
+<h2 id="_10">安全組<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<p>EKS使用<a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html">AWS VPC安全組</a>(SG)來控制Kubernetes控制平面和集群工作節點之間的流量。安全組也用於控制工作節點之間、其他VPC資源和外部IP地址之間的流量。當您配置EKS集群(Kubernetes版本1.14-eks.3或更高版本)時,會自動為您創建一個集群安全組。此安全組允許受管節點組與EKS控制平面之間的無限制通信。為了簡單起見,建議您將集群SG添加到所有節點組,包括非受管節點組。</p>
+<p>在Kubernetes版本1.14和EKS版本eks.3之前,EKS控制平面和節點組配置了單獨的安全組。控制平面和節點組安全組的最小和建議規則可以在<a href="https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html">https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html</a>找到。_控制平面安全組_的最小規則允許來自工作節點SG的443端口入站。這個規則是允許kubelet與Kubernetes API服務器通信的。它還包括端口10250的出站流量到工作節點SG;10250是kubelet監聽的端口。同樣,_節點組_的最小規則允許來自控制平面SG的10250端口入站和443端口出站。最後,還有一條允許節點組內部節點之間無限制通信的規則。</p>
+<p>如果您需要控制集群內部服務與外部服務(如RDS數據庫)之間的通信,請考慮<a href="https://docs.aws.amazon.com/eks/latest/userguide/security-groups-for-pods.html">pod的安全組</a>。使用pod的安全組,您可以將現有的安全組分配給一組pod。</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>如果在創建pod之前引用一個不存在的安全組,pod將無法調度。</p>
+</div>
+<p>您可以通過創建一個<code>SecurityGroupPolicy</code>對象並指定<code>PodSelector</code>或<code>ServiceAccountSelector</code>來控制哪些pod被分配到一個安全組。將選擇器設置為<code>{}</code>將把SG引用的SG分配給命名空間中的所有pod或所有服務帳戶。在實現pod的安全組之前,請務必熟悉所有<a href="https://docs.aws.amazon.com/eks/latest/userguide/security-groups-for-pods.html#security-groups-pods-considerations">注意事項</a>。</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>如果您使用pod的SG,<strong>必須</strong>創建允許端口53出站到集群安全組的SG。同樣,<strong>必須</strong>更新集群安全組,以接受來自pod安全組的53端口入站流量。</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><a href="https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html#vpc-limits-security-groups">安全組的限制</a>仍然適用於pod的安全組,所以要謹慎使用。</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>您<strong>必須</strong>為pod配置的所有探測創建來自集群安全組(kubelet)的入站流量規則。</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>pod的安全組依賴於一個名為<a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-instance-eni.html">ENI trunking</a>的功能,該功能是為了增加EC2實例的ENI密度。當一個pod被分配到一個SG時,VPC控制器會將一個來自節點組的分支ENI與pod關聯起來。如果在pod被調度時節點組中沒有足夠的分支ENI可用,pod將保持pending狀態。一個實例可以支持的分支ENI數量因實例類型/系列而異。請參見<a href="https://docs.aws.amazon.com/eks/latest/userguide/security-groups-for-pods.html#supported-instance-types">https://docs.aws.amazon.com/eks/latest/userguide/security-groups-for-pods.html#supported-instance-types</a>以獲取更多詳細信息。</p>
+</div>
+<p>雖然pod的安全組提供了一種AWS本地的方式來控制集群內部和外部的網絡流量,而無需依賴策略守護進程,但也有其他選擇。例如,Cilium策略引擎允許您在網絡策略中引用DNS名稱。Calico Enterprise包括一個將網絡策略映射到AWS安全組的選項。如果您實施了像Istio這樣的服務網格,您可以使用一個出口網關來限制到特定完全限定域名或IP地址的網絡出口流量。有關此選項的更多信息,請閱讀關於<a href="https://istio.io/blog/2019/egress-traffic-control-in-istio-part-1/">Istio中出口流量控制</a>的三篇系列文章。</p>
+<h2 id="vs-pod">何時使用網絡策略vs pod的安全組?<a class="headerlink" href="#vs-pod" title="Permanent link">&para;</a></h2>
+<h3 id="kubernetes">何時使用Kubernetes網絡策略<a class="headerlink" href="#kubernetes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>控制pod到pod的流量</strong></li>
+<li>適用於控制集群內pod之間的網絡流量(東西向流量)</li>
+<li><strong>在IP地址或端口級別(OSI第3層或第4層)控制流量</strong></li>
+</ul>
+<h3 id="aws-podsgp">何時使用AWS pod的安全組(SGP)<a class="headerlink" href="#aws-podsgp" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>利用現有的AWS配置</strong></li>
+<li>如果您已經有一組複雜的EC2安全組來管理對AWS服務的訪問,並且正在將應用程序從EC2實例遷移到EKS,SGPs可以是一個非常好的選擇,允許您重用安全組資源並將其應用於您的pod。</li>
+<li><strong>控制對AWS服務的訪問</strong></li>
+<li>您在EKS集群中運行的應用程序想要與其他AWS服務(RDS數據庫)進行通信,請使用SGP作為一種有效的機制來控制pod到AWS服務的流量。</li>
+<li><strong>隔離Pod和節點流量</strong></li>
+<li>如果您想完全分離pod流量和其他節點流量,請在<code>POD_SECURITY_GROUP_ENFORCING_MODE=strict</code>模式下使用SGP。</li>
+</ul>
+<h3 id="pod_1">使用<code>pod的安全組</code>和<code>網絡策略</code>的最佳實踐<a class="headerlink" href="#pod_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>分層安全</strong></li>
+<li>結合使用SGP和Kubernetes網絡策略,採取分層安全方法</li>
+<li>使用SGP來限制對不屬於集群的AWS服務的網絡級別訪問,而Kubernetes網絡策略可以限制集群內pod之間的網絡流量</li>
+<li><strong>最小特權原則</strong></li>
+<li>只允許pod或命名空間之間必要的流量</li>
+<li><strong>細分您的應用程序</strong></li>
+<li>盡可能按網絡策略細分應用程序,以減少應用程序被入侵時的影響範圍</li>
+<li><strong>保持策略簡單明了</strong></li>
+<li>Kubernetes網絡策略可能相當細粒度和複雜,最好保持它們盡可能簡單,以減少配置錯誤的風險並降低管理開銷</li>
+<li><strong>減少攻擊面</strong></li>
+<li>通過限制應用程序的暴露,最大限度地減少攻擊面</li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>pod的安全組提供了兩種執行模式:<code>strict</code>和<code>standard</code>。當在EKS集群中同時使用網絡策略和pod的安全組功能時,您必須使用<code>standard</code>模式。</p>
+</div>
+<p>在網絡安全方面,分層方法通常是最有效的解決方案。結合使用Kubernetes網絡策略和SGP可以為您在EKS上運行的應用程序提供一個強大的縱深防禦策略。</p>
+<h2 id="kubernetes_1">服務網格策略執行或Kubernetes網絡策略<a class="headerlink" href="#kubernetes_1" title="Permanent link">&para;</a></h2>
+<p><code>服務網格</code>是一個專門的基礎設施層,您可以將其添加到您的應用程序中。它允許您透明地添加諸如可觀察性、流量管理和安全性等功能,而無需將它們添加到您自己的代碼中。</p>
+<p>服務網格在OSI模型的第7層(應用程序)執行策略,而Kubernetes網絡策略在第3層(網絡)和第4層(傳輸)運行。這個領域有很多選擇,如AWS AppMesh、Istio、Linkerd等。</p>
+<h3 id="_11">何時使用服務網格進行策略執行<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li>已經在服務網格上有投資</li>
+<li>需要更高級的功能,如流量管理、可觀察性和安全性</li>
+<li>流量控制、負載均衡、斷路、速率限制、超時等</li>
+<li>詳細了解您的服務性能(延遲、錯誤率、每秒請求數、請求量等)</li>
+<li>您想要實施和利用服務網格的安全功能,如mTLS</li>
+</ul>
+<h3 id="kubernetes_2">選擇Kubernetes網絡策略用於簡單用例<a class="headerlink" href="#kubernetes_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>限制哪些pod可以相互通信</li>
+<li>網絡策略需要的資源比服務網格少,這使它們成為簡單用例或較小集群的良好選擇,在這些集群中運行和管理服務網格可能無法得到證明</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>網絡策略和服務網格也可以一起使用。使用網絡策略提供基本的安全性和pod之間的隔離,然後使用服務網格添加流量管理、可觀察性和安全性等其他功能。</p>
+</div>
+<h2 id="_12">第三方網絡策略引擎<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<p>當您有高級策略要求,如全局網絡策略、支持基於DNS主機名的規則、第7層規則、基於ServiceAccount的規則以及顯式拒絕/日誌操作等時,請考慮使用第三方網絡策略引擎。<a href="https://docs.projectcalico.org/introduction/">Calico</a>是來自<a href="https://tigera.io">Tigera</a>的開源策略引擎,與EKS配合使用效果很好。除了實現完整的Kubernetes網絡策略功能外,Calico還支持擴展網絡策略,提供更豐富的功能,包括與Istio集成時對第7層規則(如HTTP)的支持。Calico策略可以範圍到命名空間、pod或服務帳戶,或全局。當策略範圍到服務帳戶時,它會將一組入口/出口規則與該服務帳戶關聯。有了適當的RBAC規則,您可以防止團隊覆蓋這些規則,讓IT安全專業人員能夠安全地委派命名空間管理。Isovalent(Cilium的維護者)也擴展了網絡策略,部分支持第7層規則(如HTTP)。Cilium還支持DNS主機名,這對於限制Kubernetes服務/pod與VPC內部或外部運行的資源之間的流量很有用。相比之下,Calico Enterprise包括一個功能,允許您將Kubernetes網絡策略映射到AWS安全組,以及DNS主機名。</p>
+<p>您可以在<a href="https://github.com/ahmetb/kubernetes-network-policy-recipes">https://github.com/ahmetb/kubernetes-network-policy-recipes</a>找到常見的Kubernetes網絡策略列表。Calico的類似規則集可以在<a href="https://docs.projectcalico.org/security/calico-network-policy">https://docs.projectcalico.org/security/calico-network-policy</a>找到。</p>
+<h3 id="amazon-vpc-cni">遷移到Amazon VPC CNI網絡策略引擎<a class="headerlink" href="#amazon-vpc-cni" title="Permanent link">&para;</a></h3>
+<p>為了保持一致性並避免意外的pod通信行為,建議在集群中只部署一個網絡策略引擎。如果您想從3P遷移到VPC CNI網絡策略引擎,我們建議在啟用VPC CNI網絡策略支持之前,將現有的3P NetworkPolicy CRD轉換為Kubernetes NetworkPolicy資源。並在單獨的測試集群中測試遷移後的策略,然後再將其應用於生產環境。這樣可以幫助您識別和解決pod通信行為中的任何潛在問題或不一致。</p>
+<h4 id="_13">遷移工具<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h4>
+<p>為了協助您的遷移過程,我們開發了一個名為<a href="https://github.com/awslabs/k8s-network-policy-migrator">K8s Network Policy Migrator</a>的工具,可以將您現有的Calico/Cilium網絡策略CRD轉換為Kubernetes原生網絡策略。轉換後,您可以直接在運行VPC CNI網絡策略控制器的新集群上測試轉換後的網絡策略。該工具旨在幫助您簡化遷移過程,確保順利過渡。</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>遷移工具只會轉換與原生Kubernetes網絡策略API兼容的3P策略。如果您使用3P插件提供的高級網絡策略功能,遷移工具將跳過並報告它們。</p>
+</div>
+<p>請注意,遷移工具目前不受AWS VPC CNI網絡策略工程團隊支持,它是在最大努力的基礎上提供給客戶使用的。我們鼓勵您利用這個工具來促進您的遷移過程。如果您遇到任何問題或錯誤,我們誠摯地要求您創建一個<a href="https://github.com/awslabs/k8s-network-policy-migrator/issues">GitHub問題</a>。您的反饋對我們很寶貴,將有助於我們不斷改進我們的服務。</p>
+<h3 id="_14">其他資源<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://youtu.be/lEY2WnRHYpg">Kubernetes &amp; Tigera: Network Policies, Security, and Audit</a></li>
+<li><a href="https://www.tigera.io/tigera-products/calico-enterprise/">Calico Enterprise</a></li>
+<li><a href="https://cilium.readthedocs.io/en/stable/intro/">Cilium</a></li>
+<li><a href="https://cilium.io/blog/2021/02/10/network-policy-editor">NetworkPolicy Editor</a> 來自Cilium的交互式策略編輯器</li>
+<li><a href="https://www.inspektor-gadget.io/docs/latest/gadgets/advise/network-policy/">Inspektor Gadget advise network-policy gadget</a> 根據網絡流量分析建議網絡策略</li>
+</ul>
+<h2 id="_15">傳輸中的加密<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<p>需要符合PCI、HIPAA或其他法規的應用程序可能需要在傳輸過程中加密數據。如今,TLS是加密網絡流量的事實標準選擇。TLS就像它的前身SSL一樣,提供了使用加密協議在網絡上進行安全通信。TLS使用對稱加密,其中用於加密數據的密鑰是基於在會話開始時協商的共享秘密生成的。以下是在Kubernetes環境中加密數據的一些方法。</p>
+<h3 id="nitro">Nitro實例<a class="headerlink" href="#nitro" title="Permanent link">&para;</a></h3>
+<p>在以下Nitro實例類型之間交換的流量,如C5n、G4、I3en、M5dn、M5n、P3dn、R5dn和R5n,默認情況下是自動加密的。當有中間跳躍,如過境網關或負載均衡器,流量不會被加密。請參見<a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/data-protection.html#encryption-transit">傳輸中的加密</a>以及支持網絡加密的完整實例類型列表的進一步詳細信息。</p>
+<h3 id="cnis">容器網絡接口(CNIs)<a class="headerlink" href="#cnis" title="Permanent link">&para;</a></h3>
+<p><a href="https://www.weave.works/oss/net/">WeaveNet</a>可以配置為自動使用NaCl加密對sleeve流量進行加密,使用IPsec ESP加密快速數據路徑流量。</p>
+<h3 id="_16">服務網格<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h3>
+<p>傳輸中的加密也可以使用像App Mesh、Linkerd v2和Istio這樣的服務網格來實現。AppMesh支持使用X.509證書或Envoy的Secret Discovery Service(SDS)的<a href="https://docs.aws.amazon.com/app-mesh/latest/userguide/mutual-tls.html">mTLS</a>。Linkerd和Istio都支持mTLS。</p>
+<p><a href="https://github.com/aws/aws-app-mesh-examples">aws-app-mesh-examples</a>GitHub存儲庫提供了使用X.509證書和SPIRE作為SDS提供程序配置mTLS的分步指南:</p>
+<ul>
+<li><a href="https://github.com/aws/aws-app-mesh-examples/tree/main/walkthroughs/howto-k8s-mtls-file-based">使用X.509證書配置mTLS</a></li>
+<li><a href="https://github.com/aws/aws-app-mesh-examples/tree/main/walkthroughs/howto-k8s-mtls-sds-based">使用SPIRE(SDS)配置TLS</a></li>
+</ul>
+<p>App Mesh還支持使用<a href="https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html">AWS Certificate Manager</a>(ACM)發行的私有證書或存儲在虛擬節點本地文件系統上的證書的<a href="https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual-node-tls.html">TLS加密</a>。</p>
+<p><a href="https://github.com/aws/aws-app-mesh-examples">aws-app-mesh-examples</a>GitHub存儲庫提供了使用ACM簽發的證書和與您的Envoy容器打包的證書配置TLS的分步指南:</p>
+<ul>
+<li><a href="https://github.com/aws/aws-app-mesh-examples/tree/master/walkthroughs/howto-tls-file-provided">使用文件提供的TLS證書配置TLS</a></li>
+<li><a href="https://github.com/aws/aws-app-mesh-examples/tree/master/walkthroughs/tls-with-acm">使用AWS Certificate Manager配置TLS</a></li>
+</ul>
+<h3 id="ingress">Ingress控制器和負載均衡器<a class="headerlink" href="#ingress" title="Permanent link">&para;</a></h3>
+<p>Ingress控制器是一種方式,可以將來自集群外部的HTTP/S流量智能路由到集群內部運行的服務。通常,這些Ingress被一個第4層負載均衡器(如經典負載均衡器或網絡負載均衡器(NLB))所前置。可以在網絡的不同位置終止加密的流量,例如在負載均衡器、Ingress資源或Pod上。您終止SSL連接的位置最終將由您組織的網絡安全政策決定。例如,如果您有一個要求端到端加密的政策,您將不得不在Pod上解密流量。這將給您的Pod增加額外的負擔,因為它將不得不花費時間建立初始握手。總的來說,SSL/TLS處理是非常CPU密集的。因此,如果您有彈性,請嘗試在Ingress或負載均衡器上執行SSL卸載。</p>
+<h4 id="aws">與AWS彈性負載均衡器一起使用加密<a class="headerlink" href="#aws" title="Permanent link">&para;</a></h4>
+<p><a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html">AWS Application Load Balancer</a>(ALB)和<a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html">Network Load Balancer</a>(NLB)都支持傳輸加密(SSL和TLS)。ALB的<code>alb.ingress.kubernetes.io/certificate-arn</code>註釋允許您指定要添加到ALB的證書。如果省略註釋,控制器將嘗試使用匹配主機字段的可用<a href="https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html">AWS Certificate Manager (ACM)</a>證書添加證書到監聽器。從EKS v1.15開始,您可以使用NLB的<code>service.beta.kubernetes.io/aws-load-balancer-ssl-cert</code>註釋,如下面的示例所示。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">     </span><span class="nt">service.beta.kubernetes.io/aws-load-balancer-type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;nlb&quot;</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">     </span><span class="nt">service.beta.kubernetes.io/aws-load-balancer-ssl-cert</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&lt;certificate</span><span class="nv"> </span><span class="s">ARN&gt;&quot;</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">     </span><span class="nt">service.beta.kubernetes.io/aws-load-balancer-ssl-ports</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;443&quot;</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">     </span><span class="nt">service.beta.kubernetes.io/aws-load-balancer-backend-protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;http&quot;</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LoadBalancer</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">  </span><span class="nt">ports</span><span class="p">:</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">    </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">    </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="nn">---</span>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="w">  </span><span class="nt">labels</span><span class="p">:</span>
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app</span>
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app</span>
+<a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a><span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
+<a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-app</span>
+<a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a><span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a><span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a><span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a><span class="w">          </span><span class="nt">ports</span><span class="p">:</span>
+<a id="__codelineno-5-43" name="__codelineno-5-43" href="#__codelineno-5-43"></a><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">443</span>
+<a id="__codelineno-5-44" name="__codelineno-5-44" href="#__codelineno-5-44"></a><span class="w">              </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+<a id="__codelineno-5-45" name="__codelineno-5-45" href="#__codelineno-5-45"></a><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<a id="__codelineno-5-46" name="__codelineno-5-46" href="#__codelineno-5-46"></a><span class="w">              </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span>
+</code></pre></div>
+<p>以下是SSL/TLS終止的其他示例。</p>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/containers/securing-eks-ingress-contour-lets-encrypt-gitops/">使用Contour和Let's Encrypt以GitOps方式保護EKS Ingress</a></li>
+<li><a href="https://aws.amazon.com/premiumsupport/knowledge-center/terminate-https-traffic-eks-acm/">如何使用ACM在Amazon EKS工作負載上終止HTTPS流量?</a></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>某些Ingress(如AWS LB控制器)在Annotations而不是Ingress規範中實現SSL/TLS。</p>
+</div>
+<h3 id="cert-manageracmca">使用cert-manager的ACM私有CA<a class="headerlink" href="#cert-manageracmca" title="Permanent link">&para;</a></h3>
+<p>您可以使用ACM私有證書授權中心(CA)和<a href="https://cert-manager.io/">cert-manager</a>(一個流行的Kubernetes插件,用於分發、續訂和撤銷證書)來啟用EKS應用程序工作負載的TLS和mTLS。ACM私有CA是一個高可用、安全的托管CA,無需支付前期和維護成本。如果您使用默認的Kubernetes證書授權中心,有機會通過使用ACM私有CA來提高安全性並滿足合規要求。ACM私有CA在FIPS 140-2 Level 3硬件安全模塊(非常安全)中保護私鑰,而默認的CA在內存中存儲密鑰(不太安全)。集中式CA還可以讓您更好地控制和審核內部和外部Kubernetes環境中的私有證書。</p>
+<h4 id="tlsca">用於工作負載之間的相互TLS的短期CA模式<a class="headerlink" href="#tlsca" title="Permanent link">&para;</a></h4>
+<p>在EKS中使用ACM私有CA進行mTLS時,建議使用_短期CA模式_發出短期證書。雖然在通用目的CA模式下發出短期證書也是可能的,但使用短期CA模式更具成本效益(比通用模式便宜約75%)。此外,您應該努力使私有證書的有效期與EKS集群中pod的生命週期保持一致。<a href="https://aws.amazon.com/certificate-manager/private-certificate-authority/">在此了解有關ACM私有CA及其優勢的更多信息</a>。</p>
+<h4 id="acm">ACM設置說明<a class="headerlink" href="#acm" title="Permanent link">&para;</a></h4>
+<p>首先,按照<a href="https://docs.aws.amazon.com/acm-pca/latest/userguide/create-CA.html">ACM私有CA技術文檔</a>中提供的步驟創建一個私有CA。創建私有CA後,按照<a href="https://cert-manager.io/docs/installation/">常規安裝說明</a>安裝cert-manager。安裝cert-manager後,按照<a href="https://github.com/cert-manager/aws-privateca-issuer#setup">GitHub上的設置說明</a>安裝私有CA Kubernetes cert-manager插件。該插件允許cert-manager向ACM私有CA請求私有證書。</p>
+<p>現在您已經有了一個私有CA和一個配備了cert-manager和插件的EKS集群,是時候設置權限並創建簽發器了。更新EKS節點角色的IAM權限,以允許訪問ACM私有CA。用您的私有CA的<code>&lt;CA_ARN&gt;</code>替換:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">{</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="nt">&quot;Version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2012-10-17&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="nt">&quot;Statement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">        </span><span class="p">{</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">            </span><span class="nt">&quot;Sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;awspcaissuer&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">            </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">                </span><span class="s2">&quot;acm-pca:DescribeCertificateAuthority&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">                </span><span class="s2">&quot;acm-pca:GetCertificate&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">                </span><span class="s2">&quot;acm-pca:IssueCertificate&quot;</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">            </span><span class="p">],</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">            </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Allow&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">            </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;CA_ARN&gt;&quot;</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">    </span><span class="p">]</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="p">}</span>
+</code></pre></div>
+<p><a href="https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html">IAM帳戶的服務角色,或IRSA</a>也可以使用。請參見下面的其他資源部分以獲取完整的示例。</p>
+<p>通過創建一個名為cluster-issuer.yaml的自定義資源定義文件,在Amazon EKS中創建一個簽發器,其中包含以下文本,用您的私有CA的<code>&lt;CA_ARN&gt;</code>和<code>&lt;Region&gt;</code>信息替換。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">awspca.cert-manager.io/v1beta1</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AWSPCAClusterIssuer</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">demo-test-root-ca</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">          </span><span class="nt">arn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;CA_ARN&gt;</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">          </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;Region&gt;</span>
+</code></pre></div>
+<p>部署您創建的簽發器。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>cluster-issuer.yaml
+</code></pre></div>
+<p>您的EKS集群現已配置為從私有CA請求證書。您現在可以使用cert-manager的<code>Certificate</code>資源來發出證書,方法是將<code>issuerRef</code>字段的值更改為您創建的私有CA簽發器。有關如何指定和請求Certificate資源的更多詳細信息,請查看cert-manager的<a href="https://cert-manager.io/docs/usage/certificate/">Certificate Resources指南</a>。<a href="https://github.com/cert-manager/aws-privateca-issuer/tree/main/config/samples/">在此查看示例</a>。</p>
+<h3 id="istiocert-manageracmca">使用Istio和cert-manager的ACM私有CA<a class="headerlink" href="#istiocert-manageracmca" title="Permanent link">&para;</a></h3>
+<p>如果您在EKS集群中運行Istio,您可以禁用Istio控制平面(特別是<code>istiod</code>)作為根證書授權中心(CA),並將ACM私有CA配置為mTLS的根CA。如果您選擇這種方法,請考慮在ACM私有CA中使用_短期CA模式_。請參考<a href="#short-lived-ca-mode-for-mutual-tls-between-workloads">前一節</a>和這篇<a href="https://aws.amazon.com/blogs/security/how-to-use-aws-private-certificate-authority-short-lived-certificate-mode">博客文章</a>以獲取更多詳細信息。</p>
+<h4 id="istio">Istio中證書簽名的工作原理(默認)<a class="headerlink" href="#istio" title="Permanent link">&para;</a></h4>
+<p>Kubernetes中的工作負載使用服務帳戶進行標識。如果您沒有指定服務帳戶,Kubernetes將自動為您的工作負載分配一個。服務帳戶還會自動掛載一個關聯的令牌。此令牌由工作負載用於對Kubernetes API進行身份驗證。服務帳戶可能足以作為Kubernetes中的身份,但Istio有自己的身份管理系統和CA。當一個工作負載啟動時,連同它的envoy sidecar代理,它需要從Istio獲得一個身份,以便被視為可信任的並被允許與網格中的其他服務通信。</p>
+<p>為了從Istio獲得這個身份,<code>istio-agent</code>向Istio控制平面發送一個被稱為證書簽名請求(或CSR)的請求。這個CSR包含服務帳戶令牌,以便在處理之前可以驗證工作負載的身份。這個驗證過程由<code>istiod</code>處理,它同時充當註冊授權(或RA)和CA。RA充當看門人,確保只有經過驗證的CSR才能通過到CA。一旦CSR被驗證,它將被轉發到CA,CA將發出一個包含<a href="https://spiffe.io/">SPIFFE</a>身份的證書,稱為SPIFFE可驗證身份文檔(或SVID)。SVID被分配給請求服務,用於識別和加密服務之間的傳輸流量。</p>
+<p><img alt="Istio默認證書簽名請求流程" src="../../../../security/docs/images/default-istio-csr-flow.png" /></p>
+<h4 id="istioacmca">Istio中證書簽名的工作原理(使用ACM私有CA)<a class="headerlink" href="#istioacmca" title="Permanent link">&para;</a></h4>
+<p>您可以使用一個名為Istio Certificate Signing Request agent(<a href="https://cert-manager.io/docs/projects/istio-csr/">istio-csr</a>)的cert-manager插件來整合Istio與ACM私有CA。此代理公開了與<code>istiod</code>在默認配置中提供的相同的服務,用於驗證傳入的CSR。但是,在驗證之後,它將請求轉換為cert-manager支持的資源(即與外部CA簽發者的集成)。</p>
+<p>每當有工作負載的CSR時,它將被轉發到<code>istio-csr</code>,<code>istio-csr</code>將從ACM私有CA請求證書。<code>istio-csr</code>與ACM私有CA之間的這種通信是由<a href="https://github.com/cert-manager/aws-privateca-issuer">AWS私有CA簽發者插件</a>啟用的。cert-manager使用此插件向ACM私有CA請求TLS證書。簽發插件將與ACM私有CA服務通信,請求為工作負載簽發證書。一旦證書被簽發,它將被返回給<code>istio-csr</code>,<code>istio-csr</code>將讀取簽發的請求,並將其返回給發起CSR的工作負載。</p>
+<p><img alt="使用istio-csr的Istio證書簽名請求流程" src="../../../../security/docs/images/istio-csr-with-acm-private-ca.png" /></p>
+<h4 id="istioca">Istio與私有CA的設置說明<a class="headerlink" href="#istioca" title="Permanent link">&para;</a></h4>
+<ol>
+<li>首先,按照本節中的<a href="#acm-private-ca-with-cert-manager">設置說明</a>完成以下步驟:</li>
+<li>創建一個私有CA</li>
+<li>安裝cert-manager</li>
+<li>安裝簽發者插件</li>
+<li>設置權限並創建簽發者。簽發者代表CA,用於簽署<code>istiod</code>和網格工作負載證書。它將與ACM私有CA進行通信。</li>
+<li>創建一個<code>istio-system</code>命名空間。這是部署<code>istiod證書</code>和其他Istio資源的地方。</li>
+<li>
+<p>安裝配置有AWS私有CA簽發者插件的Istio CSR。您可以保留工作負載的證書簽名請求,以驗證它們是否被批准和簽發(<code>preserveCertificateRequests=true</code>)。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>helm<span class="w"> </span>install<span class="w"> </span>-n<span class="w"> </span>cert-manager<span class="w"> </span>cert-manager-istio-csr<span class="w"> </span>jetstack/cert-manager-istio-csr<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>--set<span class="w"> </span><span class="s2">&quot;app.certmanager.issuer.group=awspca.cert-manager.io&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>--set<span class="w"> </span><span class="s2">&quot;app.certmanager.issuer.kind=AWSPCAClusterIssuer&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>--set<span class="w"> </span><span class="s2">&quot;app.certmanager.issuer.name=&lt;the-name-of-the-issuer-you-created&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>--set<span class="w"> </span><span class="s2">&quot;app.certmanager.preserveCertificateRequests=true&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>--set<span class="w"> </span><span class="s2">&quot;app.server.maxCertificateDuration=48h&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>--set<span class="w"> </span><span class="s2">&quot;app.tls.certificateDuration=24h&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>--set<span class="w"> </span><span class="s2">&quot;app.tls.istiodCertificateDuration=24h&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>--set<span class="w"> </span><span class="s2">&quot;app.tls.rootCAFile=/var/run/secrets/istio-csr/ca.pem&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>--set<span class="w"> </span><span class="s2">&quot;volumeMounts[0].name=root-ca&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>--set<span class="w"> </span><span class="s2">&quot;volumeMounts[0].mountPath=/var/run/secrets/istio-csr&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>--set<span class="w"> </span><span class="s2">&quot;volumes[0].name=root-ca&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>--set<span class="w"> </span><span class="s2">&quot;volumes[0].secret.secretName=istio-root-ca&quot;</span>
+</code></pre></div>
+</li>
+<li>
+<p>使用自定義配置安裝Istio,以將<code>istiod</code>替換為<code>cert-manager istio-csr</code>作為網格的證書提供程序。這個過程可以使用<a href="https://tetrate.io/blog/what-is-istio-operator/">Istio Operator</a>來完成。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">install.istio.io/v1alpha1</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IstioOperator</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nt">metadata</span><span class="p">:</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">istio</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">istio-system</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="nt">spec</span><span class="p">:</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">  </span><span class="nt">profile</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;demo&quot;</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">  </span><span class="nt">hub</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gcr.io/istio-release</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">  </span><span class="nt">values</span><span class="p">:</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">  </span><span class="nt">global</span><span class="p">:</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">    </span><span class="c1"># Change certificate provider to cert-manager istio agent for istio agent</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">    </span><span class="nt">caAddress</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cert-manager-istio-csr.cert-manager.svc:443</span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">  </span><span class="nt">components</span><span class="p">:</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">    </span><span class="nt">pilot</span><span class="p">:</span>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">      </span><span class="nt">k8s</span><span class="p">:</span>
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="w">        </span><span class="nt">env</span><span class="p">:</span>
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="w">          </span><span class="c1"># Disable istiod CA Sever functionality</span>
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ENABLE_CA_SERVER</span>
+<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;false&quot;</span>
+<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="w">        </span><span class="nt">overlays</span><span class="p">:</span>
+<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="w">          </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">istiod</span>
+<a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="w">          </span><span class="nt">patches</span><span class="p">:</span>
+<a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a>
+<a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a><span class="w">            </span><span class="c1"># Mount istiod serving and webhook certificate from Secret mount</span>
+<a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spec.template.spec.containers.[name:discovery].args[7]</span>
+<a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a><span class="w">            </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;--tlsCertFile=/etc/cert-manager/tls/tls.crt&quot;</span>
+<a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spec.template.spec.containers.[name:discovery].args[8]</span>
+<a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a><span class="w">            </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;--tlsKeyFile=/etc/cert-manager/tls/tls.key&quot;</span>
+<a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spec.template.spec.containers.[name:discovery].args[9]</span>
+<a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a><span class="w">            </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;--caCertFile=/etc/cert-manager/ca/root-cert.pem&quot;</span>
+<a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a>
+<a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spec.template.spec.containers.[name:discovery].volumeMounts[6]</span>
+<a id="__codelineno-10-35" name="__codelineno-10-35" href="#__codelineno-10-35"></a><span class="w">            </span><span class="nt">value</span><span class="p">:</span>
+<a id="__codelineno-10-36" name="__codelineno-10-36" href="#__codelineno-10-36"></a><span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cert-manager</span>
+<a id="__codelineno-10-37" name="__codelineno-10-37" href="#__codelineno-10-37"></a><span class="w">              </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/etc/cert-manager/tls&quot;</span>
+<a id="__codelineno-10-38" name="__codelineno-10-38" href="#__codelineno-10-38"></a><span class="w">              </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-10-39" name="__codelineno-10-39" href="#__codelineno-10-39"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spec.template.spec.containers.[name:discovery].volumeMounts[7]</span>
+<a id="__codelineno-10-40" name="__codelineno-10-40" href="#__codelineno-10-40"></a><span class="w">            </span><span class="nt">value</span><span class="p">:</span>
+<a id="__codelineno-10-41" name="__codelineno-10-41" href="#__codelineno-10-41"></a><span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ca-root-cert</span>
+<a id="__codelineno-10-42" name="__codelineno-10-42" href="#__codelineno-10-42"></a><span class="w">              </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/etc/cert-manager/ca&quot;</span>
+<a id="__codelineno-10-43" name="__codelineno-10-43" href="#__codelineno-10-43"></a><span class="w">              </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-10-44" name="__codelineno-10-44" href="#__codelineno-10-44"></a>
+<a id="__codelineno-10-45" name="__codelineno-10-45" href="#__codelineno-10-45"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spec.template.spec.volumes[6]</span>
+<a id="__codelineno-10-46" name="__codelineno-10-46" href="#__codelineno-10-46"></a><span class="w">            </span><span class="nt">value</span><span class="p">:</span>
+<a id="__codelineno-10-47" name="__codelineno-10-47" href="#__codelineno-10-47"></a><span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cert-manager</span>
+<a id="__codelineno-10-48" name="__codelineno-10-48" href="#__codelineno-10-48"></a><span class="w">              </span><span class="nt">secret</span><span class="p">:</span>
+<a id="__codelineno-10-49" name="__codelineno-10-49" href="#__codelineno-10-49"></a><span class="w">                </span><span class="nt">secretName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">istiod-tls</span>
+<a id="__codelineno-10-50" name="__codelineno-10-50" href="#__codelineno-10-50"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spec.template.spec.volumes[7]</span>
+<a id="__codelineno-10-51" name="__codelineno-10-51" href="#__codelineno-10-51"></a><span class="w">            </span><span class="nt">value</span><span class="p">:</span>
+<a id="__codelineno-10-52" name="__codelineno-10-52" href="#__codelineno-10-52"></a><span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ca-root-cert</span>
+<a id="__codelineno-10-53" name="__codelineno-10-53" href="#__codelineno-10-53"></a><span class="w">              </span><span class="nt">configMap</span><span class="p">:</span>
+<a id="__codelineno-10-54" name="__codelineno-10-54" href="#__codelineno-10-54"></a><span class="w">                </span><span class="nt">defaultMode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">420</span>
+<a id="__codelineno-10-55" name="__codelineno-10-55" href="#__codelineno-10-55"></a><span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">istio-ca-root-cert</span>
+</code></pre></div>
+</li>
+<li>
+<p>部署您創建的自定義資源。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>istioctl<span class="w"> </span>operator<span class="w"> </span>init
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>istio-custom-config.yaml
+</code></pre></div>
+</li>
+<li>
+<p>現在您可以在EKS集群中部署一個工作負載到網格,並<a href="https://istio.io/latest/docs/reference/config/security/peer_authentication/">強制執行mTLS</a>。</p>
+</li>
+</ol>
+<p><img alt="Istio證書簽名請求" src="../../../../security/docs/images/istio-csr-requests.png" /></p>
+<h2 id="_17">工具和資源<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://catalog.workshops.aws/eks-security-immersionday/en-US/6-network-security">Amazon EKS Security Immersion Workshop - 網絡安全</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/tls-enabled-kubernetes-clusters-with-acm-private-ca-and-amazon-eks-2/">如何實施cert-manager和ACM私有CA插件,在EKS中啟用TLS</a>。</li>
+<li><a href="https://aws.amazon.com/blogs/containers/setting-up-end-to-end-tls-encryption-on-amazon-eks-with-the-new-aws-load-balancer-controller/">使用新的AWS Load Balancer控制器和ACM私有CA在Amazon EKS上設置端到端TLS加密</a>。</li>
+<li><a href="https://github.com/cert-manager/aws-privateca-issuer">私有CA Kubernetes cert-manager插件在GitHub上</a>。</li>
+<li><a href="https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaKubernetes.html">私有CA Kubernetes cert-manager插件用戶指南</a>。</li>
+<li><a href="https://aws.amazon.com/blogs/security/how-to-use-aws-private-certificate-authority-short-lived-certificate-mode">如何使用AWS Private Certificate Authority短期證書模式</a></li>
+<li><a href="https://itnext.io/verifying-service-mesh-tls-in-kubernetes-using-ksniff-and-wireshark-2e993b26bf95">使用ksniff和Wireshark驗證Kubernetes中的服務網格TLS</a></li>
+<li><a href="https://github.com/eldadru/ksniff">ksniff</a></li>
+<li><a href="https://github.com/monzo/egress-operator">egress-operator</a> 一個控制集群出口流量的操作員和DNS插件,無需協議檢查</li>
+<li><a href="https://www.suse.com/neuvector/">SUSE的NeuVector</a> 開源、零信任容器安全平台,提供策略網絡規則、數據丟失預防(DLP)、Web應用防火牆(WAF)和網絡威脅簽名。</li>
+</ul>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u8907\u88fd", "clipboard.copy": "\u8907\u88fd", "search.result.more.one": "\u6b64\u9801\u5c1a\u6709 1 \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.more.other": "\u6b64\u9801\u5c1a\u6709 # \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.none": "\u6c92\u6709\u7b26\u5408\u7684\u9805\u76ee", "search.result.one": "\u627e\u5230 1 \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.other": "\u627e\u5230 # \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.placeholder": "\u6253\u5b57\u9032\u884c\u641c\u5c0b", "search.result.term.missing": "\u7f3a\u5c11\u5b57\u8a5e", "select.version": "\u9078\u64c7\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2594 @@
+
+<!doctype html>
+<html lang="zh-TW" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../index/">
+      
+      
+        <link rel="next" href="../vpc-cni/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>VPC 和子網考量 - EKS最佳實踐指南</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-VQGL8B2FH8"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-VQGL8B2FH8",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-VQGL8B2FH8",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#vpc" class="md-skip">
+          跳轉到
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="頁首">
+    <a href="../../" title="EKS最佳實踐指南" class="md-header__button md-logo" aria-label="EKS最佳實踐指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EKS最佳實踐指南
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              VPC 和子網考量
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="選擇語言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../networking/subnets/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../ko/networking/subnets/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../zh/networking/subnets/" hreflang="zh" class="md-select__link">
+              中文（简体）
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh-TW" class="md-select__link">
+              中文（繁體）
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜尋" placeholder="搜尋" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="搜尋">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清除" aria-label="清除" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜尋引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-eks-best-practices" title="前往倉庫" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="導覽列" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="EKS最佳實踐指南" class="md-nav__button md-logo" aria-label="EKS最佳實踐指南" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    EKS最佳實踐指南
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-eks-best-practices" title="前往倉庫" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-eks-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    指南
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    簡介
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    安全
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            安全
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/iam/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    身份和訪問管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/pods/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pod 安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/multitenancy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多租戶
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/detective/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    偵查控制
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/network/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據加密和密鑰管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/runtime/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    運行時安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/hosts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基礎設施安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/compliance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    監管合規性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/incidents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    事故響應和取證
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/image/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    映像安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/docs/multiaccount/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    多帳戶策略
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    叢集自動擴展
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            叢集自動擴展
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../karpenter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Karpenter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cluster-autoscaling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集自動擴展器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可靠性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            可靠性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reliability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reliability/docs/application/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    應用程式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reliability/docs/controlplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reliability/docs/dataplane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Windows 容器
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Windows 容器
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/ami/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AMI 管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/gmsa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 容器的 gMSA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/hardening/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows Server 強化
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    掃描 Windows 映像
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/licensing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 版本和許可
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    日誌記錄
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    監控 Windows 容器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 網絡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/oom/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    內存和系統管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/patching/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    基礎設施管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/scheduling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    調度
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 容器的 Pod 安全
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows/docs/storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存儲選項
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    網絡
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            網絡
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    VPC 和子網考量
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    VPC 和子網考量
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      概述
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="概述">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS 叢集架構
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS 控制平面通信
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EKS 控制平面通信">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      公共端點
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      公共和私有端點
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      私有端點
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      VPC 配置
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      您可以通過三種不同的方式配置 VPC 和子網:
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="您可以通過三種不同的方式配置 VPC 和子網:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      僅使用公共子網
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用私有和公共子網
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      僅使用私有子網
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      跨 VPC 通信
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      跨多個帳戶共享 VPC
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="跨多個帳戶共享 VPC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用共享子網時的注意事項
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      安全組
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      建議
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="建議">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      考慮多可用區部署
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      將節點部署到私有子網
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      考慮公共和私有模式的叢集端點
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      謹慎配置安全組
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nat" class="md-nav__link">
+    <span class="md-ellipsis">
+      在每個可用區部署 NAT 網關
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud9" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Cloud9 訪問私有叢集
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vpc-cni/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon VPC CNI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ip-optimization-strategies/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    優化 IP 地址利用率
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ipv6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    運行 IPv6 叢集
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    自訂網路
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prefix-mode/index_linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Linux 的前綴模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prefix-mode/index_windows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows 的前綴模式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sgpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    每個 Pod 的安全組
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../loadbalancing/loadbalancing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    負載均衡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡性能問題監控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    可擴展性
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            可擴展性
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首頁
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/control-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/data-plane/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    數據平面
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/cluster-services/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集服務
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/workloads/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    工作負載
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/scaling_theory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    擴展背後的理論
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/kcp_monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    控制平面監控
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/node_efficiency/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    節點效率和擴展
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/kubernetes_slos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes SLO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scalability/docs/quotas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    已知限制和服務配額
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../upgrades/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    叢集升級
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    成本優化
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            成本優化
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cost_optimization/cfm_framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    雲端財務管理框架
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cost_optimization/cost_opt_compute/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    計算
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cost_optimization/cost_opt_networking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    網絡
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cost_optimization/cost_opt_storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    存儲
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cost_optimization/cost_opt_observability/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    可觀察性
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目錄">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目錄
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      概述
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="概述">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS 叢集架構
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      EKS 控制平面通信
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EKS 控制平面通信">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      公共端點
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      公共和私有端點
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      私有端點
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      VPC 配置
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      您可以通過三種不同的方式配置 VPC 和子網:
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="您可以通過三種不同的方式配置 VPC 和子網:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      僅使用公共子網
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用私有和公共子網
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      僅使用私有子網
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      跨 VPC 通信
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      跨多個帳戶共享 VPC
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="跨多個帳戶共享 VPC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用共享子網時的注意事項
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      安全組
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      建議
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="建議">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      考慮多可用區部署
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      將節點部署到私有子網
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      考慮公共和私有模式的叢集端點
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      謹慎配置安全組
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nat" class="md-nav__link">
+    <span class="md-ellipsis">
+      在每個可用區部署 NAT 網關
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud9" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 Cloud9 訪問私有叢集
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="vpc">VPC 和子網路注意事項<a class="headerlink" href="#vpc" title="Permanent link">&para;</a></h1>
+<p>運行 EKS 叢集需要了解 AWS VPC 網路,以及 Kubernetes 網路。</p>
+<p>我們建議您在設計 VPC 或將叢集部署到現有 VPC 之前,先了解 EKS 控制平面通信機制。</p>
+<p>在設計要與 EKS 一起使用的 VPC 和子網路時,請參考<a href="https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html">叢集 VPC 注意事項</a>和<a href="https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html">Amazon EKS 安全群組注意事項</a>。</p>
+<h2 id="_1">概述<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="eks">EKS 叢集架構<a class="headerlink" href="#eks" title="Permanent link">&para;</a></h3>
+<p>EKS 叢集由兩個 VPC 組成:</p>
+<ul>
+<li>由 AWS 管理的 VPC,用於託管 Kubernetes 控制平面。此 VPC 不會出現在客戶帳戶中。</li>
+<li>由客戶管理的 VPC,用於託管 Kubernetes 節點。這是容器運行以及其他客戶管理的 AWS 基礎設施(如叢集使用的負載均衡器)的位置。此 VPC 出現在客戶帳戶中。您需要在創建叢集之前創建客戶管理的 VPC。如果您沒有提供 VPC,eksctl 會創建一個。</li>
+</ul>
+<p>客戶 VPC 中的節點需要能夠連接到 AWS VPC 中的托管 API 服務器端點。這允許節點向 Kubernetes 控制平面註冊並接收運行應用程序 Pod 的請求。</p>
+<p>節點通過 (a) EKS 公共端點或 (b) 由 EKS 管理的跨帳戶<a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html">彈性網絡接口</a>(X-ENI)連接到 EKS 控制平面。創建叢集時,您需要指定至少兩個 VPC 子網。EKS 在創建叢集時指定的每個子網(也稱為叢集子網)中放置一個 X-ENI。Kubernetes API 服務器使用這些跨帳戶 ENI 與部署在客戶管理的叢集 VPC 子網上的節點進行通信。</p>
+<p><img alt="包括負載均衡器、節點和 pod 的叢集網絡的一般說明。" src="../../../networking/subnets/image.png" /></p>
+<p>當節點啟動時,執行 EKS 引導腳本並安裝 Kubernetes 節點配置文件。作為每個實例啟動過程的一部分,啟動容器運行時代理、kubelet 和 Kubernetes 節點代理。</p>
+<p>為了註冊節點,Kubelet 聯繫 Kubernetes 叢集端點。它與 VPC 外部的公共端點或 VPC 內部的私有端點建立連接。Kubelet 定期接收 API 指令並提供狀態更新和心跳到端點。</p>
+<h3 id="eks_1">EKS 控制平面通信<a class="headerlink" href="#eks_1" title="Permanent link">&para;</a></h3>
+<p>EKS 有兩種方式控制對<a href="https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html">叢集端點</a>的訪問。端點訪問控制可讓您選擇端點是否可從公共互聯網訪問,或僅通過您的 VPC 訪問。您可以同時啟用公共端點(這是默認設置)、私有端點或兩者。</p>
+<p>端點設置配置節點與控制平面通信的路徑。請注意,這些端點設置可以隨時通過 EKS 控制台或 API 更改。</p>
+<h4 id="_2">公共端點<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h4>
+<p>這是新 Amazon EKS 叢集的默認行為。僅啟用叢集的公共端點時,來自您叢集 VPC 內部的 Kubernetes API 請求(例如節點到控制平面的通信)會離開 VPC,但不會離開 Amazon 的網絡。為了使節點能夠連接到控制平面,它們必須具有公共 IP 地址,並具有到互聯網網關或 NAT 網關的路由,以便使用 NAT 網關的公共 IP 地址。</p>
+<h4 id="_3">公共和私有端點<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h4>
+<p>啟用公共和私有端點時,來自 VPC 內部的 Kubernetes API 請求通過 VPC 內的 X-ENI 與控制平面通信。您的叢集 API 服務器可從互聯網訪問。</p>
+<h4 id="_4">私有端點<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h4>
+<p>只啟用私有端點時,互聯網上沒有公共訪問您的 API 服務器。所有流量到您的叢集 API 服務器必須來自您的叢集 VPC 或連接的網絡。節點通過 VPC 內的 X-ENI 與 API 服務器通信。請注意,叢集管理工具必須能夠訪問私有端點。了解更多有關<a href="https://aws.amazon.com/premiumsupport/knowledge-center/eks-private-cluster-endpoint-vpc/">如何從 Amazon VPC 外部連接到 Amazon EKS 私有叢集端點</a>的信息。</p>
+<p>請注意,叢集的 API 服務器端點由公共 DNS 服務器解析為 VPC 中的私有 IP 地址。過去,端點只能從 VPC 內部解析。</p>
+<h3 id="vpc_1">VPC 配置<a class="headerlink" href="#vpc_1" title="Permanent link">&para;</a></h3>
+<p>Amazon VPC 支持 IPv4 和 IPv6 寄址。Amazon EKS 默認支持 IPv4。VPC 必須與 IPv4 CIDR 塊相關聯。您還可以選擇將多個 IPv4 <a href="http://en.wikipedia.org/wiki/CIDR_notation">無類域間路由</a>(CIDR)塊和多個 IPv6 CIDR 塊與您的 VPC 相關聯。創建 VPC 時,您必須從 <a href="http://www.faqs.org/rfcs/rfc1918.html">RFC 1918</a>中指定的私有 IPv4 地址範圍為 VPC 指定 IPv4 CIDR 塊。允許的塊大小介於 <code>/16</code> 前綴(65,536 個 IP 地址)和 <code>/28</code> 前綴(16 個 IP 地址)之間。</p>
+<p>創建新 VPC 時,您可以附加單個 IPv6 CIDR 塊,在更改現有 VPC 時最多可以附加五個。IPv6 CIDR 塊大小的前綴長度可以介於 /44 和 /60 之間,對於 IPv6 子網,它可以介於 /44/ 和 /64 之間。您可以從 Amazon 維護的 IPv6 地址池中請求 IPv6 CIDR 塊。有關更多信息,請參考 VPC 用戶指南中的<a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html">VPC CIDR 塊</a>部分。</p>
+<p>Amazon EKS 叢集同時支持 IPv4 和 IPv6。默認情況下,EKS 叢集使用 IPv4 IP。在創建叢集時指定 IPv6 將啟用 IPv6 叢集。IPv6 叢集需要雙堆疊 VPC 和子網。</p>
+<p>Amazon EKS 建議您在創建叢集時使用至少兩個位於不同可用區的子網。您在創建叢集時傳遞的子網稱為叢集子網。創建叢集時,Amazon EKS 在您指定的子網中創建最多 4 個跨帳戶(x-account 或 x-ENI) ENI。x-ENI 始終部署,用於叢集管理流量,如日誌交付、exec 和代理。有關完整的<a href="https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html#network-requirements-subnets">VPC 和子網要求</a>詳細信息,請參考 EKS 用戶指南。</p>
+<p>Kubernetes 工作節點可以在叢集子網中運行,但不建議這樣做。在<a href="https://aws.github.io/aws-eks-best-practices/upgrades/#verify-available-ip-addresses">叢集升級</a>期間,Amazon EKS 在叢集子網中配置額外的 ENI。當您的叢集擴展時,工作節點和 pod 可能會消耗叢集子網中可用的 IP。因此,為了確保有足夠的可用 IP,您可能想考慮使用具有 /28 子網掩碼的專用叢集子網。</p>
+<p>Kubernetes 工作節點可以在公共或私有子網中運行。子網是公共還是私有取決於是否通過<a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html">互聯網網關</a>路由子網內的流量。公共子網有一個到互聯網的路由表項,但私有子網沒有。</p>
+<p>從其他地方到達您節點的流量稱為<em>入站</em>。從節點發出並離開網絡的流量稱為<em>出站</em>。在配置有互聯網網關的子網中具有公共或彈性 IP 地址(EIP)的節點允許來自 VPC 外部的入站流量。私有子網通常包含<a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html">NAT 網關</a>,它只允許來自 VPC 內部的入站流量進入節點,同時仍允許來自節點的流量離開 VPC(<em>出站</em>)。</p>
+<p>在 IPv6 世界中,每個地址都是可路由的。與節點和 pod 關聯的 IPv6 地址是公共的。通過在 VPC 中實現<a href="https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html">出口專用互聯網網關(EIGW)</a>來支持私有子網,允許出站流量並阻止所有入站流量。有關實施 IPv6 子網的最佳做法,請參考<a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario2.html">VPC 用戶指南</a>。</p>
+<h3 id="vpc_2">您可以通過三種不同的方式配置 VPC 和子網:<a class="headerlink" href="#vpc_2" title="Permanent link">&para;</a></h3>
+<h4 id="_5">僅使用公共子網<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h4>
+<p>在同一個公共子網中創建節點和入口資源(如負載均衡器)。使用 <a href="http://kubernetes.io/role/elb"><code>kubernetes.io/role/elb</code></a> 標記公共子網以構建面向互聯網的負載均衡器。在此配置中,叢集端點可以配置為公共、私有或同時公共和私有。</p>
+<h4 id="_6">使用私有和公共子網<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<p>在私有子網上創建節點,而在公共子網上實例化入口資源。您可以啟用公共、私有或同時公共和私有訪問叢集端點。根據叢集端點的配置,節點流量將通過 NAT 網關或 ENI 進入。</p>
+<h4 id="_7">僅使用私有子網<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
+<p>在私有子網上創建節點和入口。使用 <a href="http://kubernetes.io/role/internal-elb:1"><code>kubernetes.io/role/internal-elb</code></a> 子網標記來構建內部負載均衡器。訪問您的叢集端點將需要 VPN 連接。您必須為 EC2 和所有 Amazon ECR 和 S3 存儲庫啟用 <a href="https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-service.html">AWS PrivateLink</a>。只應啟用叢集的私有端點。我們建議在配置私有叢集之前仔細閱讀<a href="https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html">EKS 私有叢集要求</a>。</p>
+<h3 id="vpc_3">跨 VPC 通信<a class="headerlink" href="#vpc_3" title="Permanent link">&para;</a></h3>
+<p>在許多情況下,您需要多個 VPC 和部署到這些 VPC 的單獨 EKS 叢集。</p>
+<p>您可以使用 <a href="https://aws.amazon.com/vpc/lattice/">Amazon VPC Lattice</a> 在多個 VPC 和帳戶之間一致且安全地連接服務(無需由 VPC 對等、AWS PrivateLink 或 AWS Transit Gateway 等服務提供額外的連接性)。了解更多<a href="https://aws.amazon.com/blogs/networking-and-content-delivery/build-secure-multi-account-multi-vpc-connectivity-for-your-applications-with-amazon-vpc-lattice/">信息</a>。</p>
+<p><img alt="Amazon VPC Lattice,流量流" src="../../../networking/subnets/vpc-lattice.gif" /></p>
+<p>Amazon VPC Lattice 在 IPv4 和 IPv6 的鏈路本地地址空間中運行,提供可能具有重疊 IPv4 地址的服務之間的連接。為了提高運營效率,我們強烈建議將 EKS 叢集和節點部署到不重疊的 IP 範圍。如果您的基礎設施包括具有重疊 IP 範圍的 VPC,您需要相應地設計您的網絡。我們建議使用<a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-basics">私有 NAT 網關</a>或 VPC CNI 與<a href="https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-transit-gateway.html">過境網關</a>結合使用的<a href="../custom-networking/">自定義網絡</a>模式,以解決重疊 CIDR 挑戰,同時保留可路由的 RFC1918 IP 地址。</p>
+<p><img alt="Private Nat Gateway with Custom Networking, traffic flow" src="../../../networking/subnets/private-nat-gw.gif" /></p>
+<p>如果您是服務提供商,並希望與您客戶 VPC 中的另一個帳戶共享您的 Kubernetes 服務和入口(ALB 或 NLB),請考慮使用 <a href="https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-share-your-services.html">AWS PrivateLink</a>(也稱為端點服務)。</p>
+<h3 id="vpc_4">跨多個帳戶共享 VPC<a class="headerlink" href="#vpc_4" title="Permanent link">&para;</a></h3>
+<p>許多企業採用共享 Amazon VPC 作為簡化網絡管理、降低成本和提高 AWS 組織中多個 AWS 帳戶的安全性的一種方式。他們利用 AWS Resource Access Manager (RAM) 與個別 AWS 帳戶、組織單位(OU)或整個 AWS 組織安全地共享受支持的 <a href="https://docs.aws.amazon.com/ram/latest/userguide/shareable.html">AWS 資源</a>。</p>
+<p>您可以使用 AWS RAM 在來自另一個 AWS 帳戶的共享 VPC 子網中部署 Amazon EKS 叢集、托管節點組和其他支持的 AWS 資源(如負載均衡器、安全組、端點等)。下圖描述了一個示例高級架構。這允許中央網絡團隊控制 VPC、子網等網絡構件,同時允許應用程序或平台團隊在各自的 AWS 帳戶中部署 Amazon EKS 叢集。此方案的完整演練可在此<a href="https://github.com/aws-samples/eks-shared-subnets">GitHub 存儲庫</a>中找到。</p>
+<p><img alt="在跨 AWS 帳戶共享子網中部署 Amazon EKS。" src="../../../networking/subnets/eks-shared-subnets.png" /></p>
+<h4 id="_8">使用共享子網時的注意事項<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p>Amazon EKS 叢集和工作節點可以在屬於同一 VPC 的共享子網中創建。Amazon EKS 不支持跨多個 VPC 創建叢集。</p>
+</li>
+<li>
+<p>Amazon EKS 使用 AWS VPC 安全組(SG)來控制 Kubernetes 控制平面與叢集工作節點之間的流量。安全組也用於控制工作節點與其他 VPC 資源以及外部 IP 地址之間的流量。您必須在應用程序/參與帳戶中創建這些安全組。確保您打算用於 pod 的安全組也位於參與帳戶中。您可以配置安全組中的入站和出站規則,以允許必要的流量進出位於中央 VPC 帳戶中的安全組。</p>
+</li>
+<li>
+<p>在您的 Amazon EKS 叢集所在的參與帳戶中創建 IAM 角色和相關策略。這些 IAM 角色和策略對於授予 Amazon EKS 管理的 Kubernetes 叢集以及在 Fargate 上運行的節點和 pod 所需的必要權限至關重要。這些權限使 Amazon EKS 能夠代表您調用其他 AWS 服務。</p>
+</li>
+<li>
+<p>您可以採取以下方法,允許 k8s pod 跨帳戶訪問 AWS 資源,如 Amazon S3 存儲桶、Dynamodb 表等:</p>
+<ul>
+<li>
+<p><strong>基於資源的策略方法</strong>:如果 AWS 服務支持資源策略,您可以添加適當的資源策略,以允許跨帳戶訪問分配給 kubernetes pod 的 IAM 角色。在此方案中,OIDC 提供程序、IAM 角色和權限策略存在於應用程序帳戶中。要查找支持資源策略的 AWS 服務,請參考<a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_aws-services-that-work-with-iam.html">與 IAM 一起使用的 AWS 服務</a>,並查看"資源型"列中有"是"的服務。</p>
+</li>
+<li>
+<p><strong>OIDC 提供程序方法</strong>:OIDC 提供程序、IAM 角色、權限和信任策略將在資源所在的其他參與 AWS 帳戶中創建。這些角色將分配給應用程序帳戶中的 Kubernetes pod,以便它們可以訪問跨帳戶資源。請參考<a href="https://aws.amazon.com/blogs/containers/cross-account-iam-roles-for-kubernetes-service-accounts/">用於 Kubernetes 服務帳戶的跨帳戶 IAM 角色</a>博客,了解此方法的完整演練。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>您可以將 Amazon Elastic Loadbalancer (ELB)資源(ALB 或 NLB)部署到應用程序或中央網絡帳戶,以將流量路由到 k8s pod。請參考<a href="https://aws.amazon.com/blogs/containers/expose-amazon-eks-pods-through-cross-account-load-balancer/">通過跨帳戶負載均衡器公開 Amazon EKS Pod</a>演練,了解在中央網絡帳戶中部署 ELB 資源的詳細說明。此選項提供了增強的靈活性,因為它授予中央網絡帳戶對負載均衡器資源安全配置的完全控制權。</p>
+</li>
+<li>
+<p>當使用 Amazon VPC CNI 的<code>自定義網絡功能</code>時,您需要使用中央網絡帳戶中列出的可用區(AZ) ID 映射來創建每個<code>ENIConfig</code>。這是由於在每個 AWS 帳戶中,物理 AZ 到 AZ 名稱的映射是隨機的。</p>
+</li>
+</ul>
+<h3 id="_9">安全組<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p><a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html"><em>安全組</em></a>控制允許到達和離開其關聯資源的流量。Amazon EKS 使用安全組來管理<a href="https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html">控制平面和節點之間的通信</a>。創建叢集時,Amazon EKS 創建一個名為 <code>eks-cluster-sg-my-cluster-uniqueID</code> 的安全組。EKS 將這些安全組關聯到托管的 ENI 和節點。默認規則允許節點和叢集之間的所有流量自由流動,並允許到任何目的地的所有出站流量。</p>
+<p>創建叢集時,您可以指定自己的安全組。請參見<a href="https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html">安全組建議</a>在指定自己的安全組時。</p>
+<h2 id="_10">建議<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<h3 id="_11">考慮多可用區部署<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<p>AWS 區域提供多個物理隔離的可用區(AZ),這些可用區通過低延遲、高吞吐量和高度冗餘的網絡相互連接。利用可用區,您可以設計和操作在可用區之間自動故障轉移而不中斷的應用程序。Amazon EKS 強烈建議將 EKS 叢集部署到多個可用區。在創建叢集時,請考慮至少指定兩個可用區的子網。</p>
+<p>Kubelet 在節點上運行時會自動將標籤添加到節點對象,如 <a href="http://topology.kubernetes.io/region=us-west-2,topology.kubernetes.io/zone=us-west-2d"><code>topology.kubernetes.io/region=us-west-2</code>, 和 <code>topology.kubernetes.io/zone=us-west-2d</code></a>。我們建議結合使用節點標籤和 <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/">Pod 拓撲傳播約束</a>來控制 Pod 在區域的分佈。這些提示使 Kubernetes <a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/">調度器</a>能夠放置 Pod 以獲得更好的預期可用性,降低整個工作負載受相關故障影響的風險。請參考<a href="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector">將節點分配給 Pod</a>以查看節點選擇器和 AZ 傳播約束的示例。</p>
+<p>您可以在創建節點時定義子網或可用區。如果未配置子網,節點將放置在叢集子網中。EKS 對托管節點組的支持會自動將節點分散到可用容量的多個可用區。<a href="https://karpenter.sh/">Karpenter</a>將通過將節點擴展到指定的 AZ 來尊重 AZ 傳播放置,如果工作負載定義了拓撲傳播限制。</p>
+<p>AWS Elastic Load Balancers 由 AWS Load Balancer Controller 為 Kubernetes 叢集管理。它為 Kubernetes ingress 資源配置 Application Load Balancer (ALB),為 Kubernetes 類型 Loadbalancer 的服務配置 Network Load Balancer (NLB)。Elastic Load Balancer 控制器使用<a href="https://aws.amazon.com/premiumsupport/knowledge-center/eks-vpc-subnet-discovery/">標籤</a>來發現子網。ELB 控制器需要至少兩個可用區(AZ)才能成功配置入口資源。考慮在至少兩個 AZ 中設置子網,以利用地理冗餘的安全性和可靠性。</p>
+<h3 id="_12">將節點部署到私有子網<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<p>包含公共和私有子網的 VPC 是在 EKS 上部署 Kubernetes 工作負載的理想方法。考慮設置至少兩個公共子網和兩個私有子網,位於兩個不同的可用區。公共子網的相關路由表包含到互聯網網關的路由。Pod 能夠通過 NAT 網關與互聯網交互。在 IPv6 環境中,私有子網由<a href="https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html">出口專用互聯網網關</a>(EIGW)支持。</p>
+<p>在私有子網中實例化節點提供了對節點流量的最大控制,並且對於大多數 Kubernetes 應用程序來說是有效的。入口資源(如負載均衡器)在公共子網中實例化,並將流量路由到在私有子網上運行的 Pod。</p>
+<p>如果您需要嚴格的安全性和網絡隔離,請考慮私有模式。在此配置中,在 AWS 區域的 VPC 中部署三個私有子網,位於不同的可用區。部署到子網的資源無法訪問互聯網,互聯網也無法訪問子網中的資源。為了使您的 Kubernetes 應用程序能夠訪問其他 AWS 服務,您必須配置 PrivateLink 接口和/或網關端點。您可以使用 AWS Load Balancer Controller 設置內部負載均衡器來重定向流量到 Pod。必須對私有子網進行標記(<a href="http://kubernetes.io/role/internal-elb"><code>kubernetes.io/role/internal-elb: 1</code></a>),以便控制器配置負載均衡器。為了使節點能夠註冊到叢集,必須將叢集端點設置為私有模式。請訪問<a href="https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html">私有叢集指南</a>以了解完整的要求和注意事項。</p>
+<h3 id="_13">考慮公共和私有模式的叢集端點<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<p>Amazon EKS 提供公共-僅、公共-和-私有以及私有-僅叢集端點模式。默認模式是公共-僅,但我們建議將叢集端點配置為公共和私有模式。此選項允許 Kubernetes API 調用在您叢集的 VPC 內(如節點到控制平面的通信)使用私有 VPC 端點,並保持流量在您叢集的 VPC 內。但是,您的叢集 API 服務器仍然可以從互聯網訪問。但是,我們強烈建議限制可以使用公共端點的 CIDR 塊。<a href="https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html#modify-endpoint-access">了解如何配置公共和私有端點訪問,包括限制 CIDR 塊。</a></p>
+<p>我們建議在需要安全性和網絡隔離時使用私有-僅端點。我們建議使用<a href="https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html#private-access">EKS 用戶指南</a>中列出的任何一種選項來私下連接到 API 服務器。</p>
+<h3 id="_14">謹慎配置安全組<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h3>
+<p>Amazon EKS 支持使用自定義安全組。任何自定義安全組都必須允許節點與 Kubernetes 控制平面之間的通信。請檢查<a href="https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html">端口要求</a>,並在您的組織不允許開放通信時手動配置規則。</p>
+<p>EKS 在創建叢集時將您提供的自定義安全組應用於托管接口(X-ENI)。但它不會立即將它們與節點關聯。在創建節點組時,強烈建議<a href="https://eksctl.io/usage/schema/#nodeGroups-securityGroups">手動關聯自定義安全組</a>。請考慮啟用<a href="https://karpenter.sh/docs/concepts/nodeclasses/#specsecuritygroupselectorterms">securityGroupSelectorTerms</a>,以使 Karpenter 節點模板在節點自動縮放期間發現自定義安全組。</p>
+<p>我們強烈建議創建一個安全組,以允許所有節點之間的通信流量。在引導過程中,節點需要對外部互聯網的出站連接才能訪問叢集端點。評估對外部訪問的要求,如內部連接和容器註冊表訪問,並相應地設置規則。在將更改投入生產之前,我們強烈建議您仔細檢查開發環境中的連接。</p>
+<h3 id="nat">在每個可用區部署 NAT 網關<a class="headerlink" href="#nat" title="Permanent link">&para;</a></h3>
+<p>如果您在私有子網(IPv4 和 IPv6)中部署節點,請考慮在每個可用區(AZ)創建一個 NAT 網關,以確保區域獨立的架構並減少跨 AZ 支出。每個 AZ 中的 NAT 網關都具有冗餘性。</p>
+<h3 id="cloud9">使用 Cloud9 訪問私有叢集<a class="headerlink" href="#cloud9" title="Permanent link">&para;</a></h3>
+<p>AWS Cloud9 是一個可以在私有子網中安全運行的基於 Web 的 IDE,無需入站訪問,使用 AWS Systems Manager。Cloud9 實例上也可以禁用出站。<a href="https://aws.amazon.com/blogs/security/isolating-network-access-to-your-aws-cloud9-environments/">了解更多關於使用 Cloud9 訪問私有叢集和子網的信息。</a></p>
+<p><img alt="AWS Cloud9 控制台連接到無入站 EC2 實例的說明。" src="../../../networking/subnets/image-2.jpg" /></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u8907\u88fd", "clipboard.copy": "\u8907\u88fd", "search.result.more.one": "\u6b64\u9801\u5c1a\u6709 1 \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.more.other": "\u6b64\u9801\u5c1a\u6709 # \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.none": "\u6c92\u6709\u7b26\u5408\u7684\u9805\u76ee", "search.result.one": "\u627e\u5230 1 \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.other": "\u627e\u5230 # \u500b\u7b26\u5408\u7684\u9805\u76ee", "search.result.placeholder": "\u6253\u5b57\u9032\u884c\u641c\u5c0b", "search.result.term.missing": "\u7f3a\u5c11\u5b57\u8a5e", "select.version": "\u9078\u64c7\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+    
+  </body>
+</html>
